@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>lsoportal-j17-parent</artifactId>
+        <artifactId>esmportal-parent</artifactId>
         <groupId>com.sap.cap</groupId>
         <version>1.0.0</version>
     </parent>
@@ -10,7 +10,7 @@
     <artifactId>srv</artifactId>
     <packaging>jar</packaging>
 
-    <name>lsoportal-j17</name>
+    <name>esmportal-j17</name>
 
 	<properties>
 		<node.url>https://int.repositories.cloud.sap/artifactory/proxy-3rd-party-nodejs-dist</node.url>

@@ -1,11 +1,11 @@
 _schema-version: "3.1"
-ID: lso-selfsrv
-version: 1.0.61
-description: "LSO Self Service Application"
+ID: esm-selfsrv
+version: 1.0.0
+description: "ESM Self Service Application"
 parameters:
   enable-parallel-deployments: true
 modules:
-  - name: lso-selfsrv-srv
+  - name: esm-selfsrv-srv
     type: java
     path: srv
     parameters:
@@ -24,12 +24,12 @@ modules:
         properties:
           srv-url: ${default-url}
     requires:
-      - name: lsossrv-xsuaa
-      - name: lsossrv-hdi-container
+      - name: esmssrv-xsuaa
+      - name: esmssrv-hdi-container
       - name: iESM-destination-services
 
   # HANA DB HDI Container Deployer
-  - name: lsossrv-hana-db
+  - name: esmssrv-hana-db
     type: hdb
     path: db
     parameters:
@@ -39,11 +39,11 @@ modules:
       commands:
         - npm run build
       requires:
-        - name: lso-selfsrv-srv
+        - name: esm-selfsrv-srv
     requires:
-      - name: lsossrv-hdi-container
+      - name: esmssrv-hdi-container
 
-  - name: lso-selfsrv-srv-app
+  - name: esm-selfsrv-srv-app
     type: approuter.nodejs
     path: app/
     parameters:
@@ -59,7 +59,7 @@ modules:
           url: ~{srv-url}
           forwardAuthToken: true
           strictSSL: true
-      - name: lsossrv-xsuaa
+      - name: esmssrv-xsuaa
       - name: dynatrace-service # dynatrace monitoring service binding
     provides:
       - name: app-api
@@ -67,12 +67,12 @@ modules:
           url: ${default-url}
 
 resources:
-  - name: lsossrv-hdi-container
+  - name: esmssrv-hdi-container
     parameters:
       service: hana
       service-plan: hdi-shared
     type: org.cloudfoundry.managed-service
-  - name: lsossrv-xsuaa
+  - name: esmssrv-xsuaa
     parameters:
       path: ./xs-security.json
       service: xsuaa
@@ -85,4 +85,4 @@ resources:
       path: ./destination-dev.json
     type: org.cloudfoundry.managed-service
   - name: dynatrace-service
-    type: org.cloudfoundry.existing-service    
+    type: org.cloudfoundry.existing-service

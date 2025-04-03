@@ -4,10 +4,10 @@
 	<modelVersion>4.0.0</modelVersion>
  
 	<groupId>com.sap.cap</groupId>
-	<artifactId>lsoportal-j17-parent</artifactId>
+	<artifactId>esmportal-parent</artifactId>
 	<version>1.0.0</version>
 	<packaging>pom</packaging>  
-	<name>LSO Portal App with Java 17 and Spring Boot 3.X</name>
+	<name>ESM Self Service App with Java 17 and Spring Boot 3.X</name>
 
 		<properties>
 		<!-- OUR VERSION -->

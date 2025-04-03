@@ -1,8 +1,8 @@
 _schema-version: '3.1'
-ID: lso-selfsrv-extension
-extends: lso-selfsrv
+ID: esm-selfsrv-extension
+extends: esm-selfsrv
 modules:
-  - name: lso-selfsrv-srv
+  - name: esm-selfsrv-srv
     type: java
     path: srv
     parameters:
@@ -10,7 +10,7 @@ modules:
       memory: 1G
       routes:
         - route: "${default-url}"
-        - route: "lso_ssrv-test.cfapps.eu10-004.hana.ondemand.com"
+        - route: "esm_ssrv-test.cfapps.eu10-004.hana.ondemand.com"
     properties:
       JBP_CONFIG_COMPONENTS: "jres: ['com.sap.xs.java.buildpack.jre.SAPMachineJRE']"
       JBP_CONFIG_SAP_MACHINE_JRE: "{ version: 17.+ }"
@@ -24,12 +24,12 @@ modules:
         properties:
           srv-url: ${default-url}
     requires:
-      - name: lsossrv-xsuaa
-      - name: lsossrv-hdi-container
+      - name: esmssrv-xsuaa
+      - name: esmssrv-hdi-container
       - name: iESM-destination-services
 
   # HANA DB HDI Container Deployer
-  - name: lsossrv-hana-db
+  - name: esmssrv-hana-db
     type: hdb
     path: db
     parameters:
@@ -41,11 +41,11 @@ modules:
       commands:
         - npm run build
       requires:
-        - name: lso-selfsrv-srv
+        - name: esm-selfsrv-srv
     requires:
-      - name: lsossrv-hdi-container
+      - name: esmssrv-hdi-container
 
-  - name: lso-selfsrv-srv-app
+  - name: esm-selfsrv-srv-app
     type: approuter.nodejs
     path: app/
     parameters:
@@ -53,7 +53,7 @@ modules:
       disk-quota: 1024M
       memory: 512M
       routes:
-        - route: "lso_ssrv-app-test.cfapps.eu10-004.hana.ondemand.com"  
+        - route: "esm_ssrv-app-test.cfapps.eu10-004.hana.ondemand.com"  
     requires:
       - name: srv-api
         group: destinations
@@ -62,7 +62,7 @@ modules:
           url: ~{srv-url}
           forwardAuthToken: true
           strictSSL: true
-      - name: lsossrv-xsuaa    
+      - name: esmssrv-xsuaa    
       - name: dynatrace-service # dynatrace monitoring service binding
     provides:
       - name: app-api
@@ -70,12 +70,12 @@ modules:
           url: ${default-url}
 
 resources:
-  - name: lsossrv-hdi-container
+  - name: esmssrv-hdi-container
     parameters:
       service: hana
       service-plan: hdi-shared
     type: org.cloudfoundry.managed-service
-  - name: lsossrv-xsuaa
+  - name: esmssrv-xsuaa
     parameters:
       path: ./xs-security.json
       service: xsuaa

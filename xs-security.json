@@ -1,5 +1,5 @@
 {
-  "xsappname": "lso-selfsrv",
+  "xsappname": "esm-selfsrv",
   "oauth2-configuration": {
     "credential-types": [
       "instance-secret",
@@ -14,23 +14,23 @@
   "scopes": [
     {
       "name": "$XSAPPNAME.EmployeesRole",
-      "description": "LSO Self Service - Employees"
+      "description": "ESM Self Service - Employees"
     },
     {
       "name": "$XSAPPNAME.ExternalsRole",
-      "description": "LSO Self Service - Externals"
+      "description": "ESM Self Service - Externals"
     }
   ],
   "role-templates": [
     {
-      "name": "LSOSSRV-EMP",
+      "name": "ESMSSRV-EMP",
       "description": "generated",
       "scope-references": [
         "$XSAPPNAME.EmployeesRole"
       ]
     },
     {
-      "name": "LSOSSRV-CTR",
+      "name": "ESMSSRV-CTR",
       "description": "generated",
       "scope-references": [
         "$XSAPPNAME.ExternalsRole"
@@ -39,17 +39,17 @@
   ],
   "role-collections": [
     {
-      "name": "SVC_ESM_EMPLOYEE_LSO_SELFSRV",
-      "description": "LSO Portal Access for Employees - I/D/C Users",
+      "name": "SVC_ESM_EMPLOYEE_ESM_SELFSRV",
+      "description": "ESM Portal Access for Employees - I/D/C Users",
       "role-template-references": [
-        "$XSAPPNAME.LSOSSRV-EMP"
+        "$XSAPPNAME.ESMSSRV-EMP"
       ]
     },
     {
-      "name": "SVC_ESM_CONTRACTOR_LSO_SELFSRV",
-      "description": "LSO Externals - P/S Users",
+      "name": "SVC_ESM_CONTRACTOR_ESM_SELFSRV",
+      "description": "ESM Externals - P/S Users",
       "role-template-references": [
-        "$XSAPPNAME.LSOSSRV-CTR"
+        "$XSAPPNAME.ESMSSRV-CTR"
       ]
     }
   ],
