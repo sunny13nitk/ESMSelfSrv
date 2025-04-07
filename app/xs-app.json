@@ -8,6 +8,7 @@
       "type:":"proxy",
       "destination": "srv-api",
       "authenticationType": "xsuaa",
+      "type":"proxy",
       "requestParameters": {
         "lobName": "$1"
       },
