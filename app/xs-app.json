@@ -3,10 +3,13 @@
   "authenticationMethod": "route",
   "routes": [
     {
-      "source": "^/lso",
-      "target": "/lso",
+      "source": "^/esm/cases/:lob",
+      "target": "/ess/",
       "destination": "srv-api",
       "authenticationType": "xsuaa",
+      "requestParameters": {
+        "lob": "$1"
+      },
       "cacheControl": "no-cache, no-store, must-revalidate"
     },
     {

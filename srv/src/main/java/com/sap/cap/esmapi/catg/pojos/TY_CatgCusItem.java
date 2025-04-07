@@ -32,5 +32,7 @@ public class TY_CatgCusItem
     private Boolean catgRankEnabled;
     @CsvBindByPosition(position = 8)
     private String confirmStatus;
+    @CsvBindByPosition(position = 9)
+    private String logouturl;
 
 }

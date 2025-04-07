@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.sap.cap.esmapi.catg.pojos.TY_CatgCus;
 import com.sap.cap.esmapi.catg.pojos.TY_CatgCusItem;
@@ -28,7 +29,6 @@ import com.sap.cap.esmapi.catg.srv.intf.IF_CatgSrv;
 import com.sap.cap.esmapi.exceptions.EX_ESMAPI;
 import com.sap.cap.esmapi.ui.pojos.TY_Attachment;
 import com.sap.cap.esmapi.ui.pojos.TY_Case_Form;
-import com.sap.cap.esmapi.ui.pojos.TY_ESS_Stats;
 import com.sap.cap.esmapi.ui.srv.intf.IF_ESS_UISrv;
 import com.sap.cap.esmapi.utilities.constants.GC_Constants;
 import com.sap.cap.esmapi.utilities.enums.EnumCaseTypes;
@@ -91,53 +91,62 @@ public class ESSController
     private static final String VW_ESSListViewRedirect = "redirect:/ess/";
 
     @GetMapping("/")
-    public String showCasesList4User(@AuthenticationPrincipal Token token, Model model)
+    public String showCasesList4User(@AuthenticationPrincipal Token token, @RequestParam("lob") String lob, Model model)
     {
-        if (token != null && userInfo != null && userSrv != null)
+        log.info(lob);
+        if (token != null && userInfo != null && userSrv != null && lob != null)
         {
             // Only Authenticated user via IDP
             if (userInfo.isAuthenticated())
             {
+                log.info("authenticated user with lob :" + lob);
 
-                /*
-                 * //1. Get the Cases and Information for the user
-                 */
-                try
-                {
-
-                    TY_UserESS userDetails = userSrv.getESSDetails(token);
-                    if (userDetails != null && uiSrv != null)
-                    {
-                        // Populate User Details in Model
-                        model.addAttribute("userInfo", userDetails);
-
-                        // Provision to add Session Messages: Even if No Cases - spl. for Newly Create
-                        // Account - to enable REfresh button
-                        model.addAttribute("sessMsgs", userSrv.getSessionMessages());
-
-                        // Only Populate Stats. if there are cases Bound
-                        if (!CollectionUtils.isEmpty(userDetails.getCases()))
-                        {
-                            TY_ESS_Stats stats = uiSrv.getStatsForUserCases(userDetails.getCases());
-                            model.addAttribute("stats", stats);
-                        }
-
-                    }
-                }
-
-                catch (Exception e)
-                {
-                    throw new EX_ESMAPI(msgSrc.getMessage("ERR_CASES_LIST", new Object[]
-                    { e.getLocalizedMessage() }, Locale.ENGLISH));
-                }
             }
 
-            return VW_ESSListView;
         }
-        else
-        {
-            return VW_Error;
-        }
+
+        // /*
+        // * //1. Get the Cases and Information for the user
+        // */
+        // try
+        // {
+
+        // TY_UserESS userDetails = userSrv.getESSDetails(token);
+        // if (userDetails != null && uiSrv != null)
+        // {
+        // // Populate User Details in Model
+        // model.addAttribute("userInfo", userDetails);
+
+        // // Provision to add Session Messages: Even if No Cases - spl. for Newly
+        // Create
+        // // Account - to enable REfresh button
+        // model.addAttribute("sessMsgs", userSrv.getSessionMessages());
+
+        // // Only Populate Stats. if there are cases Bound
+        // if (!CollectionUtils.isEmpty(userDetails.getCases()))
+        // {
+        // TY_ESS_Stats stats = uiSrv.getStatsForUserCases(userDetails.getCases());
+        // model.addAttribute("stats", stats);
+        // }
+
+        // }
+        // }
+
+        // catch (Exception e)
+        // {
+        // throw new EX_ESMAPI(msgSrc.getMessage("ERR_CASES_LIST", new Object[]
+        // { e.getLocalizedMessage() }, Locale.ENGLISH));
+        // }
+        // }
+
+        // return VW_ESSListView;
+        // }
+        // else
+        // {
+        // return VW_Error;
+        // }
+
+        return "success";
 
     }
 
