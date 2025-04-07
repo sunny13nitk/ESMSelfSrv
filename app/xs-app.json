@@ -5,10 +5,11 @@
     {
       "source": "^/esm/cases/:lob",
       "target": "/ess/",
+      "type:":"proxy",
       "destination": "srv-api",
       "authenticationType": "xsuaa",
       "requestParameters": {
-        "lob": "$1"
+        "lobName": "$1"
       },
       "cacheControl": "no-cache, no-store, must-revalidate"
     },
