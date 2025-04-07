@@ -91,7 +91,7 @@ public class ESSController
     private static final String VW_ESSListViewRedirect = "redirect:/ess/";
 
     @GetMapping("/")
-    public String showCasesList4User(@AuthenticationPrincipal Token token, @RequestParam("lob") String lob, Model model)
+    public String showCasesList4User(@AuthenticationPrincipal Token token, @RequestParam("lobName") String lob, Model model)
     {
         log.info(lob);
         if (token != null && userInfo != null && userSrv != null && lob != null)

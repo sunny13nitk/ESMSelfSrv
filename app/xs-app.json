@@ -7,8 +7,9 @@
       "target": "/ess/",
       "destination": "srv-api",
       "authenticationType": "xsuaa",
+      "type":"proxy",
       "requestParameters": {
-        "lob": "$1"
+        "lobName": "$1"
       },
       "cacheControl": "no-cache, no-store, must-revalidate"
     },
