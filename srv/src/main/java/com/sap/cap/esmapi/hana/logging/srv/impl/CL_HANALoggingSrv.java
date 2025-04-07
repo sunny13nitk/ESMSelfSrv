@@ -27,8 +27,8 @@ import com.sap.cds.ql.cqn.CqnInsert;
 import com.sap.cds.ql.cqn.CqnSelect;
 import com.sap.cds.services.persistence.PersistenceService;
 
-import cds.gen.db.esmlogs.Esmappmsglog;
-import cds.gen.db.esmlogs.Esmappmsglog_;
+import cds.gen.db.esmlogs.Esmapplogs;
+import cds.gen.db.esmlogs.Esmapplogs_;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -46,7 +46,7 @@ public class CL_HANALoggingSrv implements IF_HANALoggingSrv
     @Autowired
     private MessageSource msgSrc;
 
-    private final String msgLogsTablePath = "db.esmlogs.esmappmsglog"; // Table Path - HANA
+    private final String msgLogsTablePath = "db.esmlogs.esmapplogs"; // Table Path - HANA
     private final String objectID = "objectid";
 
     @Override
@@ -97,9 +97,9 @@ public class CL_HANALoggingSrv implements IF_HANALoggingSrv
     }
 
     @Override
-    public List<Esmappmsglog> getLogsByObjectIDs(List<String> objIDs) throws EX_ESMAPI
+    public List<Esmapplogs> getLogsByObjectIDs(List<String> objIDs) throws EX_ESMAPI
     {
-        List<Esmappmsglog> logs = null;
+        List<Esmapplogs> logs = null;
 
         // Only if Application is Running in BTP with one of the active profile(s) as
         // btp - check in application.properties
@@ -108,10 +108,10 @@ public class CL_HANALoggingSrv implements IF_HANALoggingSrv
         {
             if (CollectionUtils.isNotEmpty(objIDs) && ps != null)
             {
-                CqnSelect qLogsByObjectId = Select.from(Esmappmsglog_.class).where(l -> l.get(objectID).in(objIDs));
+                CqnSelect qLogsByObjectId = Select.from(Esmapplogs_.class).where(l -> l.get(objectID).in(objIDs));
                 if (qLogsByObjectId != null)
                 {
-                    logs = ps.run(qLogsByObjectId).listOf(Esmappmsglog.class);
+                    logs = ps.run(qLogsByObjectId).listOf(Esmapplogs.class);
                 }
 
             }

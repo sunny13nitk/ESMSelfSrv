@@ -3,15 +3,10 @@
   "authenticationMethod": "route",
   "routes": [
     {
-      "source": "^/esm/cases/:lob",
-      "target": "/ess/",
-      "type:":"proxy",
+      "source": "^/esm/cases/(.*)",
+      "target": "/ess/$1",
       "destination": "srv-api",
       "authenticationType": "xsuaa",
-      "type":"proxy",
-      "requestParameters": {
-        "lobName": "$1"
-      },
       "cacheControl": "no-cache, no-store, must-revalidate"
     },
     {

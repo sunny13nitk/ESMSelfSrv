@@ -1,8 +1,8 @@
 
 DROP VIEW IF EXISTS LogsReadService_Logs;
-DROP TABLE IF EXISTS db_esmlogs_esmappmsglog;
+DROP TABLE IF EXISTS db_esmlogs_esmapplogs;
 
-CREATE TABLE db_esmlogs_esmappmsglog (
+CREATE TABLE db_esmlogs_esmapplogs (
   ID NVARCHAR(36) NOT NULL,
   username NVARCHAR(50),
   casetype NVARCHAR(50),
@@ -15,13 +15,13 @@ CREATE TABLE db_esmlogs_esmappmsglog (
 ); 
 
 CREATE VIEW LogsReadService_Logs AS SELECT
-  esmappmsglog_0.ID,
-  esmappmsglog_0.username,
-  esmappmsglog_0.casetype,
-  esmappmsglog_0.timestamp,
-  esmappmsglog_0.status,
-  esmappmsglog_0.msgtype,
-  esmappmsglog_0.objectid,
-  esmappmsglog_0.message
-FROM db_esmlogs_esmappmsglog AS esmappmsglog_0; 
+  esmapplogs_0.ID,
+  esmapplogs_0.username,
+  esmapplogs_0.casetype,
+  esmapplogs_0.timestamp,
+  esmapplogs_0.status,
+  esmapplogs_0.msgtype,
+  esmapplogs_0.objectid,
+  esmapplogs_0.message
+FROM db_esmlogs_esmapplogs AS esmapplogs_0; 
 

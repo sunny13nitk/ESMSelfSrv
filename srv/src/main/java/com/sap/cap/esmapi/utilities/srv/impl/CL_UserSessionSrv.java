@@ -75,7 +75,7 @@ import com.sap.cloud.sdk.cloudplatform.connectivity.exception.DestinationAccessE
 import com.sap.cloud.security.token.Token;
 import com.sap.cloud.security.token.TokenClaims;
 
-import cds.gen.db.esmlogs.Esmappmsglog;
+import cds.gen.db.esmlogs.Esmapplogs;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -1296,12 +1296,12 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
         if (hanaLogSrv != null && CollectionUtils.isNotEmpty(userSessInfo.getSubmissionIDs()))
         {
             // Get the Logs for the Object IDS - Sumbission GUIDS
-            List<Esmappmsglog> logs = hanaLogSrv.getLogsByObjectIDs(userSessInfo.getSubmissionIDs());
+            List<Esmapplogs> logs = hanaLogSrv.getLogsByObjectIDs(userSessInfo.getSubmissionIDs());
             if (CollectionUtils.isNotEmpty(logs))
             {
                 log.info("# Of Log entries for Submission(s) in Current Session - " + logs.size());
                 // Get Logs Excluding Successful Submission
-                List<Esmappmsglog> logsExclSubm = logs.stream()
+                List<Esmapplogs> logsExclSubm = logs.stream()
                         .filter(l -> !(l.getMsgtype().equalsIgnoreCase(EnumMessageType.SUCC_CASE_SUBM.toString())
                                 || l.getMsgtype().equalsIgnoreCase(EnumMessageType.SUCC_CASE_REPL_SUBM.toString())
                                 || l.getMsgtype().equalsIgnoreCase(EnumMessageType.SUCC_CASE_CONFIRM_SAVE.toString())
@@ -1309,7 +1309,7 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
                         )).collect(Collectors.toList());
                 if (CollectionUtils.isNotEmpty(logsExclSubm))
                 {
-                    for (Esmappmsglog esmappmsglog : logsExclSubm)
+                    for (Esmapplogs esmappmsglog : logsExclSubm)
                     {
                         log.info("# Of Log Entries after Filtering Case Submissions  - " + logsExclSubm.size());
                         // further Check due to HANA String Comparison Issue - Not picked up in Filter

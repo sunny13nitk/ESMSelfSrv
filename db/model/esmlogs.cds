@@ -8,7 +8,7 @@ namespace db.esmlogs;
 */
 @Capabilities.Insertable: false
 @Capabilities.Updatable : false
-entity esmappmsglog : cuid {
+entity esmapplogs : cuid {
     username : String(50);
     casetype : String(50);
     timestamp: Timestamp;
@@ -17,3 +17,6 @@ entity esmappmsglog : cuid {
     objectid : String(50);
     message  : String(1000);
 }
+
+
+

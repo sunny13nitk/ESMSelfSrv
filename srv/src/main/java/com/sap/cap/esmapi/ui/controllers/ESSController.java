@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.sap.cap.esmapi.catg.pojos.TY_CatgCus;
 import com.sap.cap.esmapi.catg.pojos.TY_CatgCusItem;
@@ -90,8 +89,8 @@ public class ESSController
     private static final String VW_CaseForm = "caseForm";
     private static final String VW_ESSListViewRedirect = "redirect:/ess/";
 
-    @GetMapping("/")
-    public String showCasesList4User(@AuthenticationPrincipal Token token, @RequestParam("lobName") String lob, Model model)
+    @GetMapping("/{lob}")
+    public String showCasesList4User(@AuthenticationPrincipal Token token, @PathVariable(name = "lob") String lob, Model model)
     {
         log.info(lob);
         if (token != null && userInfo != null && userSrv != null && lob != null)
