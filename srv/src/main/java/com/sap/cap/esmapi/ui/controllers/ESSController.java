@@ -90,20 +90,29 @@ public class ESSController
     private static final String VW_ESSListViewRedirect = "redirect:/ess/";
 
     @GetMapping("/{lob}")
-    public String showCasesList4User(@AuthenticationPrincipal Token token, @PathVariable(name = "lob") String lob, Model model)
+    public String showCasesList4User(@AuthenticationPrincipal Token token, @PathVariable(name = "lob") String lob,
+            Model model)
     {
         log.info(lob);
-        if (token != null && userInfo != null && userSessionSrv != null && lob != null)
+        log.info("User Info: " + userInfo.getName() + " with lob :" + lob);
+        if (userInfo.isAuthenticated())
         {
-            log.info("User Info: " + userInfo.getName() + " with lob :" + lob);
-            // Only Authenticated user via IDP
-            if (userInfo.isAuthenticated())
-            {
-                log.info("authenticated user with lob :" + lob);
-
-            }
+            log.info("authenticated user with lob :" + lob);
 
         }
+
+        // if (token != null && userInfo != null && userSessionSrv != null && lob !=
+        // null)
+        // {
+        // log.info("User Info: " + userInfo.getName() + " with lob :" + lob);
+        // // Only Authenticated user via IDP
+        // if (userInfo.isAuthenticated())
+        // {
+        // log.info("authenticated user with lob :" + lob);
+
+        // }
+
+        // }
 
         // /*
         // * //1. Get the Cases and Information for the user
