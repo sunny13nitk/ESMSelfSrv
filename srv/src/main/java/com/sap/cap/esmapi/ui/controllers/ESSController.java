@@ -93,8 +93,9 @@ public class ESSController
     public String showCasesList4User(@AuthenticationPrincipal Token token, @PathVariable(name = "lob") String lob, Model model)
     {
         log.info(lob);
-        if (token != null && userInfo != null && userSrv != null && lob != null)
+        if (token != null && userInfo != null && userSessionSrv != null && lob != null)
         {
+            log.info("User Info: " + userInfo.getName() + " with lob :" + lob);
             // Only Authenticated user via IDP
             if (userInfo.isAuthenticated())
             {
