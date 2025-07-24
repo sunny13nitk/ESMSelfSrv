@@ -309,14 +309,11 @@ public class CL_CatalogSrv implements IF_CatalogSrv
                                 caseCatgContainer = new ArrayList<TY_CatalogTree>();
                             }
 
-                            if (caseCFgO.get().getToplvlCatgOnly())
+                            List<TY_CatalogItem> toplvlCatgs = caseCatgTree.getCategories().stream()
+                                    .filter(c -> c.getParentId() == null).collect(Collectors.toList());
+                            if (CollectionUtils.isNotEmpty(toplvlCatgs))
                             {
-                                List<TY_CatalogItem> toplvlCatgs = caseCatgTree.getCategories().stream()
-                                        .filter(c -> c.getParentId() == null).collect(Collectors.toList());
-                                if (CollectionUtils.isNotEmpty(toplvlCatgs))
-                                {
-                                    caseCatgTree.setCategories(toplvlCatgs);
-                                }
+                                caseCatgTree.setCategories(toplvlCatgs);
                             }
 
                             // Categories Sort Enabled
@@ -337,7 +334,7 @@ public class CL_CatalogSrv implements IF_CatalogSrv
             catch (Exception e)
             {
                 throw new EX_ESMAPI(msgSrc.getMessage("ERR_CATG_LOAD", new Object[]
-                { caseCFgO.get().getCatgCsvPath(), caseType.toString() }, Locale.ENGLISH));
+                { null, caseType.toString() }, Locale.ENGLISH));
             }
 
         }

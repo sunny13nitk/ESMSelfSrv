@@ -23,7 +23,6 @@ import com.sap.cap.esmapi.catg.pojos.TY_CatgCus;
 import com.sap.cap.esmapi.catg.pojos.TY_CatgCusItem;
 import com.sap.cap.esmapi.catg.pojos.TY_CatgTemplates;
 import com.sap.cap.esmapi.catg.srv.intf.IF_CatalogSrv;
-import com.sap.cap.esmapi.catg.srv.intf.IF_CatgSrv;
 import com.sap.cap.esmapi.events.event.EV_CaseConfirmSubmit;
 import com.sap.cap.esmapi.exceptions.EX_CaseAlreadyConfirmed;
 import com.sap.cap.esmapi.exceptions.EX_ESMAPI;
@@ -61,9 +60,6 @@ public class LSOController
 
     @Autowired
     private TY_CatgCus catgCusSrv;
-
-    @Autowired
-    private IF_CatgSrv catgTreeSrv;
 
     @Autowired
     private IF_CatalogSrv catalogTreeSrv;
@@ -130,7 +126,7 @@ public class LSOController
                                                 .filter(g -> g.getCaseTypeEnum().toString()
                                                         .equals(EnumCaseTypes.Learning.toString()))
                                                 .findFirst();
-                                        if (cusItemO.isPresent() && catgTreeSrv != null)
+                                        if (cusItemO.isPresent())
                                         {
                                             userDetails.setUserDetails(userSessSrv.getUserDetails4mSession());
                                             log.info("Fetching Cases for User From Session : "
@@ -193,7 +189,7 @@ public class LSOController
 
             Optional<TY_CatgCusItem> cusItemO = catgCusSrv.getCustomizations().stream()
                     .filter(g -> g.getCaseTypeEnum().toString().equals(EnumCaseTypes.Learning.toString())).findFirst();
-            if (cusItemO.isPresent() && catgTreeSrv != null)
+            if (cusItemO.isPresent())
             {
 
                 model.addAttribute("caseTypeStr", EnumCaseTypes.Learning.toString());
@@ -276,7 +272,7 @@ public class LSOController
 
             Optional<TY_CatgCusItem> cusItemO = catgCusSrv.getCustomizations().stream()
                     .filter(g -> g.getCaseTypeEnum().toString().equals(EnumCaseTypes.Learning.toString())).findFirst();
-            if (cusItemO.isPresent() && catgTreeSrv != null)
+            if (cusItemO.isPresent())
             {
 
                 model.addAttribute("caseTypeStr", EnumCaseTypes.Learning.toString());
@@ -408,7 +404,7 @@ public class LSOController
 
             Optional<TY_CatgCusItem> cusItemO = catgCusSrv.getCustomizations().stream()
                     .filter(g -> g.getCaseTypeEnum().toString().equals(EnumCaseTypes.Learning.toString())).findFirst();
-            if (cusItemO.isPresent() && catgTreeSrv != null)
+            if (cusItemO.isPresent())
             {
 
                 model.addAttribute("caseTypeStr", EnumCaseTypes.Learning.toString());
@@ -757,7 +753,7 @@ public class LSOController
                     Optional<TY_CatgCusItem> cusItemO = catgCusSrv.getCustomizations().stream()
                             .filter(g -> g.getCaseTypeEnum().toString().equals(EnumCaseTypes.Learning.toString()))
                             .findFirst();
-                    if (cusItemO.isPresent() && catgTreeSrv != null)
+                    if (cusItemO.isPresent())
                     {
 
                         model.addAttribute("caseTypeStr", EnumCaseTypes.Learning.toString());

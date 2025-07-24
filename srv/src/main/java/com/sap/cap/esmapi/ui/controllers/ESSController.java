@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.sap.cap.esmapi.catg.pojos.TY_CatgCus;
 import com.sap.cap.esmapi.catg.pojos.TY_CatgCusItem;
 import com.sap.cap.esmapi.catg.srv.intf.IF_CatalogSrv;
-import com.sap.cap.esmapi.catg.srv.intf.IF_CatgSrv;
 import com.sap.cap.esmapi.exceptions.EX_ESMAPI;
 import com.sap.cap.esmapi.ui.pojos.TY_Attachment;
 import com.sap.cap.esmapi.ui.pojos.TY_Case_Form;
@@ -74,9 +73,6 @@ public class ESSController
     private TY_CatgCus catgCusSrv;
 
     @Autowired
-    private IF_CatgSrv catgTreeSrv;
-
-    @Autowired
     private IF_CatalogSrv catalogTreeSrv;
 
     @Autowired
@@ -102,8 +98,8 @@ public class ESSController
             log.info("User Info: " + userInfo.getName() + " with lob :" + lob);
             log.info("authenticated user with lob :" + lob);
 
-             TY_UserESS userDetails = new TY_UserESS();
-             
+            TY_UserESS userDetails = new TY_UserESS();
+
         }
 
         // if (token != null && userInfo != null && userSessionSrv != null && lob !=
@@ -205,7 +201,7 @@ public class ESSController
 
                         Optional<TY_CatgCusItem> cusItemO = catgCusSrv.getCustomizations().stream()
                                 .filter(g -> g.getCaseTypeEnum().toString().equals(caseType.toString())).findFirst();
-                        if (cusItemO.isPresent() && catgTreeSrv != null)
+                        if (cusItemO.isPresent())
                         {
 
                             model.addAttribute("caseTypeStr", caseType.toString());

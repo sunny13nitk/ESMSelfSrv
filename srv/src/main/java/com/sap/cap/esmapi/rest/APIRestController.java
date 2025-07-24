@@ -18,17 +18,14 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.sap.cap.esmapi.catg.pojos.TY_CaseCatgTree;
 import com.sap.cap.esmapi.catg.pojos.TY_CatalogTree;
 import com.sap.cap.esmapi.catg.pojos.TY_CatgCus;
 import com.sap.cap.esmapi.catg.srv.intf.IF_CatalogSrv;
-import com.sap.cap.esmapi.catg.srv.intf.IF_CatgSrv;
 import com.sap.cap.esmapi.utilities.StringsUtility;
 import com.sap.cap.esmapi.utilities.constants.GC_Constants;
 import com.sap.cap.esmapi.utilities.enums.EnumCaseTypes;
@@ -70,8 +67,7 @@ public class APIRestController
     @Autowired
     private IF_SrvCloudAPI srvCloudApiSrv;
 
-    @Autowired
-    private IF_CatgSrv catgSrv;
+ 
 
     @Autowired
     private IF_CatalogSrv catalogSrv;
@@ -473,11 +469,7 @@ public class APIRestController
         return this.catgCus;
     }
 
-    @GetMapping("/cfgCatg/{caseType}")
-    private TY_CaseCatgTree checkCaseCusCatg(@PathVariable("caseType") EnumCaseTypes caseType)
-    {
-        return catgSrv.getCaseCatgTree4LoB(caseType);
-    }
+  
 
     @GetMapping("/accURL")
     private String getACCURL(@RequestParam(name = "userName", required = true) String userName,

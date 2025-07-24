@@ -13,7 +13,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +23,6 @@ import com.sap.cap.esmapi.catg.pojos.TY_CatgCus;
 import com.sap.cap.esmapi.catg.pojos.TY_CatgCusItem;
 import com.sap.cap.esmapi.catg.pojos.TY_CatgTemplates;
 import com.sap.cap.esmapi.catg.srv.intf.IF_CatalogSrv;
-import com.sap.cap.esmapi.catg.srv.intf.IF_CatgSrv;
 import com.sap.cap.esmapi.events.event.EV_CaseFormSubmit;
 import com.sap.cap.esmapi.events.event.EV_CaseReplySubmit;
 import com.sap.cap.esmapi.exceptions.EX_ESMAPI;
@@ -41,7 +39,6 @@ import com.sap.cap.esmapi.utilities.uimodel.intf.IF_CountryLanguageVHelpAdj;
 import com.sap.cap.esmapi.vhelps.srv.intf.IF_VHelpLOBUIModelSrv;
 import com.sap.cds.services.request.UserInfo;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 @Controller
@@ -58,9 +55,6 @@ public class LSOPostController
 
     @Autowired
     private TY_CatgCus catgCusSrv;
-
-    @Autowired
-    private IF_CatgSrv catgTreeSrv;
 
     @Autowired
     private IF_CatalogSrv catalogTreeSrv;
@@ -170,7 +164,7 @@ public class LSOPostController
 
             Optional<TY_CatgCusItem> cusItemO = catgCusSrv.getCustomizations().stream()
                     .filter(g -> g.getCaseTypeEnum().toString().equals(EnumCaseTypes.Learning.toString())).findFirst();
-            if (cusItemO.isPresent() && catgTreeSrv != null)
+            if (cusItemO.isPresent())
             {
 
                 model.addAttribute("caseTypeStr", EnumCaseTypes.Learning.toString());
@@ -249,7 +243,7 @@ public class LSOPostController
                 Optional<TY_CatgCusItem> cusItemO = catgCusSrv.getCustomizations().stream()
                         .filter(g -> g.getCaseTypeEnum().toString().equals(EnumCaseTypes.Learning.toString()))
                         .findFirst();
-                if (cusItemO.isPresent() && catgTreeSrv != null)
+                if (cusItemO.isPresent())
                 {
 
                     model.addAttribute("caseTypeStr", EnumCaseTypes.Learning.toString());
@@ -431,7 +425,7 @@ public class LSOPostController
                 Optional<TY_CatgCusItem> cusItemO = catgCusSrv.getCustomizations().stream()
                         .filter(g -> g.getCaseTypeEnum().toString().equals(EnumCaseTypes.Learning.toString()))
                         .findFirst();
-                if (cusItemO.isPresent() && catgTreeSrv != null)
+                if (cusItemO.isPresent())
                 {
 
                     model.addAttribute("caseTypeStr", EnumCaseTypes.Learning.toString());
@@ -543,5 +537,4 @@ public class LSOPostController
 
     }
 
-   
 }

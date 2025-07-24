@@ -19,20 +19,20 @@ public class TY_CatgCusItem
     @CsvBindByPosition(position = 1)
     private String caseType;
     @CsvBindByPosition(position = 2)
-    private String catgCsvPath;
-    @CsvBindByPosition(position = 3)
     private String appNoteTypes;
-    @CsvBindByPosition(position = 4)
+    @CsvBindByPosition(position = 3)
     private String statusSchema;
-    @CsvBindByPosition(position = 5)
+    @CsvBindByPosition(position = 4)
     private String replyNoteType;
-    @CsvBindByPosition(position = 6)
-    private Boolean toplvlCatgOnly;
-    @CsvBindByPosition(position = 7)
+    @CsvBindByPosition(position = 5)
     private Boolean catgRankEnabled;
-    @CsvBindByPosition(position = 8)
+    @CsvBindByPosition(position = 6)
     private String confirmStatus;
+    @CsvBindByPosition(position = 7)
+    private String fragmentHead;
+    @CsvBindByPosition(position = 8)
+    private String fragmentTitle;
     @CsvBindByPosition(position = 9)
-    private String logouturl;
+    private String logoutUrl;
 
 }

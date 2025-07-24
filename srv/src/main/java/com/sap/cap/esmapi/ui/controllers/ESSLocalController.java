@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.sap.cap.esmapi.catg.pojos.TY_CatgCus;
 import com.sap.cap.esmapi.catg.pojos.TY_CatgCusItem;
 import com.sap.cap.esmapi.catg.srv.intf.IF_CatalogSrv;
-import com.sap.cap.esmapi.catg.srv.intf.IF_CatgSrv;
 import com.sap.cap.esmapi.exceptions.EX_ESMAPI;
 import com.sap.cap.esmapi.ui.pojos.TY_Attachment;
 import com.sap.cap.esmapi.ui.pojos.TY_Case_Form;
@@ -65,9 +64,6 @@ public class ESSLocalController
 
     @Autowired
     private TY_CatgCus catgCusSrv;
-
-    @Autowired
-    private IF_CatgSrv catgTreeSrv;
 
     @Autowired
     private IF_CatalogSrv catalogTreeSrv;
@@ -170,7 +166,7 @@ public class ESSLocalController
 
                     Optional<TY_CatgCusItem> cusItemO = catgCusSrv.getCustomizations().stream()
                             .filter(g -> g.getCaseTypeEnum().toString().equals(caseType.toString())).findFirst();
-                    if (cusItemO.isPresent() && catgTreeSrv != null)
+                    if (cusItemO.isPresent())
                     {
 
                         // For TEST ONLY: Starts
@@ -246,7 +242,7 @@ public class ESSLocalController
                 model.addAttribute("userInfo", userDetails);
                 // For TEST ONLY: ENDS
 
-                if (cusItemO.isPresent() && catgTreeSrv != null)
+                if (cusItemO.isPresent())
                 {
                     model.addAttribute("caseTypeStr", cusItemO.get().getCaseTypeEnum().toString());
                     model.addAttribute("caseForm", caseForm);
