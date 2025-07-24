@@ -37,7 +37,7 @@ import com.sap.cloud.security.token.TokenClaims;
 @Configuration
 @Profile(GC_Constants.gc_BTPProfile)
 @EnableWebSecurity()
-@EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
+@EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true, prePostEnabled = true)
 @PropertySource(factory = IdentityServicesPropertySourceFactory.class, ignoreResourceNotFound = true, value =
 { "" })
 public class AppSecurityConfig

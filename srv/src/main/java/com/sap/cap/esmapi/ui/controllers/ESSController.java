@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -90,15 +91,19 @@ public class ESSController
     private static final String VW_ESSListViewRedirect = "redirect:/ess/";
 
     @GetMapping("/{lob}")
+    @PreAuthorize("hasAnyAuthority('" + GC_Constants.gc_role_employee_esm + "', '" + GC_Constants.gc_role_contractor_esm
+            + "')")
     public String showCasesList4User(@AuthenticationPrincipal Token token, @PathVariable(name = "lob") String lob,
             Model model)
     {
         log.info(lob);
-        log.info("User Info: " + userInfo.getName() + " with lob :" + lob);
-        if (userInfo.isAuthenticated())
+        if (userInfo != null && userInfo.isAuthenticated())
         {
+            log.info("User Info: " + userInfo.getName() + " with lob :" + lob);
             log.info("authenticated user with lob :" + lob);
 
+             TY_UserESS userDetails = new TY_UserESS();
+             
         }
 
         // if (token != null && userInfo != null && userSessionSrv != null && lob !=
