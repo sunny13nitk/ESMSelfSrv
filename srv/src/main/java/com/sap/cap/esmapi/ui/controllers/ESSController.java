@@ -97,8 +97,25 @@ public class ESSController
         {
             log.info("User Info: " + userInfo.getName() + " with lob :" + lob);
             log.info("authenticated user with lob :" + lob);
-
-            TY_UserESS userDetails = new TY_UserESS();
+            if (userSessionSrv.isLobValid(lob))
+            {
+                // Get the Customizations for the LOB
+                TY_CatgCusItem catgCusItem = userSessionSrv.getCurrentLOBConfig();
+                if (catgCusItem != null)
+                {
+                    TY_UserESS userDetails = new TY_UserESS();
+                }
+                else
+                {
+                    throw new EX_ESMAPI(msgSrc.getMessage("ERR_NO_LOB_CFG", new Object[]
+                    { lob }, Locale.ENGLISH));
+                }
+            }
+            else
+            {
+                throw new EX_ESMAPI(msgSrc.getMessage("ERR_NO_LOB_CFG", new Object[]
+                { lob }, Locale.ENGLISH));
+            }
 
         }
 

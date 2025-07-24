@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.sap.cap.esmapi.catg.pojos.TY_CatgCusItem;
 import com.sap.cap.esmapi.ui.pojos.TY_CaseEditFormAsync;
 import com.sap.cap.esmapi.ui.pojos.TY_CaseEdit_Form;
 import com.sap.cap.esmapi.ui.pojos.TY_CaseFormAsync;
@@ -21,6 +22,7 @@ import lombok.NoArgsConstructor;
 public class TY_UserSessionInfo
 {
     private Map<String, String> tokenDetails = new HashMap<>();
+    private TY_CatgCusItem catgCusItem; // Category Customization Item
     private TY_UserDetails userDetails;
     private String caseType;
     private String csrfToken;

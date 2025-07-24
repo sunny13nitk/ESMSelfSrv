@@ -2247,4 +2247,30 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
         throw new EX_ESMAPI(msg);
     }
 
+    @Override
+    public boolean isLobValid(String lob)
+    {
+        boolean isValid = false;
+        if (StringUtils.hasText(lob) && CollectionUtils.isNotEmpty(catgCusSrv.getCustomizations()))
+        {
+            Optional<TY_CatgCusItem> catgCusItemO = catgCusSrv.getCustomizations().stream()
+                    .filter(c -> c.getCaseTypeEnum().toString().equalsIgnoreCase(lob)).findFirst();
+            if (catgCusItemO.isPresent())
+            {
+                isValid = true;
+                userSessInfo.setCatgCusItem(catgCusItemO.get()); // also set the Path LoB in user session
+                log.info("User Session Lob Validated & Set: " + lob);
+            }
+
+        }
+
+        return isValid;
+    }
+
+    @Override
+    public TY_CatgCusItem getCurrentLOBConfig()
+    {
+        return userSessInfo.getCatgCusItem();
+    }
+
 }
