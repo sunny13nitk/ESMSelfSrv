@@ -101,7 +101,7 @@ public class POCLocalController
     public String showCasesList(@PathVariable(name = "lob") String lob, Model model)
     {
         log.info("User Logged in with lob :" + lob);
-        TY_UserESS userDetails;
+        TY_UserESS userDetails = new TY_UserESS();
 
         // Mocking the authentication
 
@@ -110,44 +110,41 @@ public class POCLocalController
             userSessSrv.loadUser4Test(lob);
 
             // check User and Account Bound
-            // if (userSessSrv.getUserDetails4mSession() != null)
-            // {
-            // if (StringUtils.hasText(userSessSrv.getUserDetails4mSession().getAccountId())
-            // ||
-            // StringUtils.hasText(userSessSrv.getUserDetails4mSession().getEmployeeId()))
-            // {
-            // if (!CollectionUtils.isEmpty(catgCusSrv.getCustomizations()))
-            // {
+            if (userSessSrv.getUserDetails4mSession() != null)
+            {
+                if (StringUtils.hasText(userSessSrv.getUserDetails4mSession().getAccountId())
+                        || StringUtils.hasText(userSessSrv.getUserDetails4mSession().getEmployeeId()))
+                {
+                    if (!CollectionUtils.isEmpty(catgCusSrv.getCustomizations()))
+                    {
 
-            // Optional<TY_CatgCusItem> cusItemO = catgCusSrv.getCustomizations().stream()
-            // .filter(g ->
-            // g.getCaseTypeEnum().toString().equals(EnumCaseTypes.Learning.toString()))
-            // .findFirst();
-            // if (cusItemO.isPresent())
-            // {
-            // userDetails.setUserDetails(userSessSrv.getUserDetails4mSession());
-            // userDetails.setCases(userSessSrv.getCases4User4mSession());
-            // model.addAttribute("userInfo", userDetails);
-            // model.addAttribute("caseTypeStr", EnumCaseTypes.Learning.toString());
-            // // Rate Limit Simulation
-            // model.addAttribute("rateLimitBreached",
-            // userSessSrv.getCurrentRateLimitBreachedValue());
+                        Optional<TY_CatgCusItem> cusItemO = catgCusSrv.getCustomizations().stream()
+                                .filter(g -> g.getCaseTypeEnum().toString().equals(EnumCaseTypes.Learning.toString()))
+                                .findFirst();
+                        if (cusItemO.isPresent())
+                        {
+                            userDetails.setUserDetails(userSessSrv.getUserDetails4mSession());
+                            userDetails.setCases(userSessSrv.getCases4User4mSession());
+                            model.addAttribute("userInfo", userDetails);
+                            model.addAttribute("caseTypeStr", EnumCaseTypes.Learning.toString());
+                            // Rate Limit Simulation
+                            model.addAttribute("rateLimitBreached", userSessSrv.getCurrentRateLimitBreachedValue());
 
-            // // Even if No Cases - spl. for Newly Create Acc - to enable REfresh button
-            // model.addAttribute("sessMsgs", userSessSrv.getSessionMessages());
+                            // Even if No Cases - spl. for Newly Create Acc - to enable REfresh button
+                            model.addAttribute("sessMsgs", userSessSrv.getSessionMessages());
 
-            // }
+                        }
 
-            // else
-            // {
+                        else
+                        {
 
-            // throw new EX_ESMAPI(msgSrc.getMessage("ERR_CASE_TYPE_NOCFG", new Object[]
-            // { EnumCaseTypes.Learning.toString() }, Locale.ENGLISH));
-            // }
-            // }
+                            throw new EX_ESMAPI(msgSrc.getMessage("ERR_CASE_TYPE_NOCFG", new Object[]
+                            { EnumCaseTypes.Learning.toString() }, Locale.ENGLISH));
+                        }
+                    }
 
-            // }
-            // }
+                }
+            }
 
         }
 

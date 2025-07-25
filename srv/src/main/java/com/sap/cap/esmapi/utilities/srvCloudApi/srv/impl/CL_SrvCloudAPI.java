@@ -2780,20 +2780,7 @@ public class CL_SrvCloudAPI implements IF_SrvCloudAPI
 
                     if (StringUtils.hasText(urlLink))
                     {
-                        String encoding = null;
-
-                        if (userDetails.isExternal())
-                        {
-                            encoding = Base64.getEncoder().encodeToString(
-                                    (srvCloudUrls.getUserNameExt() + ":" + srvCloudUrls.getPasswordExt()).getBytes());
-                        }
-                        else
-                        {
-                            encoding = Base64.getEncoder().encodeToString(
-                                    (srvCloudUrls.getUserName() + ":" + srvCloudUrls.getPassword()).getBytes());
-
-                        }
-
+                       
                         try
                         {
 

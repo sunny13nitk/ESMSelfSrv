@@ -81,7 +81,10 @@ public class ESSController
     @Autowired
     private IF_UserSessionSrv userSessionSrv;
 
+    private final String lsoCaseListViewLXSS = "lsoCasesListViewLXSS";
     private static final String VW_ESSListView = "essListView";
+
+    private final String invalidToken = "invalid_token";
     private static final String VW_Error = "error";
     private static final String VW_CaseForm = "caseForm";
     private static final String VW_ESSListViewRedirect = "redirect:/ess/";
@@ -92,93 +95,90 @@ public class ESSController
     public String showCasesList4User(@AuthenticationPrincipal Token token, @PathVariable(name = "lob") String lob,
             Model model)
     {
+        String vw = null;
         log.info(lob);
-        if (userInfo != null && userInfo.isAuthenticated())
-        {
-            log.info("User Info: " + userInfo.getName() + " with lob :" + lob);
-            log.info("authenticated user with lob :" + lob);
-            if (userSessionSrv.isLobValid(lob))
-            {
-                // Get the Customizations for the LOB
-                TY_CatgCusItem catgCusItem = userSessionSrv.getCurrentLOBConfig();
-                if (catgCusItem != null)
-                {
-                    TY_UserESS userDetails = new TY_UserESS();
-                    if (userSessionSrv.getESSDetails(token, true) != null)
-                    {
-                        log.info("lob valid and user session details refreshed");
-                    }
 
+        try
+        {
+            if (userInfo != null && userInfo.isAuthenticated())
+            {
+                log.info("User Info: " + userInfo.getName() + " with lob :" + lob);
+                log.info("authenticated user with lob :" + lob);
+                if (userSessionSrv.isLobValid(lob))
+                {
+                    // Get the Customizations for the LOB
+                    TY_CatgCusItem catgCusItem = userSessionSrv.getCurrentLOBConfig();
+                    if (catgCusItem != null)
+                    {
+                        TY_UserESS userDetails = new TY_UserESS();
+                        if (userSessionSrv.getESSDetails(token, true) != null)
+                        {
+                            if (userSessionSrv.getUserDetails4mSession() != null)
+                            {
+
+                                log.info("User Details Bound from Session!");
+                                if (StringUtils.hasText(userSessionSrv.getUserDetails4mSession().getAccountId())
+                                        || StringUtils
+                                                .hasText(userSessionSrv.getUserDetails4mSession().getEmployeeId()))
+                                {
+                                    // #View
+                                    vw = lsoCaseListViewLXSS;
+
+                                    userDetails.setUserDetails(userSessionSrv.getUserDetails4mSession());
+                                    log.info("Fetching Cases for User From Session : "
+                                            + userSessionSrv.getUserDetails4mSession().toString());
+                                    userDetails.setCases(userSessionSrv.getCases4User4mSession());
+                                    model.addAttribute("userInfo", userDetails);
+                                    model.addAttribute("caseTypeStr", catgCusItem.getCaseTypeEnum().toString());
+                                    // Rate Limit Simulation
+                                    model.addAttribute("rateLimitBreached",
+                                            userSessionSrv.getCurrentRateLimitBreachedValue());
+
+                                    // Even if No Cases - spl. for Newly Create Acc - to enable REfresh button
+                                    model.addAttribute("sessMsgs", userSessionSrv.getSessionMessages());
+
+                                    // Session Active Toast
+                                    model.addAttribute("submActive", userSessionSrv.isCurrentSubmissionActive());
+
+                                }
+
+                                else
+                                {
+
+                                    throw new EX_ESMAPI(msgSrc.getMessage("ERR_CASE_TYPE_NOCFG", new Object[]
+                                    { EnumCaseTypes.Learning.toString() }, Locale.ENGLISH));
+                                }
+
+                            }
+
+                        }
+
+                    }
+                    else
+                    {
+                        throw new EX_ESMAPI(msgSrc.getMessage("ERR_NO_LOB_CFG", new Object[]
+                        { lob }, Locale.ENGLISH));
+                    }
                 }
                 else
                 {
                     throw new EX_ESMAPI(msgSrc.getMessage("ERR_NO_LOB_CFG", new Object[]
                     { lob }, Locale.ENGLISH));
                 }
+
             }
             else
             {
-                throw new EX_ESMAPI(msgSrc.getMessage("ERR_NO_LOB_CFG", new Object[]
-                { lob }, Locale.ENGLISH));
+                log.info("User Not Authenticated!");
+                vw = invalidToken;
             }
-
+        }
+        catch (Exception e)
+        {
+            throw new EX_ESMAPI(e.getLocalizedMessage());
         }
 
-        // if (token != null && userInfo != null && userSessionSrv != null && lob !=
-        // null)
-        // {
-        // log.info("User Info: " + userInfo.getName() + " with lob :" + lob);
-        // // Only Authenticated user via IDP
-        // if (userInfo.isAuthenticated())
-        // {
-        // log.info("authenticated user with lob :" + lob);
-
-        // }
-
-        // }
-
-        // /*
-        // * //1. Get the Cases and Information for the user
-        // */
-        // try
-        // {
-
-        // TY_UserESS userDetails = userSrv.getESSDetails(token);
-        // if (userDetails != null && uiSrv != null)
-        // {
-        // // Populate User Details in Model
-        // model.addAttribute("userInfo", userDetails);
-
-        // // Provision to add Session Messages: Even if No Cases - spl. for Newly
-        // Create
-        // // Account - to enable REfresh button
-        // model.addAttribute("sessMsgs", userSrv.getSessionMessages());
-
-        // // Only Populate Stats. if there are cases Bound
-        // if (!CollectionUtils.isEmpty(userDetails.getCases()))
-        // {
-        // TY_ESS_Stats stats = uiSrv.getStatsForUserCases(userDetails.getCases());
-        // model.addAttribute("stats", stats);
-        // }
-
-        // }
-        // }
-
-        // catch (Exception e)
-        // {
-        // throw new EX_ESMAPI(msgSrc.getMessage("ERR_CASES_LIST", new Object[]
-        // { e.getLocalizedMessage() }, Locale.ENGLISH));
-        // }
-        // }
-
-        // return VW_ESSListView;
-        // }
-        // else
-        // {
-        // return VW_Error;
-        // }
-
-        return "success";
+        return vw != null ? vw : VW_Error;
 
     }
 
