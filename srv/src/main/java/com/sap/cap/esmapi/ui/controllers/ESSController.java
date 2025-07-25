@@ -90,8 +90,8 @@ public class ESSController
     private static final String VW_ESSListViewRedirect = "redirect:/ess/";
 
     @GetMapping("/{lob}")
-    // @PreAuthorize("hasAnyAuthority('" + GC_Constants.gc_role_employee_esm + "', '" + GC_Constants.gc_role_contractor_esm
-    //         + "')")
+    @PreAuthorize("hasAnyAuthority('" + GC_Constants.gc_role_employee_esm + "', '" + GC_Constants.gc_role_contractor_esm
+            + "')")
     public String showCasesList4User(@AuthenticationPrincipal Token token, @PathVariable(name = "lob") String lob,
             Model model)
     {
