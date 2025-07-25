@@ -2749,7 +2749,7 @@ public class CL_SrvCloudAPI implements IF_SrvCloudAPI
         {
 
             Optional<TY_CatgCusItem> cusItemO = caseTypeCus.getCustomizations().stream()
-                    .filter(g -> g.getCaseTypeEnum().toString().equals(EnumCaseTypes.Learning.toString())).findFirst();
+                    .filter(g -> g.getCaseTypeEnum().toString().equals(caseType.toString())).findFirst();
             if (cusItemO.isPresent())
             {
 
