@@ -339,7 +339,7 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
     public TY_UserSessionInfo getESSDetails(Token token, boolean refresh) throws EX_ESMAPI
     {
         // Token must be present
-        if (token != null && userInfo.isAuthenticated())
+        if (token != null)
         {
             TY_CatgCusItem cusLoB = this.getCurrentLOBConfig();
 
@@ -352,8 +352,7 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
 
             else
             {
-                log.info("Loading Cases for LoB  : " + cusLoB.getCaseTypeEnum() + " for User : "
-                        + userSessInfo.getUserDetails().getUsAccEmpl().getUserId());
+                log.info("Loading Cases for LoB  : " + cusLoB.getCaseTypeEnum() + " for User : " + userInfo.getName());
                 // get User Details with Token
                 getUserDetails(token);
 
