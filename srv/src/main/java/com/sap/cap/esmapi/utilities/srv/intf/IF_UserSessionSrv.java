@@ -24,7 +24,7 @@ public interface IF_UserSessionSrv
 {
 
     // For Test Purpose Only to TEst the Controller - #Test
-    public void loadUser4Test();
+    public void loadUser4Test(String lob);
 
     public boolean isLobValid(String lob);
 

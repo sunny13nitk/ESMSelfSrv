@@ -43,7 +43,7 @@ import com.sap.cap.esmapi.utilities.srv.intf.IF_UserAPISrv;
 import com.sap.cap.esmapi.utilities.srv.intf.IF_UserSessionSrv;
 import com.sap.cap.esmapi.utilities.srvCloudApi.srv.intf.IF_SrvCloudAPI;
 import com.sap.cds.services.request.UserInfo;
-import com.sap.cloud.security.xsuaa.token.Token;
+import com.sap.cloud.security.token.Token;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -104,7 +104,11 @@ public class ESSController
                 if (catgCusItem != null)
                 {
                     TY_UserESS userDetails = new TY_UserESS();
-                    
+                    if (userSessionSrv.getESSDetails(token, true) != null)
+                    {
+                        log.info("lob valid and user session details refreshed");
+                    }
+
                 }
                 else
                 {

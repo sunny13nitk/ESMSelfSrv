@@ -46,7 +46,6 @@ import com.sap.cap.esmapi.ui.pojos.TY_CaseFormAsync;
 import com.sap.cap.esmapi.ui.pojos.TY_Case_Form;
 import com.sap.cap.esmapi.ui.srv.intf.IF_ESS_UISrv;
 import com.sap.cap.esmapi.utilities.constants.GC_Constants;
-import com.sap.cap.esmapi.utilities.enums.EnumCaseTypes;
 import com.sap.cap.esmapi.utilities.enums.EnumMessageType;
 import com.sap.cap.esmapi.utilities.enums.EnumStatus;
 import com.sap.cap.esmapi.utilities.pojos.TY_CaseDetails;
@@ -1020,193 +1019,193 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
 
     // #Test
     @Override
-    public void loadUser4Test()
+    public void loadUser4Test(String lob)
     {
 
-        if (userSessInfo == null)
-        {
-            userSessInfo = new TY_UserSessionInfo();
-        }
-        if (userSessInfo.getUserDetails() == null)
+        if (this.isLobValid(lob))
         {
 
-            TY_UserDetails userDetails = new TY_UserDetails();
-
-            /*
-             * Test with Existing Employee
-             */
-            String userEmail = "sunny.bhardwaj@sap.com";
-            String userId = "I057386";
-            String userName = "Sunny Bhardwaj";
-
-            userDetails.setAuthenticated(true);
-            //
-            userDetails.setRoles(userInfo.getRoles().stream().collect(Collectors.toList()));
-
-            /*
-             * Test with Existing Employee
-             */
-
-            /*
-             * Test with Existing Customer
-             */
-            // String userEmail = "rsharma@gmail.com";
-            // String userId = "P565GJJH";
-            // String userName = "Rohit Sharma";
-
-            // userDetails.setAuthenticated(true);
-            // //
-            // userDetails.setRoles(userInfo.getRoles().stream().collect(Collectors.toList()));
-
-            // Ty_UserAccountEmployee usAccConEmpl = new Ty_UserAccountEmployee(userId,
-            // userName, userEmail,
-            // srvCloudApiSrv.getAccountIdByUserEmail(userEmail),
-            // srvCloudApiSrv.getEmployeeIdByUserId(userId),
-            // false, false);
-
-            /*
-             * Test with Existing Customer
-             */
-
-            /*
-             * Test with New Customer //
-             */
-            // String userEmail = "narendramodi@gmail.com";
-            // String userId = "SJH86775";
-            // String userName = "Narendra Modi";
-
-            // userDetails.setAuthenticated(true);
-            // //
-            // userDetails.setRoles(userInfo.getRoles().stream().collect(Collectors.toList()));
-
-            /*
-             * Test with New Customer
-             */
-
-            Ty_UserAccountEmployee usAccConEmpl = new Ty_UserAccountEmployee();
-            usAccConEmpl.setUserId(userId);
-            usAccConEmpl.setUserName(userName);
-            usAccConEmpl.setUserEmail(userEmail);
-
-            if (StringUtils.hasText(userId))
+            if (userSessInfo.getUserDetails() == null)
             {
-                // If External User
-                if (!userId.matches(rlConfig.getInternalUsersRegex()))
+
+                TY_UserDetails userDetails = new TY_UserDetails();
+
+                /*
+                 * Test with Existing Employee
+                 */
+                String userEmail = "sunny.bhardwaj@sap.com";
+                String userId = "I057386";
+                String userName = "Sunny Bhardwaj";
+
+                userDetails.setAuthenticated(true);
+                //
+                userDetails.setRoles(userInfo.getRoles().stream().collect(Collectors.toList()));
+
+                /*
+                 * Test with Existing Employee
+                 */
+
+                /*
+                 * Test with Existing Customer
+                 */
+                // String userEmail = "rsharma@gmail.com";
+                // String userId = "P565GJJH";
+                // String userName = "Rohit Sharma";
+
+                // userDetails.setAuthenticated(true);
+                // //
+                // userDetails.setRoles(userInfo.getRoles().stream().collect(Collectors.toList()));
+
+                // Ty_UserAccountEmployee usAccConEmpl = new Ty_UserAccountEmployee(userId,
+                // userName, userEmail,
+                // srvCloudApiSrv.getAccountIdByUserEmail(userEmail),
+                // srvCloudApiSrv.getEmployeeIdByUserId(userId),
+                // false, false);
+
+                /*
+                 * Test with Existing Customer
+                 */
+
+                /*
+                 * Test with New Customer //
+                 */
+                // String userEmail = "narendramodi@gmail.com";
+                // String userId = "SJH86775";
+                // String userName = "Narendra Modi";
+
+                // userDetails.setAuthenticated(true);
+                // //
+                // userDetails.setRoles(userInfo.getRoles().stream().collect(Collectors.toList()));
+
+                /*
+                 * Test with New Customer
+                 */
+
+                Ty_UserAccountEmployee usAccConEmpl = new Ty_UserAccountEmployee();
+                usAccConEmpl.setUserId(userId);
+                usAccConEmpl.setUserName(userName);
+                usAccConEmpl.setUserEmail(userEmail);
+
+                if (StringUtils.hasText(userId))
                 {
-                    usAccConEmpl.setExternal(true);
-
-                    TY_DestinationProps desProps = destSrv.getDestinationDetails4User(dS.getDestExternal());
-                    if (desProps != null)
+                    // If External User
+                    if (!userId.matches(rlConfig.getInternalUsersRegex()))
                     {
-                        userSessInfo.setDestinationProps(desProps);
-                    }
+                        usAccConEmpl.setExternal(true);
 
-                    // Seek the Account for External
-                    String accountID = srvCloudApiSrv.getAccountIdByUserEmail(usAccConEmpl.getUserEmail(),
-                            userSessInfo.getDestinationProps());
-                    if (StringUtils.hasText(accountID))
-                    {
-                        // If Account Found - Set It
-                        usAccConEmpl.setAccountId(accountID);
-                    }
-                }
-                else // For Internal Users
-                {
-                    TY_DestinationProps desProps = destSrv.getDestinationDetails4User(dS.getDestInternal());
-                    if (desProps != null)
-                    {
-                        userSessInfo.setDestinationProps(desProps);
-                    }
-                    // Seek an Employee
-                    String empID = srvCloudApiSrv.getEmployeeIdByUserId(usAccConEmpl.getUserId(),
-                            userSessInfo.getDestinationProps());
-                    if (StringUtils.hasText(empID))
-                    {
-                        usAccConEmpl.setEmployee(true);
-                        usAccConEmpl.setEmployeeId(empID);
-                    }
-                }
-
-            }
-
-            userSessInfo.setUserDetails(userDetails); // Set in Session
-            userSessInfo.getUserDetails().setUsAccEmpl(usAccConEmpl); // Set in Session
-
-            if (userSessInfo.getUserDetails().getUsAccEmpl() != null)
-            {
-                try
-                {
-                    // Create Customer for New User
-                    if ((!StringUtils.hasText(usAccConEmpl.getAccountId()))
-                            && (!StringUtils.hasText(usAccConEmpl.getEmployeeId())))
-                    {
-                        // Go For Individual Customer Creation with the User Details
-                        String newAccountID = this.createAccount();
-                        if (StringUtils.hasText(newAccountID))
+                        TY_DestinationProps desProps = destSrv.getDestinationDetails4User(dS.getDestExternal());
+                        if (desProps != null)
                         {
-                            userSessInfo.getUserDetails().getUsAccEmpl().setAccountId(newAccountID);
+                            userSessInfo.setDestinationProps(desProps);
+                        }
+
+                        // Seek the Account for External
+                        String accountID = srvCloudApiSrv.getAccountIdByUserEmail(usAccConEmpl.getUserEmail(),
+                                userSessInfo.getDestinationProps());
+                        if (StringUtils.hasText(accountID))
+                        {
+                            // If Account Found - Set It
+                            usAccConEmpl.setAccountId(accountID);
+                        }
+                    }
+                    else // For Internal Users
+                    {
+                        TY_DestinationProps desProps = destSrv.getDestinationDetails4User(dS.getDestInternal());
+                        if (desProps != null)
+                        {
+                            userSessInfo.setDestinationProps(desProps);
+                        }
+                        // Seek an Employee
+                        String empID = srvCloudApiSrv.getEmployeeIdByUserId(usAccConEmpl.getUserId(),
+                                userSessInfo.getDestinationProps());
+                        if (StringUtils.hasText(empID))
+                        {
+                            usAccConEmpl.setEmployee(true);
+                            usAccConEmpl.setEmployeeId(empID);
                         }
                     }
 
-                    // Get the cases for User
-                    // Clear from Buffer
-                    if (CollectionUtils.isNotEmpty(this.getCases4User4mSession()))
+                }
+
+                userSessInfo.setUserDetails(userDetails); // Set in Session
+                userSessInfo.getUserDetails().setUsAccEmpl(usAccConEmpl); // Set in Session
+
+                if (userSessInfo.getUserDetails().getUsAccEmpl() != null)
+                {
+                    try
                     {
-                        userSessInfo.getCases().clear();
+                        // Create Customer for New User
+                        if ((!StringUtils.hasText(usAccConEmpl.getAccountId()))
+                                && (!StringUtils.hasText(usAccConEmpl.getEmployeeId())))
+                        {
+                            // Go For Individual Customer Creation with the User Details
+                            String newAccountID = this.createAccount();
+                            if (StringUtils.hasText(newAccountID))
+                            {
+                                userSessInfo.getUserDetails().getUsAccEmpl().setAccountId(newAccountID);
+                            }
+                        }
+
+                        // Get the cases for User
+                        // Clear from Buffer
+                        if (CollectionUtils.isNotEmpty(this.getCases4User4mSession()))
+                        {
+                            userSessInfo.getCases().clear();
+                        }
+
+                        // Fetch Afresh and Reset
+                        userSessInfo.setCases(essSrv.getCases4User(userSessInfo.getUserDetails().getUsAccEmpl(),
+                                getCurrentLOBConfig().getCaseTypeEnum()));
+                        if (CollectionUtils.isNotEmpty(userSessInfo.getSubmissionIDs()))
+                        {
+                            // Seek Case IDs for Submissions
+                            updateCases4SubmissionIds();
+                        }
+
+                    }
+                    catch (Exception e)
+                    {
+                        // Log error
+                        log.error(msgSrc.getMessage("ERR_CASES_USER", new Object[]
+                        { userSessInfo.getUserDetails().getUsAccEmpl().getUserId(), e.getLocalizedMessage() },
+                                Locale.ENGLISH));
+
+                        // Raise Exception to be handled at UI via Central Aspect
+                        throw new EX_ESMAPI(msgSrc.getMessage("ERR_CASES_USER", new Object[]
+                        { userSessInfo.getUserDetails().getUsAccEmpl().getUserId(), e.getLocalizedMessage() },
+                                Locale.ENGLISH));
                     }
 
-                    // Fetch Afresh and Reset
-                    userSessInfo.setCases(
-                            essSrv.getCases4User(userSessInfo.getUserDetails().getUsAccEmpl(), EnumCaseTypes.Learning));
+                }
+            }
+            else
+
+            {
+                // Get the cases for User
+                // Clear from Buffer
+                if (CollectionUtils.isNotEmpty(this.getCases4User4mSession()))
+                {
+                    userSessInfo.getCases().clear();
+                }
+
+                // Fetch Afresh and Reset
+                try
+                {
+                    userSessInfo.setCases(essSrv.getCases4User(userSessInfo.getUserDetails().getUsAccEmpl(),
+                            getCurrentLOBConfig().getCaseTypeEnum()));
                     if (CollectionUtils.isNotEmpty(userSessInfo.getSubmissionIDs()))
                     {
                         // Seek Case IDs for Submissions
                         updateCases4SubmissionIds();
                     }
-
                 }
-                catch (Exception e)
+                catch (IOException e)
                 {
-                    // Log error
-                    log.error(msgSrc.getMessage("ERR_CASES_USER", new Object[]
-                    { userSessInfo.getUserDetails().getUsAccEmpl().getUserId(), e.getLocalizedMessage() },
-                            Locale.ENGLISH));
-
-                    // Raise Exception to be handled at UI via Central Aspect
-                    throw new EX_ESMAPI(msgSrc.getMessage("ERR_CASES_USER", new Object[]
-                    { userSessInfo.getUserDetails().getUsAccEmpl().getUserId(), e.getLocalizedMessage() },
-                            Locale.ENGLISH));
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
 
             }
-        }
-        else
-
-        {
-            // Get the cases for User
-            // Clear from Buffer
-            if (CollectionUtils.isNotEmpty(this.getCases4User4mSession()))
-            {
-                userSessInfo.getCases().clear();
-            }
-
-            // Fetch Afresh and Reset
-            try
-            {
-                userSessInfo.setCases(
-                        essSrv.getCases4User(userSessInfo.getUserDetails().getUsAccEmpl(), EnumCaseTypes.Learning));
-                if (CollectionUtils.isNotEmpty(userSessInfo.getSubmissionIDs()))
-                {
-                    // Seek Case IDs for Submissions
-                    updateCases4SubmissionIds();
-                }
-            }
-            catch (IOException e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
         }
 
     }
@@ -2274,6 +2273,11 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
             if (catgCusItemO.isPresent())
             {
                 isValid = true;
+                if (userSessInfo == null)
+                {
+                    log.info("User Session Info. Instantiated!");
+                    userSessInfo = new TY_UserSessionInfo();
+                }
                 userSessInfo.setCatgCusItem(catgCusItemO.get()); // also set the Path LoB in user session
                 log.info("User Session Lob Validated & Set: " + lob);
             }
