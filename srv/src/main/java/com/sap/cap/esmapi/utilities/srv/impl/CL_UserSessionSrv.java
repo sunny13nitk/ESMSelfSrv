@@ -340,41 +340,56 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
     public TY_UserSessionInfo getESSDetails(Token token, boolean refresh) throws EX_ESMAPI
     {
         // Token must be present
-        if (token != null)
+        if (token != null && userInfo.isAuthenticated())
         {
-            // get User Details with Token
-            getUserDetails(token);
+            TY_CatgCusItem cusLoB = this.getCurrentLOBConfig();
 
-            // Reload Cases if Refresh Requested or Cases List Blank
-            if (refresh || CollectionUtils.isEmpty(userSessInfo.getCases()))
+            // Check if LoB Config Loaded if reached this point
+            if (cusLoB == null)
             {
-                if (userSessInfo.getUserDetails() != null)
+                log.error(msgSrc.getMessage("ERR_LOB_CONFIG_NOT_LOADED_CASES", null, Locale.ENGLISH));
+                throw new EX_ESMAPI(msgSrc.getMessage("ERR_LOB_CONFIG_NOT_LOADED_CASES", null, Locale.ENGLISH));
+            }
+
+            else
+            {
+                log.info("Loading Cases for LoB  : " + cusLoB.getCaseTypeEnum() + " for User : "
+                        + userSessInfo.getUserDetails().getUsAccEmpl().getUserId());
+                // get User Details with Token
+                getUserDetails(token);
+
+                // Reload Cases if Refresh Requested or Cases List Blank
+                if (refresh || CollectionUtils.isEmpty(userSessInfo.getCases()))
                 {
-                    try
+                    if (userSessInfo.getUserDetails() != null)
                     {
-
-                        // Get ONLY Learning Cases for User
-                        userSessInfo.setCases(essSrv.getCases4User(userSessInfo.getUserDetails().getUsAccEmpl(),
-                                EnumCaseTypes.Learning));
-
-                        if (CollectionUtils.isNotEmpty(userSessInfo.getSubmissionIDs()))
+                        try
                         {
-                            // Seek Case IDs for Submissions
-                            updateCases4SubmissionIds();
+
+                            // Get ONLY Lob Specific Cases for User
+                            userSessInfo.setCases(essSrv.getCases4User(userSessInfo.getUserDetails().getUsAccEmpl(),
+                                    cusLoB.getCaseTypeEnum()));
+                            log.info("Cases Loaded for User : " + userSessInfo.getCases().size());
+
+                            if (CollectionUtils.isNotEmpty(userSessInfo.getSubmissionIDs()))
+                            {
+                                // Seek Case IDs for Submissions
+                                updateCases4SubmissionIds();
+                            }
+
                         }
+                        catch (Exception e)
+                        {
+                            // Log error
+                            log.error(msgSrc.getMessage("ERR_CASES_USER", new Object[]
+                            { userSessInfo.getUserDetails().getUsAccEmpl().getUserId(), e.getLocalizedMessage() },
+                                    Locale.ENGLISH));
 
-                    }
-                    catch (Exception e)
-                    {
-                        // Log error
-                        log.error(msgSrc.getMessage("ERR_CASES_USER", new Object[]
-                        { userSessInfo.getUserDetails().getUsAccEmpl().getUserId(), e.getLocalizedMessage() },
-                                Locale.ENGLISH));
-
-                        // Raise Exception to be handled at UI via Central Aspect
-                        throw new EX_ESMAPI(msgSrc.getMessage("ERR_CASES_USER", new Object[]
-                        { userSessInfo.getUserDetails().getUsAccEmpl().getUserId(), e.getLocalizedMessage() },
-                                Locale.ENGLISH));
+                            // Raise Exception to be handled at UI via Central Aspect
+                            throw new EX_ESMAPI(msgSrc.getMessage("ERR_CASES_USER", new Object[]
+                            { userSessInfo.getUserDetails().getUsAccEmpl().getUserId(), e.getLocalizedMessage() },
+                                    Locale.ENGLISH));
+                        }
                     }
                 }
             }
@@ -382,6 +397,7 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
         }
 
         return this.userSessInfo;
+
     }
 
     // @formatter:off -- Submit Case Form

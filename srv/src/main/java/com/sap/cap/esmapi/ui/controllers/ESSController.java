@@ -104,6 +104,7 @@ public class ESSController
                 if (catgCusItem != null)
                 {
                     TY_UserESS userDetails = new TY_UserESS();
+                    
                 }
                 else
                 {
