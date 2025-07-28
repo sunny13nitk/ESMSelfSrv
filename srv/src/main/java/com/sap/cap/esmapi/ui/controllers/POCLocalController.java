@@ -118,20 +118,21 @@ public class POCLocalController
                     if (!CollectionUtils.isEmpty(catgCusSrv.getCustomizations()))
                     {
 
-                        Optional<TY_CatgCusItem> cusItemO = catgCusSrv.getCustomizations().stream()
-                                .filter(g -> g.getCaseTypeEnum().toString().equals(EnumCaseTypes.Learning.toString()))
-                                .findFirst();
-                        if (cusItemO.isPresent())
+                        TY_CatgCusItem catgCusItem = userSessSrv.getCurrentLOBConfig();
+                        if (catgCusItem != null)
+
                         {
                             userDetails.setUserDetails(userSessSrv.getUserDetails4mSession());
                             userDetails.setCases(userSessSrv.getCases4User4mSession());
                             model.addAttribute("userInfo", userDetails);
-                            model.addAttribute("caseTypeStr", EnumCaseTypes.Learning.toString());
+                            model.addAttribute("caseTypeStr", catgCusItem.getCaseTypeEnum().toString());
                             // Rate Limit Simulation
                             model.addAttribute("rateLimitBreached", userSessSrv.getCurrentRateLimitBreachedValue());
 
                             // Even if No Cases - spl. for Newly Create Acc - to enable REfresh button
                             model.addAttribute("sessMsgs", userSessSrv.getSessionMessages());
+                            model.addAttribute("dynamicTemplateName", "fragments/HeaderFragments");
+                            model.addAttribute("dynamicFragmentSelector", "sixH");
 
                         }
 
@@ -139,7 +140,7 @@ public class POCLocalController
                         {
 
                             throw new EX_ESMAPI(msgSrc.getMessage("ERR_CASE_TYPE_NOCFG", new Object[]
-                            { EnumCaseTypes.Learning.toString() }, Locale.ENGLISH));
+                            { lob }, Locale.ENGLISH));
                         }
                     }
 

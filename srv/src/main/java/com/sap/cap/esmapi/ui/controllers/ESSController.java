@@ -146,7 +146,7 @@ public class ESSController
                                 {
 
                                     throw new EX_ESMAPI(msgSrc.getMessage("ERR_CASE_TYPE_NOCFG", new Object[]
-                                    { EnumCaseTypes.Learning.toString() }, Locale.ENGLISH));
+                                    { catgCusItem.getCaseTypeEnum().toString() }, Locale.ENGLISH));
                                 }
 
                             }

@@ -388,23 +388,15 @@
    <!-- <newlxp-header entrypoint="support"></newlxp-header>
    <newlxp-announcements entrypoint="support"></newlxp-announcements> -->
 
+
+   <!-- <div th:insert="${dynamicFragmentHeader} :: content"></div> -->
+
    <section class="customer-info-wrapper">
       <span class="mif-contacts-dialer mif-10x fg-blue" style="padding: 18px; padding-right: 40px;"></span>
       <div class="customer-info-text">
-         <p>Dear valued learner,</p>
-         <p>please note the following Information while contacting us:</p>
-         <ul>
-            <li><span>You can expect to receive a response from us within one business day.</span></li>
-            <li><span>Our service is available from Monday to Friday and in English only (submitting your query in a
-                  language other than English may impact the response time).</span></li>
-            <li><span>Please provide us with as much information as possible when entering your ticket e.g. your user ID
-                  (if applicable), screenshots of the issue, course code (if there is an issue with specific content),
-                  any reference numbers included in the error message / emails you have received etc., browser version,
-                  exact path to error / steps to reproduce in order for us to be able to reproduce the issue.</span>
-            </li>
-         </ul>
-         <p>Thank you</p>
-         <p>Your SAP Learning Support Team</p>
+         <!-- <div th:replace="~{fragments/sixH :: sixH}"></div> -->
+         <div th:replace="${dynamicTemplateName} :: ${dynamicFragmentSelector}"></div>
+        
       </div>
    </section>
 
