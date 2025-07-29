@@ -30,7 +30,9 @@ import com.sap.cap.esmapi.ui.pojos.TY_Attachment;
 import com.sap.cap.esmapi.ui.pojos.TY_Case_Form;
 import com.sap.cap.esmapi.ui.srv.intf.IF_ESS_UISrv;
 import com.sap.cap.esmapi.utilities.constants.GC_Constants;
+import com.sap.cap.esmapi.utilities.constants.VWNamesDirectory;
 import com.sap.cap.esmapi.utilities.enums.EnumCaseTypes;
+import com.sap.cap.esmapi.utilities.enums.EnumVWNames;
 import com.sap.cap.esmapi.utilities.pojos.TY_Account_CaseCreate;
 import com.sap.cap.esmapi.utilities.pojos.TY_AttachmentResponse;
 import com.sap.cap.esmapi.utilities.pojos.TY_Attachment_CaseCreate;
@@ -81,9 +83,6 @@ public class ESSController
     @Autowired
     private IF_UserSessionSrv userSessionSrv;
 
-    private final String lsoCaseListViewLXSS = "lsoCasesListViewLXSS";
-    private static final String VW_ESSListView = "essListView";
-
     private final String invalidToken = "invalid_token";
     private static final String VW_Error = "error";
     private static final String VW_CaseForm = "caseForm";
@@ -122,7 +121,7 @@ public class ESSController
                                                 .hasText(userSessionSrv.getUserDetails4mSession().getEmployeeId()))
                                 {
                                     // #View
-                                    vw = lsoCaseListViewLXSS;
+                                    vw = VWNamesDirectory.getViewName(EnumVWNames.inbox, false, lob);
 
                                     userDetails.setUserDetails(userSessionSrv.getUserDetails4mSession());
                                     log.info("Fetching Cases for User From Session : "
@@ -139,6 +138,11 @@ public class ESSController
 
                                     // Session Active Toast
                                     model.addAttribute("submActive", userSessionSrv.isCurrentSubmissionActive());
+
+                                    model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
+                                    model.addAttribute("dynamicFragmentHeader", catgCusItem.getFragmentHead());
+                                    model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
+                                    model.addAttribute("dynamicFragmentTitle", catgCusItem.getFragmentTitle());
 
                                 }
 

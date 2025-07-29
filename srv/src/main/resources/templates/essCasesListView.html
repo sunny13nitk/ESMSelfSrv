@@ -385,20 +385,15 @@
 </head>
 
 <body>
-   <!-- <newlxp-header entrypoint="support"></newlxp-header>
-   <newlxp-announcements entrypoint="support"></newlxp-announcements> -->
-
-
-   <!-- <div th:insert="${dynamicFragmentHeader} :: content"></div> -->
+   <newlxp-header entrypoint="support_lso"></newlxp-header>
+   <newlxp-announcements entrypoint="support_lso"></newlxp-announcements>
 
    <div th:replace="~{${dynamicTemplateHeader} :: ${dynamicFragmentHeader}}"></div>
-
-
 
    <div class="all-cases-wrapper">
       <div class="row user-information">
          <!--Title Head - Begin -->
-        <div th:replace="~{${dynamicTemplateTitle} :: ${dynamicFragmentTitle}}"></div>
+         <div th:replace="~{${dynamicTemplateTitle} :: ${dynamicFragmentTitle}}"></div>
 
          <!-- User Information Card -->
          <div class="colspan-4" th:if="${userInfo.userDetails != null}">
@@ -426,7 +421,7 @@
             </a>
 
             <a href="#" class="button primary outline cycle" style="margin-right: 20px;" data-role="hint"
-               th:href="@{/poclocal/}" role="button" data-hint-position="bottom" data-cls-hint="fg-black"
+               th:href="@{/lso/}" role="button" data-hint-position="bottom" data-cls-hint="fg-black"
                data-hint-text="Refresh">
                <span class="mif-refresh" style="margin-left: 0px"></span>
             </a>
@@ -442,7 +437,7 @@
                         </p>
                      </div>
 
-                     <div class="cell-11">
+                     <div class="cell-11" style="padding: 10px; height: 450px; width: 800px; overflow: auto;">
                         <table class="table table-border compact striped">
                            <thead>
                               <tr>
@@ -460,29 +455,46 @@
                </div>
             </div>
          </div>
+
+         <div class="colspan-1" style="padding: 20px;">
+            <a href="#" class="button alert outline cycle" style="margin-right: 20px;" data-role="hint"
+               th:href="@{/logout/}" role="button" data-hint-position="bottom" data-cls-hint="fg-black"
+               data-hint-text="Logout">
+               <span class="mif-switch" style="margin-left: 0px"></span>
+            </a>
+         </div>
+
       </div>
 
       <!--Table Row - Starts  -->
-      <div class="row mt-5" th:if="${userInfo.cases != null}">
-         <h1 class="all-cases-title">
-            All Cases
-         </h1>
-         <div class="colspan-12">
+      <div class="row mt-5">
+         <div class="colspan-10">
+            <h1 class="all-cases-title">All Cases</h1>
+         </div>
+         <div class="colspan-2">
+            <a href="#" class="create-case-btn ds-button ds-button--primary" th:href="@{'/lso/createCase/'}"
+               role="button" style="margin-top: 5px;">
+               Create Case
+            </a>
+         </div>
+
+
+         <div class="colspan-12" th:if="${userInfo.cases != null}">
             <table class="table compact table-border row-hover" id="t-inspector" data-role="table"
                data-show-search="true" data-show-rows-steps="false" data-table-search-title="Filter Cases:"
                data-search-min-length="1" data-search-threshold="300" data-rows="10"
                data-search-fields="subject,statusDesc,id" data-horizontal-scroll="true"
                data-info-wrapper=".info-wrapper" data-thousand-separator=","
-               data-pagination-wrapper=".pagination-wrapper" data-pagination-prev-title="Previuos">
+               data-pagination-wrapper=".pagination-wrapper" data-pagination-prev-title="Previous">
                <thead>
                   <tr>
                      <th data-name="id" class="sortable-column sort-desc pl-6">Case ID</th>
 
                      <th data-name="statusDesc" data-cls-column="text-left">Status</th>
 
-                     <th data-name="subject" data-cls-column="text-left">Issue Description</th>
+                     <th data-name="subject" data-cls-column="text-left">Subject</th>
 
-                     <th data-name="createdOn" class="sortable-column sort-desc pl-6">
+                     <th data-name="createdOn" class="sortable-column pl-6">
                         Created On
                      </th>
 
@@ -499,14 +511,21 @@
                      <td th:text="${case.subject}"></td>
                      <td th:text="${#temporals.format(case.tsCreate, 'yyyy-MM-dd HH:mm:ss')}"></td>
                      <td>
-                        <a href="#" class="" th:href="@{'/poclocal/caseDetails/' + ${case.guid}}" role="button"
+                        <a href="#" class="" th:href="@{'/lso/caseDetails/' + ${case.guid}}" role="button"
                            data-role="hint" data-hint-position="right" data-cls-hint="fg-black"
                            data-hint-text="View Case Details">
                            View
                         </a>
-                        <a th:if="${case.confirmAllowed == true}" href="#" style="margin-left: 10px;"
-                           th:href="@{'/poclocal/confirmCase/' + ${case.id}}" role="button" data-role="hint"
-                           target="_blank" data-hint-position="right" data-cls-hint="fg-black"
+                        <a th:if="${case.confirmAllowed == true and userInfo.userDetails.isExternal() == true}" href="#"
+                           style="margin-left: 10px;" th:href="@{'/lso/confirmCase/' + ${case.id}}" role="button"
+                           data-role="hint" target="_blank" data-hint-position="right" data-cls-hint="fg-black"
+                           data-hint-text="Confirm Case">
+                           Confirm
+                        </a>
+
+                        <a th:if="${case.confirmAllowed == true and userInfo.userDetails.isExternal() != true}" href="#"
+                           style="margin-left: 10px;" th:href="@{'/lso/confirmCase/' + ${case.id}}" role="button"
+                           data-role="hint" data-hint-position="right" data-cls-hint="fg-black"
                            data-hint-text="Confirm Case">
                            Confirm
                         </a>
@@ -517,24 +536,18 @@
             <p class="h5 text-center info-wrapper"></p>
             <div class="d-flex flex-justify-center pagination-wrapper"></div>
          </div>
+
+         <div class="row flex-justify-center mt-10" th:if="${userInfo.cases == null}">
+            <div class="remark primary ">
+               <h6>No Cases could be identified for you! You can however create a new Case/Service Request using Create
+                  Case button.</h6>
+            </div>
+         </div>
       </div>
       <!--Table Row - Ends -->
 
-      <div class="row flex-justify-center mt-10" th:if="${userInfo.cases == null}">
-         <div class="remark primary ">
-            <h6>No Cases could be identified for you! You can however create a new Case/Service Request using options as
-               below.</h6>
-         </div>
-      </div>
 
-      <!--Create Case Row - Starts  -->
-      <div class="row">
-         <a href="#" class="create-case-btn ds-button ds-button--primary" th:href="@{'/poclocal/createCase/'}"
-            role="button">
-            Create Case
-         </a>
-      </div>
-      <!--Create Case Row - Ends  -->
+
    </div>
 
 
@@ -542,7 +555,10 @@
 
 
 
+
+
    <div class="slot" id="slot1" th:if="${rateLimitBreached == true}"></div>
+   <div class="slotSubm" id="submToast" th:if="${submActive == true}"></div>
    <newlxp-footer></newlxp-footer>
 
 
@@ -551,7 +567,7 @@
       {
          var toast = Metro.toast.create("Rate Limit Exceeded!! ", function ()
          {
-            alert('Rate Limit Exceeded!! You can only submit a maximum of 2 incidents in a 5 min slot for an Active Session.')
+            alert('Rate Limit Exceeded!! You can only submit a maximum of 2 incidents in a 5 min slot for an Active Session. New Case Creation and Case(s) navigation would be blocked for this duration.')
          });
 
       }
@@ -563,6 +579,92 @@
             runToast.call($(this));
          });
       });
+
+      function runSubmToast()
+      {
+
+         var toast2 = Metro.toast
+            .create("Request submitted successfully.", null, 5000, "bg-green fg-white");
+      }
+
+      $(document).ready(function ()
+      {
+         $('div.slotSubm').each(function (i, d)
+         {
+            runSubmToast.call($(this));
+         });
+      });
+
+      const scripts = {
+         'lxpWebComponents': {
+            src: '/web-components.js',
+            loaded: false
+         }
+      };
+
+      function load(...scripts)
+      {
+         return Promise.all(scripts.map((script) => loadScript(script)));
+      }
+
+      function loadScript(name)
+      {
+         return new Promise((resolve, reject) =>
+         {
+            // Resolve if already loaded
+            if (scripts[name].loaded)
+            {
+               resolve({ script: name, loaded: true, status: 'Already Loaded' });
+            } else
+            {
+               // Load script
+               const script = document.createElement('script');
+               script.type = 'text/javascript';
+               // TODO: uncomment for local testing while distensions are not configured. Remove after destinations configuring.
+               // script.src = 'https://support.learning-test.sap.com/web-components.js';
+               script.src = scripts[name].src;
+               if (script.readyState)
+               {
+                  // IE
+                  script.onreadystatechange = () =>
+                  {
+                     if (
+                        script.readyState === 'loaded' ||
+                        script.readyState === 'complete'
+                     )
+                     {
+                        script.onreadystatechange = null;
+                        scripts[name].loaded = true;
+                        resolve({ script: name, loaded: true, status: 'Loaded' });
+                     }
+                  };
+               } else
+               {
+                  // Others
+                  script.onload = () =>
+                  {
+                     scripts[name].loaded = true;
+                     resolve({ script: name, loaded: true, status: 'Loaded' });
+                  };
+               }
+               script.onerror = (error) =>
+                  resolve({ script: name, loaded: false, status: 'Not loaded' });
+               document.body.appendChild(script);
+            }
+         });
+      }
+
+      load('lxpWebComponents').then((data) =>
+      {
+         if (data.loaded)
+         {
+            console.log('LXP Web-components were successfully loaded.');
+         } else
+         {
+            console.log('LXP Web-components are not loaded.');
+         }
+      })
+         .catch((error) => console.error(error))
 
    </script>
 

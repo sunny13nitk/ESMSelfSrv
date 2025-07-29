@@ -37,6 +37,7 @@ import com.sap.cap.esmapi.ui.pojos.TY_CaseEditFormAsync;
 import com.sap.cap.esmapi.ui.pojos.TY_CaseEdit_Form;
 import com.sap.cap.esmapi.ui.pojos.TY_CaseFormAsync;
 import com.sap.cap.esmapi.ui.pojos.TY_Case_Form;
+import com.sap.cap.esmapi.utilities.constants.GC_Constants;
 import com.sap.cap.esmapi.utilities.enums.EnumCaseTypes;
 import com.sap.cap.esmapi.utilities.enums.EnumMessageType;
 import com.sap.cap.esmapi.utilities.pojos.TY_Message;
@@ -131,8 +132,10 @@ public class POCLocalController
 
                             // Even if No Cases - spl. for Newly Create Acc - to enable REfresh button
                             model.addAttribute("sessMsgs", userSessSrv.getSessionMessages());
-                            model.addAttribute("dynamicTemplateName", "fragments/HeaderFragments");
-                            model.addAttribute("dynamicFragmentSelector", "sixH");
+                            model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
+                            model.addAttribute("dynamicFragmentHeader", catgCusItem.getFragmentHead());
+                            model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
+                            model.addAttribute("dynamicFragmentTitle", catgCusItem.getFragmentTitle());
 
                         }
 

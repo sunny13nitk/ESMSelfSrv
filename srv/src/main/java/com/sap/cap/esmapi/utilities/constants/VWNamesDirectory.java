@@ -18,7 +18,7 @@ public class VWNamesDirectory
     {
         ArrayList<TY_ViewMappings> viewsDescMap = new ArrayList<TY_ViewMappings>();
 
-        viewsDescMap.add(new TY_ViewMappings(EnumVWNames.inbox, "/ess", "esscaseslist"));
+        viewsDescMap.add(new TY_ViewMappings(EnumVWNames.inbox, "/ess/{lob}", "essCasesListView"));
 
         return viewsDescMap;
     }
