@@ -89,52 +89,98 @@
          <div class="colspan-10 offset-1" style="margin-top: 5px">
             <div class="card">
 
-               <h6 style="color: #54627B; margin-left: 10px">Create new Case.
-                  <span style="color: #B1365B" th:text="${caseTypeStr}"></span> !
+               <h6 style="color: #007db8; margin-left: 10px; font-family: Arial, Helvetica, sans-serif;">Create
+                  new case.
+                  <!-- <span style="color: #B1365B" th:text="${caseTypeStr}"></span> ! -->
                </h6>
-               <form th:object="${caseForm}" enctype="multipart/form-data" th:action="@{/poclocal/saveCase}"
+               <form id="caseForm" th:object="${caseForm}" enctype="multipart/form-data" th:action="@{/post/saveCase}"
                   method="post">
-
-
                   <input type="hidden" th:field="*{accId}" />
                   <input type="hidden" th:field="*{caseTxnType}" />
+                  <input type="hidden" th:field="*{catgChange}" id="catgChange" />
+                  <input type="hidden" th:field="*{catgText}" id="catgText" />
                   <div class="colspan-9 offset-1" style="margin-top: 15px; margin-bottom: 10px;">
-                     <label>Subject </label> <input class="alert metro-input input-large" type="text" data-role="input"
+                     <label style="color: #007db8;font-family: Arial, Helvetica, sans-serif;">Subject </label>
+                     <input class="alert metro-input input-large" type="text" data-role="input"
                         data-prepend="<span style = 'padding-top:7px' class='mif-event-available mif-3x'></span>"
                         title="" th:field="*{subject}" />
-                     <small class="text-muted">Enter
-                        Issue Main Description. </small>
                   </div>
 
                   <div class="colspan-9 offset-1" style="margin-top: 5px; margin-bottom: 10px"
                      th:if="${catgsList != null}">
-                     <label>Service Category </label>
+                     <label style="color: #007db8;font-family: Arial, Helvetica, sans-serif;">Service Category
+                        <a style="margin-left: 4px; margin-top: -2px;" class="button info cycle mini"
+                           data-role="popover" data-popover-position="right" data-popover-hide=1000000
+                           data-hide-on-leave=true data-popover-text="<b> Categories Information </b>
+                           <p>
+                              <b>Learning and Certification Advice: </b> 
+                              Business support for learners regarding information about the learning portal and learning portfolio, learning path, on-demand public courses to Run, learning method, certifications, course schedule, training delivery & training center
+                           </p>
+
+                           <p>
+                              <b>Booking & Order: </b> 
+                              Business support for learners regarding booking/order requests, consequent billing activities, activation code redemption & preferred card, etc.
+                           </p>
+
+                           <p>
+                              <b>Technical Queries: </b> 
+                              Technical Support for learners regarding access, content and functionality
+                           </p>
+
+                           <p>
+                              <b>Practice Systems: </b> 
+                              Help instructors and learners regarding access and login, system performance, how-to questions, user guides, exercises & demos, etc.
+                           </p>
+
+                           <p>
+                              <b>Training Reseller Partner Support: </b> 
+                              Support for SAP Education Resellers regarding onboarding, high level training, booking/order requests, activation code redemption, Manage My Partnership, account setup & contract management, etc.
+                           </p>
+
+                           <p>
+                              <b>Learning Virtual Class Support: </b> 
+                              Support for SAP Learning Class Virtual delivery for the registered learners (e-material, virtual room link)
+                           </p>
+
+                           <p>
+                              <b>Virtual Event Services: </b> 
+                              Provides logistics and support for broader events, virtual trainings or workshops published on SAP Learning Hub and learning.sap.com to support any enablement activities.
+                           </p>
+
+                           <p>
+                              <b>Practice System Delivery (SAP Internal): </b> 
+                              This is intended for our SAP internal colleagues who require additional support for training system landscapes.
+                           </p>
+
+                           <p>
+                              <b>Demo or Interactive Learning: </b> 
+                              Support for technical issues experienced on the interactive learning components as part of a Learning Journey.
+                           </p>
+
+                           "> <span class="mif-info  fg-white"></span></a>
+                     </label>
                      <select name="catgDesc" id="dropDown" data-role="select" th:field="*{catgDesc}"
                         data-cls-option="fg-grayMouse" data-cls-selected-item="bg-teal fg-white" addEmptyValue="true"
-                        data-cls-select="bd-red bg-transparent">
+                        data-cls-select="bd-red bg-transparent" onchange="getCatgSel(this)">
 
                         <option th:each="catg : ${catgsList}" th:value="${catg.id}" th:selected="${catg.id}"
                            th:text="${catg.parentName != null} ? ${catg.parentName} + '>' +${catg.name}: ${catg.name}">
 
                         </option>
-
-
                      </select>
-                     <small class="text-muted">Select Service Category from dropdown and Hit Reload to Refresh Form for
-                        Chosen Category. </small>
-                     <span>
+                     <!-- <small class="text-muted" style="color: #007db8; font-family: Arial, Helvetica, sans-serif;">
+                        Select service category and click the refresh button to adapt the form
+                     </small> -->
+                     <!-- <span>
                         <button id="refresh" style="margin: 3px;" class="button secondary cycle outline" type="submit"
                            name="action" value="catgChange">
                            <span class="mif-replay"></span>
                         </button>
-                     </span>
-
+                     </span> -->
                   </div>
 
-
-                  <div class="colspan-9 offset-1" style="margin-top: 35px; margin-bottom: 10px">
-                     <label>Description</label>
-
+                  <div class="colspan-9 offset-1" style="margin-top: 10px; margin-bottom: 10px">
+                     <label style="color: #007db8;font-family: Arial, Helvetica, sans-serif;">Description</label>
                      <div th:if="${caseForm.template != null}" style="padding-top: 15px; padding-bottom: 20px;">
                         <!-- Panel for Template(s) -->
                         <div data-role="panel"
@@ -142,66 +188,79 @@
                            data-collapsed="false" data-collapsible="true" data-cls-panel="shadow-3"
                            data-cls-title="bg-lightGray fg-black" data-cls-content="bg-transparent fg-black">
                            <div th:utext="*{template}"></div>
-
                         </div>
                      </div>
 
-                     <p id="chars-counter" style="margin-top: -1px">You enter 0 char(s)</p>
-                     <textarea data-role="textarea" data-prepend="<span class='mif-leanpub mif-3x'></span>"
-                        data-cls-prepend="bg-light" th:field="*{description}" data-chars-counter="#chars-counter"
-                        data-chars-counter-template="You enter $1 char(s)"
+                     <!-- <p id="chars-counter" style="margin-top: -1px">You enter 0 char(s)</p> -->
+                     <!-- <textarea data-role="textarea" data-prepend="<span class='mif-leanpub mif-3x'></span>"
+                        data-cls-prepend="bg-light" th:unescaped="true" th:field="*{description}"
+                        data-chars-counter="#chars-counter" data-chars-counter-template="You enter $1 char(s)"
                         data-clear-button-icon="<span class='mif-cross fg-black'></span>">
+                     </textarea> -->
+
+                     <textarea data-role="textarea" data-cls-prepend="bg-light" th:unescaped="true"
+                        th:field="*{description}" data-clear-button-icon="<span class='mif-cross fg-black'></span>">
                      </textarea>
 
-                     <small class="text-muted">Enter Issue Description in detail. </small>
+                     <!-- <small class="text-muted">Enter Issue Description in detail. </small> -->
                   </div>
 
                   <div class="colspan-9 offset-1" style="margin-top: 5px; margin-bottom: 10px"
                      th:if="${LSO_Country != null}">
-                     <label>Country </label>
+                     <label style="color: #007db8;font-family: Arial, Helvetica, sans-serif;">Country </label>
                      <select name="country" id="dropDown1" data-role="select" th:field="*{country}"
                         data-cls-option="fg-grayMouse" data-cls-selected-item="bg-teal fg-white"
                         data-random-color="true" addEmptyValue="true" data-cls-select="bd-red bg-transparent">
 
                         <option th:each="countryI: ${LSO_Country}" th:value="${countryI.key}"
                            th:selected="${countryI.key}" th:text="${countryI.value}">
-
                         </option>
-
-
                      </select>
+
+                     <!-- Language Dropdown -->
+                     <span th:if="${LSO_Language != null}">
+                        <button id="languLoad" style="margin: 3px;" class="button primary outline mini" type="submit"
+                           name="action" value="languAdj">
+                           Adapt Language
+                        </button>
+                     </span>
                   </div>
 
                   <div class="colspan-9 offset-1" style="margin-top: 5px; margin-bottom: 10px"
                      th:if="${LSO_Language != null}">
-                     <label>Language </label>
+                     <label style="color: #007db8;font-family: Arial, Helvetica, sans-serif;">Language </label>
                      <select name="language" id="dropDown2" data-role="select" th:field="*{language}"
                         data-cls-option="fg-grayMouse" data-cls-selected-item="bg-teal fg-white"
                         data-random-color="true" data-cls-select="bd-red bg-transparent" addEmptyValue="true">
 
                         <option th:each="languageI: ${LSO_Language}" th:value="${languageI.key}"
                            th:selected="${languageI.key}" th:text="${languageI.value}">
-
                         </option>
-
-
                      </select>
                   </div>
 
-                  <div class="colspan-9 offset-1" style="margin-top: 5px; margin-bottom: 10px">
-                     <label>Attachment(s) - Choose the File and Upload to Attach to the Case</label>
+                  <div class="colspan-9 offset-1" style="margin-top: 15px; margin-bottom: 10px;">
+                     <label style="color: #007db8;font-family: Arial, Helvetica, sans-serif;">Email of affected user
+                        (optional) </label>
+                     <input class="alert metro-input" type="text" data-role="input" title="" th:field="*{addEmail}" />
+                  </div>
 
+                  <div class="colspan-9 offset-1" style="margin-top: 15px; margin-bottom: 10px">
                      <div class="row" style="margin-top: 10px;">
 
                         <div class="cell-10 flex-align-self-start">
                            <input type="file" data-role="file" name="attachment" th:field="*{attachment}"
-                              data-mode="drop">
+                              data-mode="drop" onchange="handleFileSelection(this)">
 
                            <small class="text-muted">Max file size allowed : <span style="color: #B1365B"
                                  th:text="${attSize}"></span> MB! </small>
+
+                           <small class="text-muted" style="margin-left: 320px;">Allowed file type(s) : <span
+                                 style="color: slategray; margin: 10px;">pdf|docx|doc|txt|csv|xlsx|xls|mp4|msg|png|jpg|jpeg</span>
+                           </small>
                         </div>
 
-                        <div class="cell-1 flex-align-self-end">
+                        <!-- <div class="cell-1 flex-align-self-end">
                            <button class="button rounded primary outline" name="action" value="upload"
                               style="margin-top: 70px">
                               <span class="mif-file-upload" style="margin-left: 0px"> </span> <span
@@ -209,7 +268,7 @@
                            </button>
 
 
-                        </div>
+                        </div> -->
                      </div>
 
                      <div class="colspan-9 offset-1" style="margin-top: 5px; margin-bottom: 10px"
@@ -229,8 +288,8 @@
                                     <td style="text-align: left" th:text="${file}"></td>
                                     <td>
                                        <a href="#" class="button alert mini rounded outline"
-                                          th:href="@{'/poclocal/removeAttachment/' + ${file}}" role="button"
-                                          data-role="hint" data-hint-position="right" data-cls-hint="fg-black"
+                                          th:href="@{'/lso/removeAttachment/' + ${file}}" role="button" data-role="hint"
+                                          data-hint-position="right" data-cls-hint="fg-black"
                                           data-hint-text="Remove Attachment">
                                           <span class="mif-bin icon" style="margin-left: 0px"></span> <span
                                              style="margin-left: 3px">Delete</span></a>
@@ -240,38 +299,20 @@
                            </table>
                         </div>
                      </div>
-
-
-
                   </div>
 
-
-
-                  <div class="d-flex flex-row-r" style="margin-top: 30px; margin-bottom: 10px; margin-right: 20px;">
-                     <button class="button rounded " style="color: #004466; background: #00ffb3" data-role="hint"
-                        data-hint-position="top" data-cls-hint="fg-black" data-hint-text="Submit the Case" name="action"
-                        value="saveCase">
-                        <span class="mif-beenhere" style="margin-left: 0px"> </span> <span
-                           style="margin-left: 3px">Submit</span>
+                  <div class="case-form-footer-btn pb-4" style="margin-left: 500px; margin-top: 25px;">
+                     <button id="SubmitCaseBtn" class="ds-button ds-button--primary" name="action" value="saveCase"
+                        role="button">
+                        Submit
                      </button>
-
-
-                     <a href="#" class="button rounded "
-                        style="color: #004466; background: #FF004C; margin-left: 10px; margin-right: 20px;"
-                        data-role="hint" th:href="@{/poclocal/}" role="button" data-hint-position="top"
-                        data-cls-hint="fg-black" data-hint-text="Cancel Case Submission.">
-                        <span class="mif-cancel" style="margin-left: 0px">
-                        </span>
-                        <span style="margin-left: 3px">Cancel
-                        </span>
+                     <a href="#" class="ds-button ds-button--secondary" th:href="@{/lso/}" role="button">
+                        Cancel
                      </a>
-
-
                   </div>
                </form>
             </div>
          </div>
-
 
 
 
