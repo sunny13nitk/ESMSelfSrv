@@ -1,52 +1,57 @@
 package com.sap.cap.esmapi.ui.controllers;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
-import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.sap.cap.esmapi.catg.pojos.TY_CatgCus;
 import com.sap.cap.esmapi.catg.pojos.TY_CatgCusItem;
+import com.sap.cap.esmapi.catg.pojos.TY_CatgDetails;
+import com.sap.cap.esmapi.catg.pojos.TY_CatgTemplates;
 import com.sap.cap.esmapi.catg.srv.intf.IF_CatalogSrv;
+import com.sap.cap.esmapi.events.event.EV_CaseConfirmSubmit;
+import com.sap.cap.esmapi.exceptions.EX_CaseAlreadyConfirmed;
 import com.sap.cap.esmapi.exceptions.EX_ESMAPI;
-import com.sap.cap.esmapi.ui.pojos.TY_Attachment;
+import com.sap.cap.esmapi.ui.pojos.TY_CaseConfirmPOJO;
+import com.sap.cap.esmapi.ui.pojos.TY_CaseEdit_Form;
 import com.sap.cap.esmapi.ui.pojos.TY_Case_Form;
 import com.sap.cap.esmapi.ui.srv.intf.IF_ESS_UISrv;
 import com.sap.cap.esmapi.utilities.constants.GC_Constants;
 import com.sap.cap.esmapi.utilities.constants.VWNamesDirectory;
 import com.sap.cap.esmapi.utilities.enums.EnumCaseTypes;
+import com.sap.cap.esmapi.utilities.enums.EnumMessageType;
 import com.sap.cap.esmapi.utilities.enums.EnumVWNames;
-import com.sap.cap.esmapi.utilities.pojos.TY_Account_CaseCreate;
-import com.sap.cap.esmapi.utilities.pojos.TY_AttachmentResponse;
-import com.sap.cap.esmapi.utilities.pojos.TY_Attachment_CaseCreate;
-import com.sap.cap.esmapi.utilities.pojos.TY_Case_Customer_SrvCloud;
-import com.sap.cap.esmapi.utilities.pojos.TY_CatgLvl1_CaseCreate;
-import com.sap.cap.esmapi.utilities.pojos.TY_Description_CaseCreate;
-import com.sap.cap.esmapi.utilities.pojos.TY_NotesCreate;
+import com.sap.cap.esmapi.utilities.pojos.TY_Message;
+import com.sap.cap.esmapi.utilities.pojos.TY_RLConfig;
 import com.sap.cap.esmapi.utilities.pojos.TY_UserESS;
+import com.sap.cap.esmapi.utilities.pojos.Ty_UserAccountEmployee;
+import com.sap.cap.esmapi.utilities.srv.intf.IF_SessAttachmentsService;
 import com.sap.cap.esmapi.utilities.srv.intf.IF_UserAPISrv;
 import com.sap.cap.esmapi.utilities.srv.intf.IF_UserSessionSrv;
 import com.sap.cap.esmapi.utilities.srvCloudApi.srv.intf.IF_SrvCloudAPI;
+import com.sap.cap.esmapi.vhelps.srv.intf.IF_VHelpLOBUIModelSrv;
 import com.sap.cds.services.request.UserInfo;
 import com.sap.cloud.security.token.Token;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 /*
@@ -78,15 +83,32 @@ public class ESSController
     private IF_CatalogSrv catalogTreeSrv;
 
     @Autowired
+    private TY_RLConfig rlConfig;
+
+    @Autowired
+    private IF_VHelpLOBUIModelSrv vhlpUISrv;
+
+    @Autowired
     private IF_SrvCloudAPI srvCloudApiSrv;
+
+    @Autowired
+    private IF_CatalogSrv catalogSrv;
+
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
+
+    @Autowired
+    private IF_SessAttachmentsService attSrv;
 
     @Autowired
     private IF_UserSessionSrv userSessionSrv;
 
+    private final String caseListVWRedirect = "redirect:/lso/";
+    private final String caseFormViewLXSS = "caseFormLSOLXSS";
+    private final String caseFormReplyLXSS = "caseFormReplyLSOLXSS";
+    private final String lsoCaseListViewLXSS = "lsoCasesListViewLXSS";
+    private final String caseConfirmError = "alreadyConfirmed";
     private final String invalidToken = "invalid_token";
-    private static final String VW_Error = "error";
-    private static final String VW_CaseForm = "caseForm";
-    private static final String VW_ESSListViewRedirect = "redirect:/ess/";
 
     @GetMapping("/{lob}")
     @PreAuthorize("hasAnyAuthority('" + GC_Constants.gc_role_employee_esm + "', '" + GC_Constants.gc_role_contractor_esm
@@ -182,296 +204,730 @@ public class ESSController
             throw new EX_ESMAPI(e.getLocalizedMessage());
         }
 
-        return vw != null ? vw : VW_Error;
+        return vw != null ? vw : invalidToken;
 
     }
 
-    @GetMapping("/createCase/{caseType}")
-    public String showTxnDetails4Scrip(@PathVariable("caseType") EnumCaseTypes caseType, Model model) throws Exception
+    @GetMapping("/createCase/")
+    public String showCaseAsyncForm(Model model)
     {
+        userSessionSrv.clearActiveSubmission();
+        String viewCaseForm = caseFormViewLXSS;
 
-        String accountId;
-
-        // Only Authenticated user via IDP
-        if (userInfo.isAuthenticated())
+        if ((StringUtils.hasText(userSessionSrv.getUserDetails4mSession().getAccountId())
+                || StringUtils.hasText(userSessionSrv.getUserDetails4mSession().getEmployeeId()))
+                && !CollectionUtils.isEmpty(catgCusSrv.getCustomizations()) && userInfo.isAuthenticated())
         {
 
-            try
+            Optional<TY_CatgCusItem> cusItemO = catgCusSrv.getCustomizations().stream()
+                    .filter(g -> g.getCaseTypeEnum().toString().equals(EnumCaseTypes.Learning.toString())).findFirst();
+            if (cusItemO.isPresent())
             {
 
-                if (StringUtils.hasText(caseType.toString()) && userSrv != null)
-                {
-                    System.out.println("Case Type Selected for Creation: " + caseType);
+                model.addAttribute("caseTypeStr", EnumCaseTypes.Learning.toString());
 
+                // Before case form Inititation we must check the Rate Limit for the Current
+                // User Session --current Form Submission added for Rate Limit Evaulation
+                if (userSessionSrv.isWithinRateLimit())
+                {
+                    // Populate User Details
                     TY_UserESS userDetails = new TY_UserESS();
-
-                    // 1. Check if Account Exists for the logged in User as A/C is mandatory to
-                    // create a case
-
-                    if (StringUtils.hasText(userSrv.getUserDetails4mSession().getAccountId()))
-                    {
-
-                        accountId = userSrv.getUserDetails4mSession().getAccountId();
-                    }
-
-                    else // Create the Account with logged in User credentials
-                    {
-                        accountId = userSrv.createAccount(); // Implictly refreshed in buffer
-                    }
-
-                    // Prepare Case Model - Form
-                    if (StringUtils.hasText(accountId) && !CollectionUtils.isEmpty(catgCusSrv.getCustomizations()))
-                    {
-                        userDetails.setUserDetails(userSrv.getUserDetails4mSession());
-                        model.addAttribute("userInfo", userDetails);
-
-                        Optional<TY_CatgCusItem> cusItemO = catgCusSrv.getCustomizations().stream()
-                                .filter(g -> g.getCaseTypeEnum().toString().equals(caseType.toString())).findFirst();
-                        if (cusItemO.isPresent())
-                        {
-
-                            model.addAttribute("caseTypeStr", caseType.toString());
-
-                            TY_Case_Form caseForm = new TY_Case_Form();
-                            caseForm.setAccId(accountId); // hidden
-                            caseForm.setCaseTxnType(cusItemO.get().getCaseType()); // hidden
-                            model.addAttribute("caseForm", caseForm);
-
-                            model.addAttribute("formError", null);
-
-                            // also Upload the Catg. Tree as per Case Type
-                            model.addAttribute("catgsList",
-                                    catalogTreeSrv.getCaseCatgTree4LoB(caseType).getCategories());
-
-                        }
-                        else
-                        {
-                            throw new EX_ESMAPI(msgSrc.getMessage("ERR_CASE_TYPE_NOCFG", new Object[]
-                            { caseType.toString() }, Locale.ENGLISH));
-                        }
-
-                    }
-
-                }
-
-            }
-            catch (Exception e)
-            {
-                throw new EX_ESMAPI(msgSrc.getMessage("ERR_CASES_FORM", new Object[]
-                { e.getLocalizedMessage() }, Locale.ENGLISH));
-            }
-        }
-
-        return VW_CaseForm;
-    }
-
-    @PostMapping("/saveCase")
-    public String saveCase(@ModelAttribute("caseForm") TY_Case_Form caseForm, Model model)
-    {
-        log.info("Inside SAve Case Method!!");
-        System.out.println("Inside SAve Case Method!!");
-        TY_UserESS userDetails = new TY_UserESS();
-        TY_Case_Customer_SrvCloud newCaseEntity = new TY_Case_Customer_SrvCloud();
-        Optional<TY_CatgCusItem> cusItemO = null;
-        TY_AttachmentResponse attR = null;
-
-        if (caseForm != null && userInfo.isAuthenticated())
-        {
-            System.out.println("Case Payload: " + caseForm.toString());
-
-            // Validate Case Form
-            List<String> msgs = validateCaseForm(caseForm);
-            cusItemO = catgCusSrv.getCustomizations().stream()
-                    .filter(g -> g.getCaseType().equals(caseForm.getCaseTxnType())).findFirst();
-            if (!CollectionUtils.isEmpty(msgs))
-            {
-                model.addAttribute("formError", msgs);
-                /*
-                 * ------ Prepare Model for REload
-                 */
-                if (StringUtils.hasText(userSrv.getUserDetails4mSession().getAccountId()))
-                {
-                    userDetails.setUserDetails(userSrv.getUserDetails4mSession());
+                    userDetails.setUserDetails(userSessionSrv.getUserDetails4mSession());
                     model.addAttribute("userInfo", userDetails);
-                }
 
-                if (cusItemO.isPresent() && catalogTreeSrv != null)
-                {
-                    model.addAttribute("caseTypeStr", cusItemO.get().getCaseTypeEnum().toString());
-                    model.addAttribute("caseForm", caseForm);
-                    // also Upload the Catg. Tree as per Case Type
-                    model.addAttribute("catgsList",
-                            catalogTreeSrv.getCaseCatgTree4LoB(cusItemO.get().getCaseTypeEnum()).getCategories());
-
-                    return "caseForm";
-                }
-            } // CaseForm has errors
-
-            else // Commit the Case
-            {
-
-                newCaseEntity.setAccount(new TY_Account_CaseCreate(caseForm.getAccId())); // Account ID
-                newCaseEntity.setCaseType(caseForm.getCaseTxnType()); // Case Txn. Type
-                newCaseEntity.setSubject(caseForm.getSubject()); // Subject
-
-                // Fetch CatgGuid by description from Customizing - Set Categories
-                if (cusItemO.isPresent() && catalogTreeSrv != null)
-                {
-                    String[] catTreeSelCatg = catalogTreeSrv.getCatgHierarchyforCatId(caseForm.getCatgDesc(),
-                            cusItemO.get().getCaseTypeEnum());
-                    if (Arrays.stream(catTreeSelCatg).filter(e -> e != null).count() > 0)
+                    // Initialize Attachments Session Service
+                    if (attSrv != null)
                     {
-                        switch ((int) Arrays.stream(catTreeSelCatg).filter(e -> e != null).count())
-                        {
-                        case 4:
-                            newCaseEntity.setCategoryLevel1(new TY_CatgLvl1_CaseCreate(catTreeSelCatg[3]));
-                            newCaseEntity.setCategoryLevel2(new TY_CatgLvl1_CaseCreate(catTreeSelCatg[2]));
-                            newCaseEntity.setCategoryLevel3(new TY_CatgLvl1_CaseCreate(catTreeSelCatg[1]));
-                            newCaseEntity.setCategoryLevel4(new TY_CatgLvl1_CaseCreate(catTreeSelCatg[0]));
-                            break;
-                        case 3:
-                            newCaseEntity.setCategoryLevel1(new TY_CatgLvl1_CaseCreate(catTreeSelCatg[2]));
-                            newCaseEntity.setCategoryLevel2(new TY_CatgLvl1_CaseCreate(catTreeSelCatg[1]));
-                            newCaseEntity.setCategoryLevel3(new TY_CatgLvl1_CaseCreate(catTreeSelCatg[0]));
-                            break;
-                        case 2:
-                            newCaseEntity.setCategoryLevel1(new TY_CatgLvl1_CaseCreate(catTreeSelCatg[1]));
-                            newCaseEntity.setCategoryLevel2(new TY_CatgLvl1_CaseCreate(catTreeSelCatg[0]));
-                            break;
-                        case 1:
-                            newCaseEntity.setCategoryLevel1(new TY_CatgLvl1_CaseCreate(catTreeSelCatg[0]));
-                        default:
-                            throw new EX_ESMAPI(msgSrc.getMessage("ERR_INVALID_CATG", new Object[]
-                            { cusItemO.get().getCaseTypeEnum().toString(), caseForm.getCatgDesc() }, Locale.ENGLISH));
-                        }
+                        attSrv.initialize();
+                    }
+                    // Populate Case Form Details
+                    TY_Case_Form caseForm = new TY_Case_Form();
+                    if (userSessionSrv.getUserDetails4mSession().isEmployee())
+                    {
+                        caseForm.setAccId(userSessionSrv.getUserDetails4mSession().getEmployeeId()); // hidden
                     }
                     else
                     {
-                        throw new EX_ESMAPI(msgSrc.getMessage("ERR_INVALID_CATG", new Object[]
-                        { cusItemO.get().getCaseTypeEnum().toString(), caseForm.getCatgDesc() }, Locale.ENGLISH));
+                        caseForm.setAccId(userSessionSrv.getUserDetails4mSession().getAccountId()); // hidden
                     }
 
-                    // Create Notes if There is a description
-                    if (StringUtils.hasText(caseForm.getDescription()))
+                    caseForm.setCaseTxnType(cusItemO.get().getCaseType()); // hidden
+                    model.addAttribute("caseForm", caseForm);
+
+                    model.addAttribute("formErrors", null);
+
+                    // clear Form errors on each refresh or a New Case form request
+                    if (CollectionUtils.isNotEmpty(userSessionSrv.getFormErrors()))
                     {
-                        // Create Note and Get Guid back
-                        String noteId = srvCloudApiSrv.createNotes(
-                                new TY_NotesCreate(false, caseForm.getDescription(), null),
-                                userSessionSrv.getDestinationDetails4mUserSession());
-                        if (StringUtils.hasText(noteId))
-                        {
-                            newCaseEntity.setDescription(new TY_Description_CaseCreate(noteId));
-                        }
+                        userSessionSrv.clearFormErrors();
+
                     }
 
-                    // Check if Attachment needs to be Created
-                    if (caseForm.getAttachment() != null)
+                    // also Upload the Catg. Tree as per Case Type
+                    model.addAttribute("catgsList",
+                            catalogTreeSrv.getCaseCatgTree4LoB(EnumCaseTypes.Learning).getCategories());
+
+                    // Attachment file Size
+                    model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
+
+                }
+                else
+                {
+                    // Not Within Rate Limit - REdirect to List View
+                    viewCaseForm = caseListVWRedirect;
+
+                }
+
+            }
+            else
+            {
+
+                throw new EX_ESMAPI(msgSrc.getMessage("ERR_CASE_TYPE_NOCFG", new Object[]
+                { EnumCaseTypes.Learning.toString() }, Locale.ENGLISH));
+            }
+
+        }
+
+        return viewCaseForm;
+    }
+
+    @GetMapping("/errForm/")
+    public String showErrorCaseForm(Model model)
+    {
+
+        if ((StringUtils.hasText(userSessionSrv.getUserDetails4mSession().getAccountId())
+                || StringUtils.hasText(userSessionSrv.getUserDetails4mSession().getEmployeeId()))
+                && !CollectionUtils.isEmpty(catgCusSrv.getCustomizations())
+                && userSessionSrv.getCurrentForm4Submission() != null)
+        {
+            userSessionSrv.clearActiveSubmission();
+
+            Optional<TY_CatgCusItem> cusItemO = catgCusSrv.getCustomizations().stream()
+                    .filter(g -> g.getCaseTypeEnum().toString().equals(EnumCaseTypes.Learning.toString())).findFirst();
+            if (cusItemO.isPresent())
+            {
+
+                model.addAttribute("caseTypeStr", EnumCaseTypes.Learning.toString());
+
+                // Populate User Details
+                TY_UserESS userDetails = new TY_UserESS();
+                userDetails.setUserDetails(userSessionSrv.getUserDetails4mSession());
+                model.addAttribute("userInfo", userDetails);
+
+                // Populate Case Form Details
+                TY_Case_Form caseForm = new TY_Case_Form();
+                if (userSessionSrv.getUserDetails4mSession().isEmployee())
+                {
+                    caseForm.setAccId(userSessionSrv.getUserDetails4mSession().getEmployeeId()); // hidden
+                }
+                else
+                {
+                    caseForm.setAccId(userSessionSrv.getUserDetails4mSession().getAccountId()); // hidden
+                }
+
+                caseForm.setCaseTxnType(cusItemO.get().getCaseType()); // hidden
+                caseForm.setCatgDesc(userSessionSrv.getCurrentForm4Submission().getCaseForm().getCatgDesc()); // Curr
+                                                                                                              // Catg
+                caseForm.setDescription(userSessionSrv.getCurrentForm4Submission().getCaseForm().getDescription()); // Curr
+                                                                                                                    // Notes
+                caseForm.setSubject(userSessionSrv.getCurrentForm4Submission().getCaseForm().getSubject()); // Curr
+                                                                                                            // Subject
+
+                if (StringUtils.hasText(userSessionSrv.getCurrentForm4Submission().getCaseForm().getAddEmail())) // Affected
+                                                                                                                 // User
+                                                                                                                 // email
+                {
+                    caseForm.setAddEmail(userSessionSrv.getCurrentForm4Submission().getCaseForm().getAddEmail());
+                }
+
+                if (StringUtils.hasText(userSessionSrv.getCurrentForm4Submission().getCaseForm().getCountry()))
+                {
+                    caseForm.setCountry(userSessionSrv.getCurrentForm4Submission().getCaseForm().getCountry());
+                }
+
+                if (StringUtils.hasText(userSessionSrv.getCurrentForm4Submission().getCaseForm().getLanguage()))
+                {
+                    caseForm.setLanguage(userSessionSrv.getCurrentForm4Submission().getCaseForm().getLanguage());
+                }
+
+                if (StringUtils.hasText(userSessionSrv.getCurrentForm4Submission().getCaseForm().getLanguage()))
+                {
+                    caseForm.setLanguage(userSessionSrv.getCurrentForm4Submission().getCaseForm().getLanguage());
+                }
+
+                model.addAttribute("formErrors", userSessionSrv.getFormErrors());
+
+                // Not Feasible to have a Validation Error in Form and Attachment Persisted -
+                // But just to handle theoratically in case there is an Error in Attachment
+                // Persistence only- Remove the attachment otherwise let it persist
+                if (CollectionUtils.isNotEmpty(userSessionSrv.getMessageStack()))
+                {
+                    Optional<TY_Message> attErrO = userSessionSrv.getMessageStack().stream()
+                            .filter(e -> e.getMsgType().equals(EnumMessageType.ERR_ATTACHMENT)).findFirst();
+                    if (!attErrO.isPresent())
                     {
-                        try
+                        // Attachment able to presist do not remove it from Current Payload
+                        caseForm.setAttachment(
+                                userSessionSrv.getCurrentForm4Submission().getCaseForm().getAttachment());
+
+                    }
+                }
+
+                // Not Feasible to have a Validation Error in Form and Attachment Persisted -
+                // But just to handle theoratically in case there is an Error in Attachment
+                // Persistence only- Remove the attachment otherwise let it persist
+                if (CollectionUtils.isNotEmpty(userSessionSrv.getMessageStack()))
+                {
+                    Optional<TY_Message> attErrO = userSessionSrv.getMessageStack().stream()
+                            .filter(e -> e.getMsgType().equals(EnumMessageType.ERR_ATTACHMENT)).findFirst();
+                    if (!attErrO.isPresent())
+                    {
+                        // Attachment able to presist do not remove it from Current Payload
+                        caseForm.setAttachment(
+                                userSessionSrv.getCurrentForm4Submission().getCaseForm().getAttachment());
+
+                    }
+                }
+
+                model.addAttribute("caseForm", caseForm);
+
+                // also Upload the Catg. Tree as per Case Type
+                model.addAttribute("catgsList",
+                        catalogTreeSrv.getCaseCatgTree4LoB(EnumCaseTypes.Learning).getCategories());
+
+                if (attSrv != null)
+                {
+                    if (CollectionUtils.isNotEmpty(attSrv.getAttachmentNames()))
+                    {
+                        model.addAttribute("attachments", attSrv.getAttachmentNames());
+                    }
+                }
+
+                // Attachment file Size
+                model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
+
+            }
+            else
+            {
+
+                throw new EX_ESMAPI(msgSrc.getMessage("ERR_CASE_TYPE_NOCFG", new Object[]
+                { EnumCaseTypes.Learning.toString() }, Locale.ENGLISH));
+            }
+
+        }
+
+        return caseFormViewLXSS;
+    }
+
+    @GetMapping("/removeAttachment/{fileName}")
+    public String removeAttachmentCaseCreate(@PathVariable String fileName, Model model)
+    {
+        if (StringUtils.hasText(fileName) && attSrv != null && userSessionSrv != null)
+        {
+            userSessionSrv.clearActiveSubmission();
+            if (attSrv.checkIFExists(fileName))
+            {
+                attSrv.removeAttachmentByName(fileName);
+            }
+
+            // Populate the view
+
+            Optional<TY_CatgCusItem> cusItemO = catgCusSrv.getCustomizations().stream()
+                    .filter(g -> g.getCaseTypeEnum().toString().equals(EnumCaseTypes.Learning.toString())).findFirst();
+            if (cusItemO.isPresent())
+            {
+
+                model.addAttribute("caseTypeStr", EnumCaseTypes.Learning.toString());
+
+                // Populate User Details
+                TY_UserESS userDetails = new TY_UserESS();
+                userDetails.setUserDetails(userSessionSrv.getUserDetails4mSession());
+                model.addAttribute("userInfo", userDetails);
+
+                // Get Case from Session Service
+
+                TY_Case_Form caseForm = userSessionSrv.getCaseFormB4Submission();
+
+                if (caseForm != null)
+                {
+
+                    if (userSessionSrv.getUserDetails4mSession().isEmployee())
+                    {
+                        caseForm.setEmployee(true);
+                    }
+
+                    // Clear form for New Attachment as Current Attachment already in Container
+                    caseForm.setAttachment(null);
+
+                    // Scan for Template Load
+                    TY_CatgTemplates catgTemplate = catalogTreeSrv.getTemplates4Catg(caseForm.getCatgDesc(),
+                            EnumCaseTypes.Learning);
+                    if (catgTemplate != null)
+                    {
+
+                        // Set Questionnaire for Category
+                        caseForm.setTemplate(catgTemplate.getQuestionnaire());
+
+                    }
+
+                    model.addAttribute("caseForm", caseForm);
+
+                    // also Upload the Catg. Tree as per Case Type
+                    model.addAttribute("catgsList",
+                            catalogTreeSrv.getCaseCatgTree4LoB(EnumCaseTypes.Learning).getCategories());
+
+                    model.addAttribute("attachments", attSrv.getAttachmentNames());
+
+                    // Attachment file Size
+                    model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
+                }
+
+            }
+        }
+
+        return caseFormViewLXSS;
+    }
+
+    @GetMapping("/caseReply/removeAttachment/{fileName}")
+    public String removeAttachmentCaseReply(@PathVariable String fileName, Model model)
+    {
+        if (StringUtils.hasText(fileName) && attSrv != null && userSessionSrv != null)
+        {
+            userSessionSrv.clearActiveSubmission();
+            if (attSrv.checkIFExists(fileName))
+            {
+                attSrv.removeAttachmentByName(fileName);
+            }
+
+            // Populate User Details
+            TY_UserESS userDetails = new TY_UserESS();
+            userDetails.setUserDetails(userSessionSrv.getUserDetails4mSession());
+            model.addAttribute("userInfo", userDetails);
+
+            model.addAttribute("formErrors", userSessionSrv.getFormErrors());
+
+            // Get Case Details
+            TY_CaseEdit_Form caseEditForm = null;
+
+            // Try to Get Case Edit Form from Upload Form from User Submit
+            if (userSessionSrv.getCurrentReplyForm4Submission() != null)
+            {
+                caseEditForm = userSessionSrv.getCaseDetails4Edit(
+                        userSessionSrv.getCurrentReplyForm4Submission().getCaseReply().getCaseDetails().getCaseGuid());
+
+                // Super Impose Reply from User Form 4m Session
+                caseEditForm.setReply(userSessionSrv.getCurrentReplyForm4Submission().getCaseReply().getReply());
+                // Not Feasible to have a Validation Error in Form and Attachment Persisted -
+                // But just to handle theoratically in case there is an Error in Attachment
+                // Persistence only- Remove the attachment otherwise let it persist
+                if (CollectionUtils.isNotEmpty(userSessionSrv.getMessageStack()))
+                {
+                    Optional<TY_Message> attErrO = userSessionSrv.getMessageStack().stream()
+                            .filter(e -> e.getMsgType().equals(EnumMessageType.ERR_ATTACHMENT)).findFirst();
+                    if (attErrO.isPresent())
+                    {
+                        // Attachment able to presist do not remove it from Current Payload
+                        caseEditForm.setAttachment(null);
+
+                    }
+                }
+            }
+            else
+            {
+                caseEditForm = userSessionSrv.getCaseDetails4Edit(
+                        userSessionSrv.getCaseEditFormB4Submission().getCaseDetails().getCaseGuid());
+                // Super Impose Reply from User Form 4m Session
+                caseEditForm.setReply(userSessionSrv.getCaseEditFormB4Submission().getReply());
+            }
+
+            if (caseEditForm != null)
+            {
+
+                model.addAttribute("caseEditForm", caseEditForm);
+
+                model.addAttribute("attachments", attSrv.getAttachmentNames());
+
+                // Attachment file Size
+                model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
+            }
+        }
+
+        return caseFormReplyLXSS;
+
+    }
+
+    @GetMapping("/errCaseReply/")
+    public String showErrorCaseReplyForm(Model model)
+    {
+        if (userSessionSrv != null)
+        {
+            userSessionSrv.clearActiveSubmission();
+
+            if (userSessionSrv.getCurrentReplyForm4Submission() != null && StringUtils.hasText(
+                    userSessionSrv.getCurrentReplyForm4Submission().getCaseReply().getCaseDetails().getCaseGuid()))
+            {
+
+                // Populate User Details
+                TY_UserESS userDetails = new TY_UserESS();
+                userDetails.setUserDetails(userSessionSrv.getUserDetails4mSession());
+                model.addAttribute("userInfo", userDetails);
+
+                model.addAttribute("formErrors", userSessionSrv.getFormErrors());
+
+                // Get Case Details
+                TY_CaseEdit_Form caseEditForm = userSessionSrv.getCaseDetails4Edit(
+                        userSessionSrv.getCurrentReplyForm4Submission().getCaseReply().getCaseDetails().getCaseGuid());
+
+                if (caseEditForm != null)
+                {
+                    // Super Impose Reply from User Form 4m Session
+                    caseEditForm.setReply(userSessionSrv.getCurrentReplyForm4Submission().getCaseReply().getReply());
+                    // Not Feasible to have a Validation Error in Form and Attachment Persisted -
+                    // But just to handle theoratically in case there is an Error in Attachment
+                    // Persistence only- Remove the attachment otherwise let it persist
+                    if (CollectionUtils.isNotEmpty(userSessionSrv.getMessageStack()))
+                    {
+                        Optional<TY_Message> attErrO = userSessionSrv.getMessageStack().stream()
+                                .filter(e -> e.getMsgType().equals(EnumMessageType.ERR_ATTACHMENT)).findFirst();
+                        if (attErrO.isPresent())
                         {
-                            if (caseForm.getAttachment().getBytes() != null)
-                            {
-                                // Create Attachment
-                                TY_Attachment newAttachment = new TY_Attachment(false,
-                                        FilenameUtils.getName(caseForm.getAttachment().getOriginalFilename()),
-                                        GC_Constants.gc_Attachment_Category, false);
-                                attR = srvCloudApiSrv.createAttachment(newAttachment,
-                                        userSessionSrv.getDestinationDetails4mUserSession());
-                                if (attR != null)
-                                {
-                                    if (StringUtils.hasText(attR.getId()) && StringUtils.hasText(attR.getUploadUrl()))
-                                    {
-                                        log.info("Attachment id :" + attR.getId() + " generated for Upload Url : "
-                                                + attR.getUploadUrl());
+                            // Attachment able to presist do not remove it from Current Payload
+                            caseEditForm.setAttachment(null);
 
-                                        if (srvCloudApiSrv.persistAttachment(attR.getUploadUrl(),
-                                                caseForm.getAttachment(),
-                                                userSessionSrv.getDestinationDetails4mUserSession()))
-                                        {
-                                            log.info("Attachment with id : " + attR.getId()
-                                                    + " Persisted in Document Container..");
-
-                                            // Prepare POJOdetails for TY_Case_SrvCloud newCaseEntity
-                                            List<TY_Attachment_CaseCreate> caseAttachmentsNew = new ArrayList<TY_Attachment_CaseCreate>();
-                                            TY_Attachment_CaseCreate caseAttachment = new TY_Attachment_CaseCreate(
-                                                    attR.getId());
-                                            caseAttachmentsNew.add(caseAttachment);
-                                            newCaseEntity.setAttachments(caseAttachmentsNew);
-
-                                        }
-
-                                    }
-
-                                }
-                            }
-                        }
-                        catch (EX_ESMAPI | IOException e)
-                        {
-                            if (e instanceof IOException)
-                            {
-                                throw new EX_ESMAPI(msgSrc.getMessage("FILE_NO_DATA", new Object[]
-                                { caseForm.getAttachment().getOriginalFilename() }, Locale.ENGLISH));
-                            }
-                            else if (e instanceof EX_ESMAPI)
-                            {
-                                throw new EX_ESMAPI(msgSrc.getMessage("ERROR_DOCS_PERSIST", new Object[]
-                                { attR.getUploadUrl(), caseForm.getAttachment().getOriginalFilename(),
-                                        e.getLocalizedMessage() }, Locale.ENGLISH));
-                            }
                         }
                     }
 
-                    // Case Payload is now Ready: Post and get the Case ID back
+                    model.addAttribute("caseEditForm", caseEditForm);
+
+                    model.addAttribute("attachments", attSrv.getAttachmentNames());
+
+                    // Attachment file Size
+                    model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
+                }
+
+            }
+            else
+            {
+
+                throw new EX_ESMAPI(msgSrc.getMessage("ERR_CASE_DET_FETCH", new Object[]
+                { userSessionSrv.getCurrentReplyForm4Submission().getCaseReply().getCaseDetails().getCaseGuid() },
+                        Locale.ENGLISH));
+            }
+        }
+
+        return caseFormReplyLXSS;
+
+    }
+
+    @GetMapping("/caseDetails/{caseID}")
+    public String getCaseDetails(@PathVariable String caseID, Model model)
+    {
+        String viewName = caseFormReplyLXSS;
+        userSessionSrv.clearActiveSubmission();
+        log.info("Navigating to case with UUID : " + caseID);
+        if (StringUtils.hasText(caseID))
+        {
+            if (userSessionSrv != null)
+            {
+                // Before case form Inititation we must check the Rate Limit for the Current
+                // User Session --current Form Submission added for Rate Limit Evaulation
+                if (userSessionSrv.checkRateLimit())
+                {
                     try
                     {
-                        String caseID = srvCloudApiSrv.createCase(newCaseEntity,
-                                userSessionSrv.getDestinationDetails4mUserSession());
-                        if (StringUtils.hasText(caseID))
+
+                        // Populate User Details
+                        TY_UserESS userDetails = new TY_UserESS();
+                        userDetails.setUserDetails(userSessionSrv.getUserDetails4mSession());
+                        model.addAttribute("userInfo", userDetails);
+
+                        // Get Case Details
+                        TY_CaseEdit_Form caseEditForm = userSessionSrv.getCaseDetails4Edit(caseID);
+                        if (caseEditForm != null)
                         {
-                            System.out.println("Case ID : " + caseID + " created..");
-                            // Populate Success message in session
-                            userSrv.addSessionMessage(msgSrc.getMessage("SUCC_CASE", new Object[]
-                            { caseID, cusItemO.get().getCaseTypeEnum().toString() }, Locale.ENGLISH));
+                            model.addAttribute("caseEditForm", caseEditForm);
+                            if (CollectionUtils.isNotEmpty(caseEditForm.getCaseDetails().getNotes()))
+                            {
+                                log.info("# External Notes Bound for Case ID - "
+                                        + caseEditForm.getCaseDetails().getNotes().size());
+
+                            }
+
+                            // Initialize Attachments Session Service
+                            if (attSrv != null)
+                            {
+                                attSrv.initialize();
+                            }
+
+                            // Attachment file Size
+                            model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
                         }
                     }
                     catch (Exception e)
                     {
-                        throw new EX_ESMAPI(msgSrc.getMessage("ERR_CASE_POST", new Object[]
-                        { e.getLocalizedMessage() }, Locale.ENGLISH));
+                        return "error";
+                    }
+                }
+                else
+                {
+                    // Not Within Rate Limit - REdirect to List View
+                    viewName = caseListVWRedirect;
+                }
+
+            }
+        }
+
+        return viewName;
+    }
+
+    @GetMapping("/confirmCase/{caseID}")
+    public ModelAndView confirmCase(@PathVariable String caseID, RedirectAttributes attributes)
+    {
+        String svyUrl = null;
+
+        TY_CaseConfirmPOJO caseDetails;
+
+        if (StringUtils.hasText(caseID) && userSessionSrv != null)
+        {
+            log.info("Triggered Confirmation for case ID : " + caseID);
+
+            try
+            {
+
+                Ty_UserAccountEmployee usAccConEmpl = userSessionSrv.getUserDetails4mSession();
+
+                if (!usAccConEmpl.isExternal())
+                { // Internal User
+                    log.info("Internal employee detected. Skipping survey redirect for case ID: " + caseID);
+
+                    caseDetails = userSessionSrv.getCaseDetails4Confirmation(caseID);
+                    if (caseDetails != null && StringUtils.hasText(caseDetails.getETag()))
+                    {
+                        EV_CaseConfirmSubmit caseConfirmEvent = new EV_CaseConfirmSubmit(this, caseDetails);
+                        applicationEventPublisher.publishEvent(caseConfirmEvent);
+                    }
+                    return new ModelAndView(new RedirectView(GC_Constants.gc_basePath)); // Redirect for INTERNAL user -
+                                                                                         // Base Path
+                }
+                else
+                { // External User
+                    svyUrl = userSessionSrv.getSurveyUrl4CaseId(caseID);
+
+                    if (StringUtils.hasText(svyUrl))
+                    {
+                        caseDetails = userSessionSrv.getCaseDetails4Confirmation(caseID);
+                        if (caseDetails != null && StringUtils.hasText(caseDetails.getETag()))
+                        {
+                            EV_CaseConfirmSubmit caseConfirmEvent = new EV_CaseConfirmSubmit(this, caseDetails);
+                            applicationEventPublisher.publishEvent(caseConfirmEvent);
+                        }
+                        return new ModelAndView(new RedirectView(svyUrl)); // Redirect for EXTERNAL user with survey URL
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                if (e instanceof EX_ESMAPI)
+                {
+                    throw new EX_ESMAPI("Exception Triggered while Confirming the Case Id : " + caseID + "Details : "
+                            + e.getLocalizedMessage());
+                }
+
+                if (e instanceof EX_CaseAlreadyConfirmed)
+                {
+                    userSessionSrv.addSessionMessage(e.getMessage());
+                    attributes.addFlashAttribute("message", e.getMessage());
+                    return new ModelAndView(new RedirectView("/lso/errorConfirm"));
+
+                }
+            }
+
+        }
+        return new ModelAndView(new RedirectView(GC_Constants.gc_basePath)); // Redirect for INTERNAL user -
+                                                                             // Base Path
+    }
+
+    @GetMapping("/errorConfirm")
+    public String redirectWithUsingRedirectView(Model model, @ModelAttribute("message") String message)
+    {
+        model.addAttribute("message", message);
+        return caseConfirmError;
+
+    }
+
+    @GetMapping("/refreshForm4SelCatg")
+    public String refreshFormCxtx4SelCatg(HttpServletRequest request, Model model)
+    {
+        if (userSessionSrv != null)
+        {
+            TY_Case_Form caseForm = userSessionSrv.getCaseFormB4Submission();
+
+            if (caseForm != null)
+            {
+                userSessionSrv.setCaseFormB4Submission(null);
+
+                // Normal Scenario - Catg. chosen Not relevant for Notes Template and/or
+                // additional fields
+
+                if ((StringUtils.hasText(userSessionSrv.getUserDetails4mSession().getAccountId())
+                        || StringUtils.hasText(userSessionSrv.getUserDetails4mSession().getEmployeeId()))
+                        && !CollectionUtils.isEmpty(catgCusSrv.getCustomizations()))
+                {
+
+                    Optional<TY_CatgCusItem> cusItemO = catgCusSrv.getCustomizations().stream()
+                            .filter(g -> g.getCaseTypeEnum().toString().equals(EnumCaseTypes.Learning.toString()))
+                            .findFirst();
+                    if (cusItemO.isPresent())
+                    {
+
+                        model.addAttribute("caseTypeStr", EnumCaseTypes.Learning.toString());
+
+                        // Populate User Details
+                        TY_UserESS userDetails = new TY_UserESS();
+                        userDetails.setUserDetails(userSessionSrv.getUserDetails4mSession());
+                        model.addAttribute("userInfo", userDetails);
+
+                        // clear Form errors on each refresh or a New Case form request
+                        if (CollectionUtils.isNotEmpty(userSessionSrv.getFormErrors()))
+                        {
+                            userSessionSrv.clearFormErrors();
+                        }
+
+                        // also Upload the Catg. Tree as per Case Type
+                        model.addAttribute("catgsList",
+                                catalogTreeSrv.getCaseCatgTree4LoB(EnumCaseTypes.Learning).getCategories());
+
+                        // Scan Current Catg for Templ. Load and or Additional Fields
+
+                        // Scan for Template Load
+                        TY_CatgTemplates catgTemplate = catalogTreeSrv.getTemplates4Catg(caseForm.getCatgDesc(),
+                                EnumCaseTypes.Learning);
+                        if (catgTemplate != null)
+                        {
+
+                            // Set Questionnaire for Category
+                            caseForm.setTemplate(catgTemplate.getQuestionnaire());
+
+                        }
+
+                        // Also set the Category Description in Upper Case
+                        // Get the Category Description for the Category ID from Case Form
+                        TY_CatgDetails catgDetails = catalogSrv.getCategoryDetails4Catg(caseForm.getCatgDesc(),
+                                EnumCaseTypes.Learning, true);
+                        if (catgDetails != null)
+                        {
+                            caseForm.setCatgText(catgDetails.getCatDesc());
+                            log.info("Catg. Text for Category ID : " + caseForm.getCatgDesc() + " is : "
+                                    + catgDetails.getCatDesc());
+                        }
+
+                        // Case Form Model Set at last
+                        model.addAttribute("caseForm", caseForm);
+
+                        if (attSrv != null)
+                        {
+                            if (CollectionUtils.isNotEmpty(attSrv.getAttachmentNames()))
+                            {
+                                model.addAttribute("attachments", attSrv.getAttachmentNames());
+                            }
+                        }
+
+                        // Attachment file Size
+                        model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
+                    }
+                    else
+                    {
+
+                        throw new EX_ESMAPI(msgSrc.getMessage("ERR_CASE_TYPE_NOCFG", new Object[]
+                        { EnumCaseTypes.Learning.toString() }, Locale.ENGLISH));
                     }
 
                 }
             }
 
         }
-        return VW_ESSListViewRedirect;
+
+        return caseFormViewLXSS;
     }
 
-    private List<String> validateCaseForm(TY_Case_Form caseForm)
+    @GetMapping("/refreshForm4AttUpload")
+    public String refreshCaseFormPostAttachmentUpload(Model model)
     {
-        List<String> msgs = new ArrayList<String>();
+        String viewName = caseFormViewLXSS;
 
-        if (!StringUtils.hasLength(caseForm.getAccId()))
+        if (attSrv != null && userSessionSrv != null)
         {
-            msgs.add(msgSrc.getMessage("ERR_NO_AC", null, Locale.ENGLISH));
+            Optional<TY_CatgCusItem> cusItemO = catgCusSrv.getCustomizations().stream()
+                    .filter(g -> g.getCaseTypeEnum().toString().equals(EnumCaseTypes.Learning.toString())).findFirst();
+            if (cusItemO.isPresent())
+            {
+
+                TY_Case_Form caseForm = userSessionSrv.getCaseFormB4Submission();
+
+                model.addAttribute("caseTypeStr", EnumCaseTypes.Learning.toString());
+
+                // Populate User Details
+                TY_UserESS userDetails = new TY_UserESS();
+                if (userSessionSrv != null)
+                {
+                    log.info("User Bound in Session..");
+                }
+                userDetails.setUserDetails(userSessionSrv.getUserDetails4mSession());
+                model.addAttribute("userInfo", userDetails);
+
+                model.addAttribute("caseForm", caseForm);
+                // also Place the form in Session
+                userSessionSrv.setCaseFormB4Submission(caseForm);
+
+                model.addAttribute("formErrors", attSrv.getSessionMessages());
+
+                // also Upload the Catg. Tree as per Case Type
+                model.addAttribute("catgsList",
+                        catalogTreeSrv.getCaseCatgTree4LoB(EnumCaseTypes.Learning).getCategories());
+
+                model.addAttribute("attachments", attSrv.getAttachmentNames());
+
+                // Attachment file Size
+                model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
+
+            }
+
+        }
+        return viewName;
+
+    }
+
+    @GetMapping("/refreshFormReply4AttUpload")
+    public String refreshCaseReplyFormPostAttachmentUpload(Model model)
+    {
+        String viewName = caseFormReplyLXSS;
+        List<String> attMsgs = Collections.emptyList();
+        TY_CaseEdit_Form caseEditForm = null;
+        if (userSessionSrv != null)
+        {
+            caseEditForm = userSessionSrv.getCaseEditFormB4Submission();
+            if (caseEditForm != null)
+            {
+                // Populate User Details
+                TY_UserESS userDetails = new TY_UserESS();
+                userDetails.setUserDetails(userSessionSrv.getUserDetails4mSession());
+                model.addAttribute("userInfo", userDetails);
+
+                // Attachment to Local Storage Persistence Error
+                attMsgs = attSrv.getSessionMessages();
+
+                model.addAttribute("caseEditForm", caseEditForm);
+
+                model.addAttribute("formErrors", attMsgs);
+
+                model.addAttribute("attachments", attSrv.getAttachmentNames());
+                // Attachment file Size
+                model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
+            }
         }
 
-        if (!StringUtils.hasLength(caseForm.getCaseTxnType()))
-        {
-            msgs.add(msgSrc.getMessage("ERR_NO_CASETYPE", null, Locale.ENGLISH));
-        }
+        return viewName;
 
-        if (!StringUtils.hasLength(caseForm.getCatgDesc()))
-        {
-            msgs.add(msgSrc.getMessage("ERR_NO_CATG", null, Locale.ENGLISH));
-        }
-
-        if (!StringUtils.hasLength(caseForm.getSubject()))
-        {
-            msgs.add(msgSrc.getMessage("ERR_NO_SUBJECT", null, Locale.ENGLISH));
-        }
-
-        return msgs;
     }
 
 }
