@@ -289,7 +289,7 @@
             <div th:if="${formErrors != null}">
                <!-- Check for Form error -->
                <div th:if="${formErrors.size() > 0}" data-role="panel"
-                  data-title-caption="Case Form Validation Error(s)" data-collapsed="true" data-collapsible="true"
+                  data-title-caption="Case Form Validation Error(s)" data-collapsed="false" data-collapsible="true"
                   data-cls-panel="shadow-3" data-cls-title="bg-lightRed fg-white"
                   data-cls-content="bg-lightRed fg-white">
                   <div class="cell-11">
@@ -322,6 +322,7 @@
                   <input type="hidden" th:field="*{accId}" />
                   <input type="hidden" th:field="*{caseTxnType}" />
                   <input type="hidden" th:field="*{catgChange}" id="catgChange" />
+                  <input type="hidden" th:field="*{catgText}" id="catgText" />
                   <div class="colspan-9 offset-1" style="margin-top: 15px; margin-bottom: 10px;">
                      <label style="color: #007db8;font-family: Arial, Helvetica, sans-serif;">Subject </label>
                      <input class="alert metro-input input-large" type="text" data-role="input"
@@ -332,6 +333,57 @@
                   <div class="colspan-9 offset-1" style="margin-top: 5px; margin-bottom: 10px"
                      th:if="${catgsList != null}">
                      <label style="color: #007db8;font-family: Arial, Helvetica, sans-serif;">Service Category
+                        <a style="margin-left: 4px; margin-top: -2px;" class="button info cycle mini"
+                           data-role="popover" data-popover-position="right"
+                           data-popover-hide=1000000 
+                           data-hide-on-leave=true
+                           data-popover-text="<b> Categories Information </b>
+                           <p>
+                              <b>Learning and Certification Advice: </b> 
+                              Business support for learners regarding information about the learning portal and learning portfolio, learning path, on-demand public courses to Run, learning method, certifications, course schedule, training delivery & training center
+                           </p>
+
+                           <p>
+                              <b>Booking & Order: </b> 
+                              Business support for learners regarding booking/order requests, consequent billing activities, activation code redemption & preferred card, etc.
+                           </p>
+
+                           <p>
+                              <b>Technical Queries: </b> 
+                              Technical Support for learners regarding access, content and functionality
+                           </p>
+
+                           <p>
+                              <b>Practice Systems: </b> 
+                              Help instructors and learners regarding access and login, system performance, how-to questions, user guides, exercises & demos, etc.
+                           </p>
+
+                           <p>
+                              <b>Training Reseller Partner Support: </b> 
+                              Support for SAP Education Resellers regarding onboarding, high level training, booking/order requests, activation code redemption, Manage My Partnership, account setup & contract management, etc.
+                           </p>
+
+                           <p>
+                              <b>Learning Virtual Class Support: </b> 
+                              Support for SAP Learning Class Virtual delivery for the registered learners (e-material, virtual room link)
+                           </p>
+
+                           <p>
+                              <b>Virtual Event Services: </b> 
+                              Provides logistics and support for broader events, virtual trainings or workshops published on SAP Learning Hub and learning.sap.com to support any enablement activities.
+                           </p>
+
+                           <p>
+                              <b>Practice System Delivery (SAP Internal): </b> 
+                              This is intended for our SAP internal colleagues who require additional support for training system landscapes.
+                           </p>
+
+                           <p>
+                              <b>Demo or Interactive Learning: </b> 
+                              Support for technical issues experienced on the interactive learning components as part of a Learning Journey.
+                           </p>
+
+                           "> <span class="mif-info  fg-white"></span></a>
                      </label>
                      <select name="catgDesc" id="dropDown" data-role="select" th:field="*{catgDesc}"
                         data-cls-option="fg-grayMouse" data-cls-selected-item="bg-teal fg-white" addEmptyValue="true"
@@ -391,6 +443,7 @@
                         </option>
                      </select>
 
+                     <!-- Language Dropdown -->
                      <span th:if="${LSO_Language != null}">
                         <button id="languLoad" style="margin: 3px;" class="button primary outline mini" type="submit"
                            name="action" value="languAdj">
@@ -415,8 +468,7 @@
                   <div class="colspan-9 offset-1" style="margin-top: 15px; margin-bottom: 10px;">
                      <label style="color: #007db8;font-family: Arial, Helvetica, sans-serif;">Email of affected user
                         (optional) </label>
-                     <input class="alert metro-input" type="text" data-role="input" title=""
-                        th:field="*{addEmail}" />
+                     <input class="alert metro-input" type="text" data-role="input" title="" th:field="*{addEmail}" />
                   </div>
 
                   <div class="colspan-9 offset-1" style="margin-top: 15px; margin-bottom: 10px">
@@ -424,13 +476,17 @@
 
                         <div class="cell-10 flex-align-self-start">
                            <input type="file" data-role="file" name="attachment" th:field="*{attachment}"
-                              data-mode="drop">
+                              data-mode="drop" onchange="handleFileSelection(this)">
 
                            <small class="text-muted">Max file size allowed : <span style="color: #B1365B"
                                  th:text="${attSize}"></span> MB! </small>
+
+                           <small class="text-muted" style="margin-left: 320px;">Allowed file type(s) : <span
+                                 style="color: slategray; margin: 10px;">pdf|docx|doc|txt|csv|xlsx|xls|mp4|msg|png|jpg|jpeg</span>
+                           </small>
                         </div>
 
-                        <div class="cell-1 flex-align-self-end">
+                        <!-- <div class="cell-1 flex-align-self-end">
                            <button class="button rounded primary outline" name="action" value="upload"
                               style="margin-top: 70px">
                               <span class="mif-file-upload" style="margin-left: 0px"> </span> <span
@@ -438,7 +494,7 @@
                            </button>
 
 
-                        </div>
+                        </div> -->
                      </div>
 
                      <div class="colspan-9 offset-1" style="margin-top: 5px; margin-bottom: 10px"
@@ -608,19 +664,189 @@
    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
    <script th:inline="javascript">
 
+
+      function handleFileSelection(inputElement)
+      {
+         if (inputElement.files.length > 0)
+         {
+            // File was selected, proceed with server event trigger
+            // triggerServerEvent(inputElement.files);
+            console.log("File selected: " + inputElement.files[0].name);
+            // File was selected, proceed with server event trigger
+            triggerServerEvent(inputElement.files);
+
+         } else
+         {
+            // No file selected, handle as needed
+            console.log("No file selected.");
+         }
+      }
+
+      function triggerServerEvent(files)
+      {
+         // // Example: Send the file data to a server
+         // const formData = new FormData();
+         // for (let i = 0; i < files.length; i++)
+         // {
+         //    formData.append('file', files[i]);
+         // }
+
+         var formData = new FormData($("#caseForm")[0]);
+
+         $.ajax({
+            type: "POST",
+            url: "/post/uploadAJAX",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (attUploaded)
+            {
+               if (attUploaded === true)
+               {
+                  console.log("File(s) Upload Success");
+                  window.location.href = '/lso/refreshForm4AttUpload'; // redirect     //this would be GET
+               }
+               else
+               {
+                  console.log("File(s) Upload Failed");
+                  window.location.href = '/lso/refreshForm4AttUpload'; // redirect     //this would be GET
+               }
+               // Handle the response from the server if needed
+            },
+            error: function (error)
+            {
+               console.error("Error uploading file(s):", error);
+               window.location.href = '/lso/refreshForm4AttUpload'; // redirect     //this would be GET
+            }
+
+
+         });
+      }
       function getCatgSel(selectObject)
       {
          var value = selectObject.value;
          var formData = new FormData($("#caseForm")[0]);
-
          var catgChange = formData.get('catgChange');
          console.log("Category - Changed " + catgChange);
+         var catgText = formData.get('catgText');
+         console.log("Category - Text : " + catgText);
 
          if (Boolean(value) && catgChange)
          {
             console.log("Catg. Bound..")
             console.log(value);
             console.log("Category - Changed " + catgChange);
+            console.log("Category - Text : " + catgText);
+
+            // if (catgText !== null && catgText !== '')
+            // {
+
+
+            //    switch (catgText)
+            //    {
+            //       case "LEARNING AND CERTIFICATION ADVICE":
+            //          console.log("Learning and Certification Advice");
+            //          const dialog1 = Metro.dialog.create({
+            //             title: "Learning and Certification Advice",
+            //             content: "<p>Business support for learners regarding information about the learning portal and learning portfolio, learning path, on-demand public courses/3 to Run, learning method, certifications, course schedule, training delivery & training center</p> ",
+            //             actionsAlign: "center",
+            //             overlayClickClose: true
+            //          });
+
+            //          break;
+            //       case "BOOKING & ORDER":
+            //          console.log("Booking & Order");
+            //          const dialog2 = Metro.dialog.create({
+            //             title: "Booking & Order",
+            //             content: "<p>Business support for learners regarding booking/order requests, consequent billing activities, activation code redemption & preferred card, etc.</p> ",
+            //             actionsAlign: "center",
+            //             overlayClickClose: true
+            //          });
+
+            //          break;
+
+            //       case "TECHNICAL QUERIES":
+            //          console.log("Technical Queries");
+            //          const dialog3 = Metro.dialog.create({
+            //             title: "Technical Queries",
+            //             content: "<p>Technical Support for learners regarding access, content and functionality</p> ",
+            //             actionsAlign: "center",
+            //             overlayClickClose: true
+            //          });
+            //          break;
+
+
+            //       case "PRACTICE SYSTEMS":
+            //          console.log("Practice Systems");
+            //          const dialog4 = Metro.dialog.create({
+            //             title: "Practice Systems",
+            //             content: "<p>Help instructors and learners regarding access and login, system performance, how-to questions, user guides, exercises & demos, etc.</p> ",
+            //             actionsAlign: "center",
+            //             overlayClickClose: true
+            //          });
+            //          break;
+
+            //       case "TRAINING RESELLER PARTNER SUPPORT":
+            //          console.log("TRAINING RESELLER PARTNER SUPPORT");
+            //          const dialog5 = Metro.dialog.create({
+            //             title: "Training Reseller Partner Support",
+            //             content: "<p>Support for SAP Education Resellers regarding onboarding, high level training, booking/order requests, activation code redemption, Manage My Partnership, account setup & contract management, etc.</p> ",
+            //             actionsAlign: "center",
+            //             overlayClickClose: true
+            //          });
+            //          break;
+
+            //       case "LEARNING VIRTUAL CLASS SUPPORT":
+            //          console.log("LEARNING VIRTUAL CLASS SUPPORT");
+            //          const dialog6 = Metro.dialog.create({
+            //             title: "Learning Virtual Class Support",
+            //             content: "<p>Support for SAP Learning Class Virtual delivery for the registered learners (e-material, virtual room link)</p> ",
+            //             actionsAlign: "center",
+            //             overlayClickClose: true
+            //          });
+            //          break;
+
+
+            //       case "VIRTUAL EVENT SERVICES":
+            //          console.log("VIRTUAL EVENT SERVICES");
+            //          const dialog7 = Metro.dialog.create({
+            //             title: "Virtual Event Services",
+            //             content: "<p>Provides logistics and support for broader events, virtual trainings or workshops published on SAP Learning Hub and learning.sap.com to support any enablement activities.</p> ",
+            //             actionsAlign: "center",
+            //             overlayClickClose: true
+            //          });
+            //          break;
+
+            //       case "PRACTICE SYSTEM DELIVERY (SAP INTERNAL)":
+            //          console.log("PRACTICE SYSTEM DELIVERY (SAP INTERNAL)");
+            //          const dialog8 = Metro.dialog.create({
+            //             title: "Practice System Delivery (SAP Internal)",
+            //             content: "<p>This is intended for our SAP internal colleagues who require additional support for training system landscapes.</p> ",
+            //             actionsAlign: "center",
+            //             overlayClickClose: true
+            //          });
+            //          break;
+
+            //       case "DEMO OR INTERACTIVE LEARNING":
+            //          console.log("DEMO OR INTERACTIVE LEARNING");
+            //          const dialog9 = Metro.dialog.create({
+            //             title: "Demo or Interactive Learning",
+            //             content: "<p>Support for technical issues experienced on the interactive learning components as part of a Learning Journey.</p> ",
+            //             actionsAlign: "center",
+            //             overlayClickClose: true
+            //          });
+            //          break;   
+
+
+
+            //       default:
+            //          console.log("Unknown Category - " + catgText);
+            //          break;
+            //    }
+
+            // }
+
+
 
             $.ajax({
                type: "POST",
@@ -634,11 +860,17 @@
                   {
                      console.log("Reloading Case Form for Selected Category");
                      console.log(catgChanged);
+                     console.log("Category - Text : " + catgText);
+
                      window.location.href = '/lso/refreshForm4SelCatg'; // redirect     //this would be GET
+
+
                   }
                }
 
             });
+
+
          }
       }
 
