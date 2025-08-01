@@ -219,12 +219,11 @@ public class ESSController
                 && !CollectionUtils.isEmpty(catgCusSrv.getCustomizations()) && userInfo.isAuthenticated())
         {
 
-            Optional<TY_CatgCusItem> cusItemO = catgCusSrv.getCustomizations().stream()
-                    .filter(g -> g.getCaseTypeEnum().toString().equals(EnumCaseTypes.Learning.toString())).findFirst();
-            if (cusItemO.isPresent())
+            TY_CatgCusItem cusItem = userSessionSrv.getCurrentLOBConfig();
+            if (cusItem != null)
             {
 
-                model.addAttribute("caseTypeStr", EnumCaseTypes.Learning.toString());
+                model.addAttribute("caseTypeStr", cusItem.getCaseTypeEnum().toString());
 
                 // Before case form Inititation we must check the Rate Limit for the Current
                 // User Session --current Form Submission added for Rate Limit Evaulation
@@ -251,7 +250,7 @@ public class ESSController
                         caseForm.setAccId(userSessionSrv.getUserDetails4mSession().getAccountId()); // hidden
                     }
 
-                    caseForm.setCaseTxnType(cusItemO.get().getCaseType()); // hidden
+                    caseForm.setCaseTxnType(cusItem.getCaseType()); // hidden
                     model.addAttribute("caseForm", caseForm);
 
                     model.addAttribute("formErrors", null);
@@ -265,7 +264,7 @@ public class ESSController
 
                     // also Upload the Catg. Tree as per Case Type
                     model.addAttribute("catgsList",
-                            catalogTreeSrv.getCaseCatgTree4LoB(EnumCaseTypes.Learning).getCategories());
+                            catalogTreeSrv.getCaseCatgTree4LoB(cusItem.getCaseTypeEnum()).getCategories());
 
                     // Attachment file Size
                     model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
@@ -283,7 +282,7 @@ public class ESSController
             {
 
                 throw new EX_ESMAPI(msgSrc.getMessage("ERR_CASE_TYPE_NOCFG", new Object[]
-                { EnumCaseTypes.Learning.toString() }, Locale.ENGLISH));
+                { userSessionSrv.getCurrentLOBConfig().getCaseTypeEnum().toString() }, Locale.ENGLISH));
             }
 
         }
@@ -302,12 +301,11 @@ public class ESSController
         {
             userSessionSrv.clearActiveSubmission();
 
-            Optional<TY_CatgCusItem> cusItemO = catgCusSrv.getCustomizations().stream()
-                    .filter(g -> g.getCaseTypeEnum().toString().equals(EnumCaseTypes.Learning.toString())).findFirst();
-            if (cusItemO.isPresent())
+            TY_CatgCusItem cusItem = userSessionSrv.getCurrentLOBConfig();
+            if (cusItem != null)
             {
 
-                model.addAttribute("caseTypeStr", EnumCaseTypes.Learning.toString());
+                model.addAttribute("caseTypeStr", cusItem.getCaseTypeEnum().toString());
 
                 // Populate User Details
                 TY_UserESS userDetails = new TY_UserESS();
@@ -325,7 +323,7 @@ public class ESSController
                     caseForm.setAccId(userSessionSrv.getUserDetails4mSession().getAccountId()); // hidden
                 }
 
-                caseForm.setCaseTxnType(cusItemO.get().getCaseType()); // hidden
+                caseForm.setCaseTxnType(cusItem.getCaseType()); // hidden
                 caseForm.setCatgDesc(userSessionSrv.getCurrentForm4Submission().getCaseForm().getCatgDesc()); // Curr
                                                                                                               // Catg
                 caseForm.setDescription(userSessionSrv.getCurrentForm4Submission().getCaseForm().getDescription()); // Curr
@@ -393,7 +391,7 @@ public class ESSController
 
                 // also Upload the Catg. Tree as per Case Type
                 model.addAttribute("catgsList",
-                        catalogTreeSrv.getCaseCatgTree4LoB(EnumCaseTypes.Learning).getCategories());
+                        catalogTreeSrv.getCaseCatgTree4LoB(cusItem.getCaseTypeEnum()).getCategories());
 
                 if (attSrv != null)
                 {
@@ -411,7 +409,7 @@ public class ESSController
             {
 
                 throw new EX_ESMAPI(msgSrc.getMessage("ERR_CASE_TYPE_NOCFG", new Object[]
-                { EnumCaseTypes.Learning.toString() }, Locale.ENGLISH));
+                { userSessionSrv.getCurrentLOBConfig().getCaseTypeEnum().toString() }, Locale.ENGLISH));
             }
 
         }
@@ -432,12 +430,11 @@ public class ESSController
 
             // Populate the view
 
-            Optional<TY_CatgCusItem> cusItemO = catgCusSrv.getCustomizations().stream()
-                    .filter(g -> g.getCaseTypeEnum().toString().equals(EnumCaseTypes.Learning.toString())).findFirst();
-            if (cusItemO.isPresent())
+            TY_CatgCusItem cusItem = userSessionSrv.getCurrentLOBConfig();
+            if (cusItem != null)
             {
 
-                model.addAttribute("caseTypeStr", EnumCaseTypes.Learning.toString());
+                model.addAttribute("caseTypeStr", cusItem.getCaseTypeEnum().toString());
 
                 // Populate User Details
                 TY_UserESS userDetails = new TY_UserESS();
@@ -461,7 +458,7 @@ public class ESSController
 
                     // Scan for Template Load
                     TY_CatgTemplates catgTemplate = catalogTreeSrv.getTemplates4Catg(caseForm.getCatgDesc(),
-                            EnumCaseTypes.Learning);
+                            cusItem.getCaseTypeEnum());
                     if (catgTemplate != null)
                     {
 
@@ -474,7 +471,7 @@ public class ESSController
 
                     // also Upload the Catg. Tree as per Case Type
                     model.addAttribute("catgsList",
-                            catalogTreeSrv.getCaseCatgTree4LoB(EnumCaseTypes.Learning).getCategories());
+                            catalogTreeSrv.getCaseCatgTree4LoB(cusItem.getCaseTypeEnum()).getCategories());
 
                     model.addAttribute("attachments", attSrv.getAttachmentNames());
 
@@ -774,13 +771,10 @@ public class ESSController
                         && !CollectionUtils.isEmpty(catgCusSrv.getCustomizations()))
                 {
 
-                    Optional<TY_CatgCusItem> cusItemO = catgCusSrv.getCustomizations().stream()
-                            .filter(g -> g.getCaseTypeEnum().toString().equals(EnumCaseTypes.Learning.toString()))
-                            .findFirst();
-                    if (cusItemO.isPresent())
+                    TY_CatgCusItem cusItem = userSessionSrv.getCurrentLOBConfig();
+                    if (cusItem != null)
                     {
-
-                        model.addAttribute("caseTypeStr", EnumCaseTypes.Learning.toString());
+                        model.addAttribute("caseTypeStr", cusItem.getCaseTypeEnum().toString());
 
                         // Populate User Details
                         TY_UserESS userDetails = new TY_UserESS();
@@ -795,13 +789,13 @@ public class ESSController
 
                         // also Upload the Catg. Tree as per Case Type
                         model.addAttribute("catgsList",
-                                catalogTreeSrv.getCaseCatgTree4LoB(EnumCaseTypes.Learning).getCategories());
+                                catalogTreeSrv.getCaseCatgTree4LoB(cusItem.getCaseTypeEnum()).getCategories());
 
                         // Scan Current Catg for Templ. Load and or Additional Fields
 
                         // Scan for Template Load
                         TY_CatgTemplates catgTemplate = catalogTreeSrv.getTemplates4Catg(caseForm.getCatgDesc(),
-                                EnumCaseTypes.Learning);
+                                cusItem.getCaseTypeEnum());
                         if (catgTemplate != null)
                         {
 
@@ -813,7 +807,7 @@ public class ESSController
                         // Also set the Category Description in Upper Case
                         // Get the Category Description for the Category ID from Case Form
                         TY_CatgDetails catgDetails = catalogSrv.getCategoryDetails4Catg(caseForm.getCatgDesc(),
-                                EnumCaseTypes.Learning, true);
+                                cusItem.getCaseTypeEnum(), true);
                         if (catgDetails != null)
                         {
                             caseForm.setCatgText(catgDetails.getCatDesc());
@@ -839,7 +833,7 @@ public class ESSController
                     {
 
                         throw new EX_ESMAPI(msgSrc.getMessage("ERR_CASE_TYPE_NOCFG", new Object[]
-                        { EnumCaseTypes.Learning.toString() }, Locale.ENGLISH));
+                        { userSessionSrv.getCurrentLOBConfig().getCaseTypeEnum().toString() }, Locale.ENGLISH));
                     }
 
                 }
@@ -857,14 +851,13 @@ public class ESSController
 
         if (attSrv != null && userSessionSrv != null)
         {
-            Optional<TY_CatgCusItem> cusItemO = catgCusSrv.getCustomizations().stream()
-                    .filter(g -> g.getCaseTypeEnum().toString().equals(EnumCaseTypes.Learning.toString())).findFirst();
-            if (cusItemO.isPresent())
+            TY_CatgCusItem cusItem = userSessionSrv.getCurrentLOBConfig();
+            if (cusItem != null)
             {
 
                 TY_Case_Form caseForm = userSessionSrv.getCaseFormB4Submission();
 
-                model.addAttribute("caseTypeStr", EnumCaseTypes.Learning.toString());
+                model.addAttribute("caseTypeStr", cusItem.getCaseTypeEnum().toString());
 
                 // Populate User Details
                 TY_UserESS userDetails = new TY_UserESS();
@@ -883,7 +876,7 @@ public class ESSController
 
                 // also Upload the Catg. Tree as per Case Type
                 model.addAttribute("catgsList",
-                        catalogTreeSrv.getCaseCatgTree4LoB(EnumCaseTypes.Learning).getCategories());
+                        catalogTreeSrv.getCaseCatgTree4LoB(cusItem.getCaseTypeEnum()).getCategories());
 
                 model.addAttribute("attachments", attSrv.getAttachmentNames());
 

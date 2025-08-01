@@ -27,12 +27,16 @@ public class TY_CatgCusItem
     @CsvBindByPosition(position = 5)
     private Boolean catgRankEnabled;
     @CsvBindByPosition(position = 6)
-    private String confirmStatus;
+    private Boolean catgsranksonlyShow;
     @CsvBindByPosition(position = 7)
-    private String fragmentHead;
+    private String confirmStatus;
     @CsvBindByPosition(position = 8)
-    private String fragmentTitle;
+    private String fragmentHead;
     @CsvBindByPosition(position = 9)
+    private String fragmentTitle;
+    @CsvBindByPosition(position = 10)
+    private String caseFormView;
+    @CsvBindByPosition(position = 11)
     private String logoutUrl;
 
 }

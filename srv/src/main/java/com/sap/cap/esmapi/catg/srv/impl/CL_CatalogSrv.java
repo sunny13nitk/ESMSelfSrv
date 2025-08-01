@@ -355,8 +355,9 @@ public class CL_CatalogSrv implements IF_CatalogSrv
     private List<TY_CatalogItem> prepareRankedCatgTree(TY_CatalogTree caseCatgTree, EnumCaseTypes caseType)
     {
         List<TY_CatalogItem> catgsSorted = new ArrayList<TY_CatalogItem>();
+        TY_CatgCusItem cusItem = userSessionSrv.getCurrentLOBConfig();
 
-        if (catgRanks != null)
+        if (catgRanks != null && cusItem != null)
         {
             if (CollectionUtils.isNotEmpty(catgRanks.getCatgRankItems()))
             {
@@ -391,7 +392,21 @@ public class CL_CatalogSrv implements IF_CatalogSrv
                     // Append TopN Excluded Categories to Sorted List
                     if (CollectionUtils.isNotEmpty(catgsExclTopN))
                     {
-                        catgsSorted.addAll(catgsExclTopN);
+                        if (cusItem.getCatgsranksonlyShow() != null)
+                        {
+                            if (cusItem.getCatgsranksonlyShow())
+                            {
+                                return catgsSorted;
+                            }
+                            else
+                            {
+                                catgsSorted.addAll(catgsExclTopN);
+                            }
+                        }
+                        else
+                        {
+                            catgsSorted.addAll(catgsExclTopN);
+                        }
                     }
 
                 }

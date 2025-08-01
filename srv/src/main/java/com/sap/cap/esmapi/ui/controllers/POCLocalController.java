@@ -166,12 +166,12 @@ public class POCLocalController
                 && !CollectionUtils.isEmpty(catgCusSrv.getCustomizations()))
         {
 
-            Optional<TY_CatgCusItem> cusItemO = catgCusSrv.getCustomizations().stream()
-                    .filter(g -> g.getCaseTypeEnum().toString().equals(EnumCaseTypes.Learning.toString())).findFirst();
-            if (cusItemO.isPresent())
+            TY_CatgCusItem catgCusItem = userSessSrv.getCurrentLOBConfig();
+            if (catgCusItem != null)
+
             {
 
-                model.addAttribute("caseTypeStr", EnumCaseTypes.Learning.toString());
+                model.addAttribute("caseTypeStr", catgCusItem.getCaseTypeEnum().toString());
 
                 // Before case form Inititation we must check the Rate Limit for the Current
                 // User Session --current Form Submission added for Rate Limit Evaulation
@@ -202,7 +202,7 @@ public class POCLocalController
                         caseForm.setAccId(userSessSrv.getUserDetails4mSession().getAccountId()); // hidden
                     }
 
-                    caseForm.setCaseTxnType(cusItemO.get().getCaseType()); // hidden
+                    caseForm.setCaseTxnType(catgCusItem.getCaseType()); // hidden
                     model.addAttribute("caseForm", caseForm);
 
                     model.addAttribute("formErrors", null);
@@ -216,10 +216,20 @@ public class POCLocalController
 
                     // also Upload the Catg. Tree as per Case Type
                     model.addAttribute("catgsList",
-                            catalogTreeSrv.getCaseCatgTree4LoB(EnumCaseTypes.Learning).getCategories());
+                            catalogTreeSrv.getCaseCatgTree4LoB(catgCusItem.getCaseTypeEnum()).getCategories());
 
                     // Attachment file Size
                     model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
+                    model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
+                    model.addAttribute("dynamicFragmentHeader", catgCusItem.getFragmentHead());
+                    model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
+                    model.addAttribute("dynamicFragmentTitle", catgCusItem.getFragmentTitle());
+                  
+                    //Check if LoB Specific Case Form is configured
+                    if (StringUtils.hasText(catgCusItem.getCaseFormView())) 
+                    {
+                        viewCaseForm = catgCusItem.getCaseFormView();
+                    }
 
                 }
                 else
