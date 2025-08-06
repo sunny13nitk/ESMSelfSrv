@@ -293,10 +293,11 @@
                   new case.
                   <!-- <span style="color: #B1365B" th:text="${caseTypeStr}"></span> ! -->
                </h6>
-               <form id="caseForm" th:object="${caseForm}" enctype="multipart/form-data" th:action="@{/post/saveCase}"
+               <form id="caseForm" th:object="${caseForm}" enctype="multipart/form-data" th:action="@{/poclocal/saveCase}"
                   method="post">
                   <input type="hidden" th:field="*{accId}" />
                   <input type="hidden" th:field="*{caseTxnType}" />
+                  <input type="hidden" th:field="*{lob}" />
                   <input type="hidden" th:field="*{catgChange}" id="catgChange" />
                   <input type="hidden" th:field="*{catgText}" id="catgText" />
                   <div class="colspan-9 offset-1" style="margin-top: 15px; margin-bottom: 10px;">
@@ -427,8 +428,8 @@
                                     <td style="text-align: left" th:text="${file}"></td>
                                     <td>
                                        <a href="#" class="button alert mini rounded outline"
-                                          th:href="@{'/lso/removeAttachment/' + ${file}}" role="button" data-role="hint"
-                                          data-hint-position="right" data-cls-hint="fg-black"
+                                          th:href="@{'/poclocal/removeAttachment/' + ${file}}" role="button"
+                                          data-role="hint" data-hint-position="right" data-cls-hint="fg-black"
                                           data-hint-text="Remove Attachment">
                                           <span class="mif-bin icon" style="margin-left: 0px"></span> <span
                                              style="margin-left: 3px">Delete</span></a>
@@ -445,7 +446,8 @@
                         role="button">
                         Submit
                      </button>
-                     <a href="#" class="ds-button ds-button--secondary" th:href="@{/lso/}" role="button">
+                     <a href="#" class="ds-button ds-button--secondary" th:href="@{'/poclocal/' + ${caseForm.lob}}"
+                        role="button">
                         Cancel
                      </a>
                   </div>
@@ -608,7 +610,7 @@
 
          $.ajax({
             type: "POST",
-            url: "/post/uploadAJAX",
+            url: "/poclocal/uploadAJAX",
             data: formData,
             processData: false,
             contentType: false,
@@ -617,19 +619,19 @@
                if (attUploaded === true)
                {
                   console.log("File(s) Upload Success");
-                  window.location.href = '/ess/refreshForm4AttUpload'; // redirect     //this would be GET
+                  window.location.href = '/poclocal/refreshForm4AttUpload'; // redirect     //this would be GET
                }
                else
                {
                   console.log("File(s) Upload Failed");
-                  window.location.href = '/ess/refreshForm4AttUpload'; // redirect     //this would be GET
+                  window.location.href = '/poclocal/refreshForm4AttUpload'; // redirect     //this would be GET
                }
                // Handle the response from the server if needed
             },
             error: function (error)
             {
                console.error("Error uploading file(s):", error);
-               window.location.href = '/ess/refreshForm4AttUpload'; // redirect     //this would be GET
+               window.location.href = '/poclocal/refreshForm4AttUpload'; // redirect     //this would be GET
             }
 
 
@@ -666,7 +668,7 @@
                      console.log(catgChanged);
                      console.log("Category - Text : " + catgText);
 
-                     window.location.href = '/ess/refreshForm4SelCatg'; // redirect     //this would be GET
+                     window.location.href = '/poclocal/refreshForm4SelCatg'; // redirect     //this would be GET
 
 
                   }

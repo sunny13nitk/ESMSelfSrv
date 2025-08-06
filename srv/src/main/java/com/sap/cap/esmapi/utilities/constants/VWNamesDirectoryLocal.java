@@ -8,7 +8,7 @@ import org.springframework.util.StringUtils;
 import com.sap.cap.esmapi.ui.pojos.TY_ViewMappings;
 import com.sap.cap.esmapi.utilities.enums.EnumVWNames;
 
-public class VWNamesDirectory
+public class VWNamesDirectoryLocal
 {
     public static final String gc_redirect = "redirect:";
     public static final String gc_paramPattern = "{";
@@ -18,8 +18,8 @@ public class VWNamesDirectory
     {
         ArrayList<TY_ViewMappings> viewsDescMap = new ArrayList<TY_ViewMappings>();
 
-        viewsDescMap.add(new TY_ViewMappings(EnumVWNames.inbox, "/ess/{lob}", "essCasesListView"));
-        viewsDescMap.add(new TY_ViewMappings(EnumVWNames.caseFormError, "/ess/errForm/", "caseFormLSOLXSS"));
+        viewsDescMap.add(new TY_ViewMappings(EnumVWNames.inbox, "/poclocal/{lob}", "essCasesListView"));
+         viewsDescMap.add(new TY_ViewMappings(EnumVWNames.caseFormError, "/poclocal/errForm/", "caseFormPOCLocalLXSS"));
 
         return viewsDescMap;
     }

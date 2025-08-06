@@ -162,6 +162,7 @@ public class LSOPostController
             caseForm.setAttachment(null);
             caseForm.setCatgChange(false);
             caseForm.setCatgText(null);
+            caseForm.setLob(userSessSrv.getCurrentLOBConfig().getCaseTypeEnum().toString());
 
             TY_CatgCusItem cusItem = userSessSrv.getCurrentLOBConfig();
             if (cusItem != null)
@@ -251,6 +252,7 @@ public class LSOPostController
             caseForm.setAttachment(null);
             caseForm.setCatgChange(false);
             caseForm.setCatgText(null);
+            caseForm.setLob(userSessSrv.getCurrentLOBConfig().getCaseTypeEnum().toString());
             if (userSessSrv.getUserDetails4mSession().isEmployee())
             {
                 caseForm.setEmployee(true);
@@ -324,7 +326,7 @@ public class LSOPostController
                         caseForm.setTemplate(catgTemplate.getQuestionnaire());
 
                     }
-
+                    caseForm.setLob(userSessSrv.getCurrentLOBConfig().getCaseTypeEnum().toString());
                     // Case Form Model Set at last
                     model.addAttribute("caseForm", caseForm);
 
@@ -466,6 +468,7 @@ public class LSOPostController
 
                         userSessSrv.setPreviousCategory(caseForm.getCatgDesc());
                         caseForm.setCatgChange(true);
+                        caseForm.setLob(userSessSrv.getCurrentLOBConfig().getCaseTypeEnum().toString());
                         log.info("Category changed by User ...");
                         // Also set the Category Description in Upper Case
                         // Get the Category Description for the Category ID from Case Form

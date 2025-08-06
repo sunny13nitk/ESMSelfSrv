@@ -15,6 +15,7 @@ public class TY_Case_Form
 {
     private String accId;
     private String caseTxnType;
+    private String lob;
     private String catgDesc;
     private String subject;
     private String description;
