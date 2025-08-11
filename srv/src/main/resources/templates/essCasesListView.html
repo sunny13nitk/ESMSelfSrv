@@ -421,7 +421,7 @@
             </a>
 
             <a href="#" class="button primary outline cycle" style="margin-right: 20px;" data-role="hint"
-               th:href="@{/lso/}" role="button" data-hint-position="bottom" data-cls-hint="fg-black"
+               th:href="@{'/lso/' + ${caseTypeStr}'}" role="button" data-hint-position="bottom" data-cls-hint="fg-black"
                data-hint-text="Refresh">
                <span class="mif-refresh" style="margin-left: 0px"></span>
             </a>
@@ -472,7 +472,7 @@
             <h1 class="all-cases-title">All Cases</h1>
          </div>
          <div class="colspan-2">
-            <a href="#" class="create-case-btn ds-button ds-button--primary" th:href="@{'/lso/createCase/'}"
+            <a href="#" class="create-case-btn ds-button ds-button--primary" th:href="@{'/ess/createCase/'}"
                role="button" style="margin-top: 5px;">
                Create Case
             </a>
@@ -511,20 +511,20 @@
                      <td th:text="${case.subject}"></td>
                      <td th:text="${#temporals.format(case.tsCreate, 'yyyy-MM-dd HH:mm:ss')}"></td>
                      <td>
-                        <a href="#" class="" th:href="@{'/lso/caseDetails/' + ${case.guid}}" role="button"
+                        <a href="#" class="" th:href="@{'/ess/caseDetails/' + ${case.guid}}" role="button"
                            data-role="hint" data-hint-position="right" data-cls-hint="fg-black"
                            data-hint-text="View Case Details">
                            View
                         </a>
                         <a th:if="${case.confirmAllowed == true and userInfo.userDetails.isExternal() == true}" href="#"
-                           style="margin-left: 10px;" th:href="@{'/lso/confirmCase/' + ${case.id}}" role="button"
+                           style="margin-left: 10px;" th:href="@{'/ess/confirmCase/' + ${case.id}}" role="button"
                            data-role="hint" target="_blank" data-hint-position="right" data-cls-hint="fg-black"
                            data-hint-text="Confirm Case">
                            Confirm
                         </a>
 
                         <a th:if="${case.confirmAllowed == true and userInfo.userDetails.isExternal() != true}" href="#"
-                           style="margin-left: 10px;" th:href="@{'/lso/confirmCase/' + ${case.id}}" role="button"
+                           style="margin-left: 10px;" th:href="@{'/ess/confirmCase/' + ${case.id}}" role="button"
                            data-role="hint" data-hint-position="right" data-cls-hint="fg-black"
                            data-hint-text="Confirm Case">
                            Confirm
