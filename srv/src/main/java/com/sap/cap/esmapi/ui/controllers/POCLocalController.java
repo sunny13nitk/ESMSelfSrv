@@ -275,7 +275,7 @@ public class POCLocalController
             if (!userSessSrv.SubmitCaseForm(caseForm))
             {
                 // Redirect to Error Processing of Form
-                viewName = VWNamesDirectoryLocal.getViewName(EnumVWNames.caseFormError, true, null);
+                viewName = VWNamesDirectoryLocal.getViewName(EnumVWNames.caseFormError, true, (String[]) null);
             }
             else
             {
@@ -419,6 +419,7 @@ public class POCLocalController
                 caseForm.setDescription(userSessSrv.getCurrentForm4Submission().getCaseForm().getDescription()); // Curr
                                                                                                                  // Notes
                 caseForm.setSubject(userSessSrv.getCurrentForm4Submission().getCaseForm().getSubject()); // Curr Subject
+                caseForm.setAddEmail(userSessSrv.getCurrentForm4Submission().getCaseForm().getAddEmail()); // Curr Add Email
 
                 model.addAttribute("formErrors", userSessSrv.getFormErrors());
 

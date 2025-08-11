@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -65,7 +64,6 @@ import com.sap.cap.esmapi.utilities.srv.intf.IF_UserSessionSrv;
 import com.sap.cap.esmapi.utilities.srvCloudApi.destination.intf.IF_DestinationService;
 import com.sap.cap.esmapi.utilities.srvCloudApi.destination.pojos.TY_DestinationProps;
 import com.sap.cap.esmapi.utilities.srvCloudApi.srv.intf.IF_SrvCloudAPI;
-import com.sap.cap.esmapi.vhelps.pojos.TY_KeyValue;
 import com.sap.cap.esmapi.vhelps.srv.intf.IF_VHelpLOBUIModelSrv;
 import com.sap.cds.services.request.UserInfo;
 import com.sap.cloud.sdk.cloudplatform.connectivity.Destination;
@@ -653,40 +651,7 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
 
             // Make the Case Enum Scan Generic
             // Get Case Type Enum from Case Transaction Type
-            Optional<TY_CatgCusItem> cusItemO = catgCusSrv.getCustomizations().stream()
-                    .filter(f -> f.getCaseType().equals(caseForm.getCaseTxnType())).findFirst();
-            if (cusItemO.isPresent())
-            {
-
-                Map<String, List<TY_KeyValue>> vHlpsMap = vHlpModelSrv
-                        .getVHelpUIModelMap4LobCatg(cusItemO.get().getCaseTypeEnum(), caseForm.getCatgDesc());
-                // Some Attributes Relevant for Current Category
-                if (vHlpsMap.size() > 0)
-                { // Country Field Relevant
-                    if (CollectionUtils.isNotEmpty(vHlpsMap.get(GC_Constants.gc_LSO_COUNTRY)))
-                    {
-                        caseForm.setCountryMandatory(true);
-                    }
-                    else // Remove if Country field is not relevant for Current Category and passed on //
-                         // from Form Buffer
-                    {
-                        caseForm.setCountry(null);
-                    }
-
-                    // Language Field Relevant
-                    if (CollectionUtils.isNotEmpty(vHlpsMap.get(GC_Constants.gc_LSO_LANGUAGE)))
-                    {
-                        caseForm.setLangMandatory(true);
-                    }
-                    else // Remove if Country field is not relevant for Current Category and passed on
-                         // from Form Buffer
-                    {
-                        caseForm.setLanguage(null);
-                    }
-
-                }
-
-            }
+            TY_CatgCusItem cusItem = this.getCurrentLOBConfig();
 
             // Format the text input for New Lines
             String formattedReply = caseForm.getDescription().replaceAll("\r\n", "<br/>");
@@ -705,10 +670,10 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
 
             {
 
-                if (cusItemO.isPresent() && catalogSrv != null)
+                if (cusItem != null && catalogSrv != null)
                 {
                     String[] catTreeSelCatg = catalogSrv.getCatgHierarchyforCatId(caseForm.getCatgDesc(),
-                            cusItemO.get().getCaseTypeEnum());
+                            cusItem.getCaseTypeEnum());
                     caseFormAsync.setCatTreeSelCatg(catTreeSelCatg);
                 }
 
@@ -1109,33 +1074,11 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
                         && StringUtils.hasText(userSessInfo.getCurrentForm4Submission().getCaseForm().getCatgDesc()))
                 {
 
-                    // Include Country and Language mandatory check for certain category as
-                    // requested by business.
-                    if (userSessInfo.getCurrentForm4Submission().getCaseForm().isCountryMandatory())
-                    {
-                        if (!StringUtils.hasText(userSessInfo.getCurrentForm4Submission().getCaseForm().getCountry()))
-                        {
-                            // Payload Error as Category level shuld be atleast 2
-                            handleMandatoryFieldMissingError(GC_Constants.gc_LSO_COUNTRY_DESC);
-                            return false;
-                        }
-                    }
-
-                    if (userSessInfo.getCurrentForm4Submission().getCaseForm().isLangMandatory())
-                    {
-                        if (!StringUtils.hasText(userSessInfo.getCurrentForm4Submission().getCaseForm().getLanguage()))
-                        {
-                            // Payload Error as Category level shuld be atleast 2
-                            handleMandatoryFieldMissingError(GC_Constants.gc_LSO_LANGUAGE_DESC);
-                            return false;
-                        }
-                    }
-
+                    // Validate Category Level
                     Optional<TY_CatgCusItem> cusItemO = catgCusSrv.getCustomizations().stream()
                             .filter(g -> g.getCaseType()
                                     .equals(userSessInfo.getCurrentForm4Submission().getCaseForm().getCaseTxnType()))
                             .findFirst();
-
                     if (cusItemO.isPresent())
                     {
                         // Only Validate for Category Lower than level 1 if Set in Customization for
@@ -1147,51 +1090,36 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
                         // Check that Category is not a level 1 - Base Category
                         if (catLen <= 1)
                         {
+                            isValid = true;
+                        }
+                        else
+                        {
+                            // ERR_CATG_LVL_ROOT= Only level 1 Categoey allowed for Case Creation. Current
+                            // Category specified is at level - {0} .
+                            // Payload Error as Category level shuld be atleast 2
+                            String msg = msgSrc.getMessage("ERR_CATG_LVL_ROOT", new Object[]
+                            { catLen }, Locale.ENGLISH);
+                            log.error(msg); // System Log
+
+                            // Logging Framework
+                            TY_Message logMsg = new TY_Message(userSessInfo.getUserDetails().getUsAccEmpl().getUserId(),
+                                    Timestamp.from(Instant.now()), EnumStatus.Error, EnumMessageType.ERR_PAYLOAD,
+                                    userSessInfo.getUserDetails().getUsAccEmpl().getUserId(), msg);
+                            userSessInfo.getMessagesStack().add(logMsg);
+
+                            // Instantiate and Fire the Event : Syncronous processing
+                            EV_LogMessage logMsgEvent = new EV_LogMessage(this, logMsg);
+                            applicationEventPublisher.publishEvent(logMsgEvent);
+
+                            this.addFormErrors(msg);// For Form Display
+
                             // Extract Category Description
                             TY_CatalogTree catgTree = catalogSrv.getCaseCatgTree4LoB(cusItemO.get().getCaseTypeEnum());
-                            if (catgTree != null)
-                            {
-                                if (CollectionUtils.isNotEmpty(catgTree.getCategories()))
-                                {
-
-                                    // Remove blank Categories from Catalog Tree Used for UI Presentation
-                                    catgTree.getCategories().removeIf(x -> x.getId() == null);
-                                    Optional<TY_CatalogItem> currCatgDetailsO = catgTree
-                                            .getCategories().stream().filter(f -> f.getId().equals(userSessInfo
-                                                    .getCurrentForm4Submission().getCaseForm().getCatgDesc()))
-                                            .findFirst();
-                                    if (currCatgDetailsO.isPresent())
-                                    {
-                                        // Payload Error as Category level shuld be atleast 2
-                                        String msg = msgSrc.getMessage("ERR_CATG_LVL", new Object[]
-                                        { currCatgDetailsO.get().getName() }, Locale.ENGLISH);
-                                        log.error(msg); // System Log
-
-                                        // Logging Framework
-                                        TY_Message logMsg = new TY_Message(
-                                                userSessInfo.getUserDetails().getUsAccEmpl().getUserId(),
-                                                Timestamp.from(Instant.now()), EnumStatus.Error,
-                                                EnumMessageType.ERR_PAYLOAD,
-                                                userSessInfo.getUserDetails().getUsAccEmpl().getUserId(), msg);
-                                        userSessInfo.getMessagesStack().add(logMsg);
-
-                                        // Instantiate and Fire the Event : Syncronous processing
-                                        EV_LogMessage logMsgEvent = new EV_LogMessage(this, logMsg);
-                                        applicationEventPublisher.publishEvent(logMsgEvent);
-
-                                        this.addFormErrors(msg);// For Form Display
-
-                                    }
-                                    // Refurbish Blank Category at Top for New Form - Session maintained
-                                    catgTree.getCategories().add(0, new TY_CatalogItem());
-                                }
-                            }
-
+                            // Refurbish Blank Category at Top for New Form - Session maintained
+                            catgTree.getCategories().add(0, new TY_CatalogItem());
                             // Add to Display Messages : to be shown to User or Successful Submission
                             isValid = false;
-
                         }
-
                     }
 
                 }
