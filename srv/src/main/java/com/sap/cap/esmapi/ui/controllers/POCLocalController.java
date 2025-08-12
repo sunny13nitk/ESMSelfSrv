@@ -369,6 +369,16 @@ public class POCLocalController
 
                 // Attachment file Size
                 model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
+
+                // View Name for Dynamic Template Header and Title
+                model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
+                model.addAttribute("dynamicFragmentHeader",
+                        cusItem.getFragmentHead() != null ? cusItem.getFragmentHead()
+                                : GC_Constants.gc_HeaderFragmentDefault);
+                model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
+                model.addAttribute("dynamicFragmentTitle",
+                        cusItem.getFragmentTitle() != null ? cusItem.getFragmentTitle()
+                                : GC_Constants.gc_TitleFragmentDefault);
             }
 
             log.info("Processing of Case Attachment Upload Form - UI layer :Ends....");
@@ -598,7 +608,7 @@ public class POCLocalController
 
                     // Clear form for New Attachment as Current Attachment already in Container
                     caseForm.setAttachment(null);
-                    
+
                     // Scan for Template Load
                     TY_CatgTemplates catgTemplate = catalogTreeSrv.getTemplates4Catg(caseForm.getCatgDesc(),
                             cusItem.getCaseTypeEnum());
@@ -1039,8 +1049,6 @@ public class POCLocalController
 
                         model.addAttribute("caseTypeStr", cusItem.getCaseTypeEnum().toString());
 
-                        
-
                         // Populate User Details
                         TY_UserESS userDetails = new TY_UserESS();
                         userDetails.setUserDetails(userSessSrv.getUserDetails4mSession());
@@ -1123,7 +1131,6 @@ public class POCLocalController
             if (cusItem != null)
             {
 
-                
                 TY_Case_Form caseForm = userSessSrv.getCaseFormB4Submission();
 
                 model.addAttribute("caseTypeStr", cusItem.getCaseTypeEnum().toString());

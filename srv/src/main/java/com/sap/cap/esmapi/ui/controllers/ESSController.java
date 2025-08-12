@@ -420,7 +420,7 @@ public class ESSController
     @GetMapping("/removeAttachment/{fileName}")
     public String removeAttachmentCaseCreate(@PathVariable String fileName, Model model)
     {
-        String viewCaseForm = VWNamesDirectory.getViewName(EnumVWNames.caseFormError, false, (String[]) null);
+        String viewCaseForm = VWNamesDirectory.getViewName(EnumVWNames.caseForm, false, (String[]) null);
         if (StringUtils.hasText(fileName) && attSrv != null && userSessionSrv != null)
         {
             userSessionSrv.clearActiveSubmission();
@@ -772,7 +772,7 @@ public class ESSController
     @GetMapping("/refreshForm4SelCatg")
     public String refreshFormCxtx4SelCatg(HttpServletRequest request, Model model)
     {
-        String viewCaseForm = VWNamesDirectory.getViewName(EnumVWNames.caseFormError, false, (String[]) null);
+        String viewCaseForm = VWNamesDirectory.getViewName(EnumVWNames.caseForm, false, (String[]) null);
         if (userSessionSrv != null)
         {
             TY_Case_Form caseForm = userSessionSrv.getCaseFormB4Submission();
@@ -877,7 +877,7 @@ public class ESSController
     @GetMapping("/refreshForm4AttUpload")
     public String refreshCaseFormPostAttachmentUpload(Model model)
     {
-        String viewCaseForm = VWNamesDirectory.getViewName(EnumVWNames.caseFormError, false, (String[]) null);
+        String viewCaseForm = VWNamesDirectory.getViewName(EnumVWNames.caseForm, false, (String[]) null);
 
         if (attSrv != null && userSessionSrv != null)
         {

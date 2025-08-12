@@ -30,6 +30,9 @@ import com.sap.cap.esmapi.ui.pojos.TY_CaseEditFormAsync;
 import com.sap.cap.esmapi.ui.pojos.TY_CaseEdit_Form;
 import com.sap.cap.esmapi.ui.pojos.TY_CaseFormAsync;
 import com.sap.cap.esmapi.ui.pojos.TY_Case_Form;
+import com.sap.cap.esmapi.utilities.constants.GC_Constants;
+import com.sap.cap.esmapi.utilities.constants.VWNamesDirectory;
+import com.sap.cap.esmapi.utilities.enums.EnumVWNames;
 import com.sap.cap.esmapi.utilities.pojos.TY_RLConfig;
 import com.sap.cap.esmapi.utilities.pojos.TY_UserESS;
 import com.sap.cap.esmapi.utilities.srv.intf.IF_SessAttachmentsService;
@@ -86,7 +89,9 @@ public class ESSPostController
     public String saveCase(@ModelAttribute("caseForm") TY_Case_Form caseForm, Model model)
     {
 
-        String viewName = caseListVWRedirect;
+        String viewName = VWNamesDirectory.getViewName(EnumVWNames.inbox, true,
+                userSessSrv.getCurrentLOBConfig().getCaseTypeEnum().toString());
+
         userSessSrv.clearActiveSubmission();
         if (caseForm != null && userSessSrv != null && userInfo.isAuthenticated())
         {
@@ -102,7 +107,7 @@ public class ESSPostController
             {
                 log.info("Error in Case Form!");
                 // Redirect to Error Processing of Form
-                viewName = caseFormErrorRedirect;
+                viewName = VWNamesDirectory.getViewName(EnumVWNames.caseFormError, true, (String[]) null);
             }
             else
             {
@@ -133,7 +138,7 @@ public class ESSPostController
     @PostMapping(value = "/saveCase", params = "action=upload")
     public String uploadAttachments(@ModelAttribute("caseForm") TY_Case_Form caseForm, Model model)
     {
-        String viewName = caseFormViewLXSS;
+        String viewName = VWNamesDirectory.getViewName(EnumVWNames.caseForm, false, (String[]) null);
 
         List<String> attMsgs = Collections.emptyList();
 
@@ -169,6 +174,7 @@ public class ESSPostController
             {
 
                 model.addAttribute("caseTypeStr", cusItem.getCaseTypeEnum().toString());
+                viewName = cusItem.getCaseFormView() != null ? cusItem.getCaseFormView() : viewName;
 
                 // Populate User Details
                 TY_UserESS userDetails = new TY_UserESS();
@@ -209,6 +215,16 @@ public class ESSPostController
 
                 // Attachment file Size
                 model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
+
+                // View Name for Dynamic Template Header and Title
+                model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
+                model.addAttribute("dynamicFragmentHeader",
+                        cusItem.getFragmentHead() != null ? cusItem.getFragmentHead()
+                                : GC_Constants.gc_HeaderFragmentDefault);
+                model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
+                model.addAttribute("dynamicFragmentTitle",
+                        cusItem.getFragmentTitle() != null ? cusItem.getFragmentTitle()
+                                : GC_Constants.gc_TitleFragmentDefault);
             }
 
             log.info("Processing of Case Attachment Upload Form - UI layer :Ends....");
@@ -280,7 +296,7 @@ public class ESSPostController
             @ModelAttribute("caseForm") TY_Case_Form caseForm, Model model)
     {
 
-        String viewCaseForm = caseFormViewLXSS;
+        String viewCaseForm = VWNamesDirectory.getViewName(EnumVWNames.caseForm, false, (String[]) null);
         if (caseForm != null && userSessSrv != null)
         {
 
@@ -297,6 +313,7 @@ public class ESSPostController
                 {
 
                     model.addAttribute("caseTypeStr", cusItem.getCaseTypeEnum().toString());
+                    viewCaseForm = cusItem.getCaseFormView() != null ? cusItem.getCaseFormView() : viewCaseForm;
 
                     // Populate User Details
                     TY_UserESS userDetails = new TY_UserESS();
@@ -340,6 +357,15 @@ public class ESSPostController
 
                     // Attachment file Size
                     model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
+                    // View Name for Dynamic Template Header and Title
+                    model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
+                    model.addAttribute("dynamicFragmentHeader",
+                            cusItem.getFragmentHead() != null ? cusItem.getFragmentHead()
+                                    : GC_Constants.gc_HeaderFragmentDefault);
+                    model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
+                    model.addAttribute("dynamicFragmentTitle",
+                            cusItem.getFragmentTitle() != null ? cusItem.getFragmentTitle()
+                                    : GC_Constants.gc_TitleFragmentDefault);
                 }
                 else
                 {
