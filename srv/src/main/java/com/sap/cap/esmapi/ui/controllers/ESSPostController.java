@@ -43,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @RequestMapping("/post")
 @Slf4j
-public class LSOPostController
+public class ESSPostController
 {
 
     @Autowired

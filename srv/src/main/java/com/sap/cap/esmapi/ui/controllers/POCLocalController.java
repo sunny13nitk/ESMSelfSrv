@@ -419,7 +419,8 @@ public class POCLocalController
                 caseForm.setDescription(userSessSrv.getCurrentForm4Submission().getCaseForm().getDescription()); // Curr
                                                                                                                  // Notes
                 caseForm.setSubject(userSessSrv.getCurrentForm4Submission().getCaseForm().getSubject()); // Curr Subject
-                caseForm.setAddEmail(userSessSrv.getCurrentForm4Submission().getCaseForm().getAddEmail()); // Curr Add Email
+                caseForm.setAddEmail(userSessSrv.getCurrentForm4Submission().getCaseForm().getAddEmail()); // Curr Add
+                                                                                                           // Email
 
                 model.addAttribute("formErrors", userSessSrv.getFormErrors());
 
@@ -597,7 +598,7 @@ public class POCLocalController
 
                     // Clear form for New Attachment as Current Attachment already in Container
                     caseForm.setAttachment(null);
-
+                    
                     // Scan for Template Load
                     TY_CatgTemplates catgTemplate = catalogTreeSrv.getTemplates4Catg(caseForm.getCatgDesc(),
                             cusItem.getCaseTypeEnum());
@@ -1038,6 +1039,8 @@ public class POCLocalController
 
                         model.addAttribute("caseTypeStr", cusItem.getCaseTypeEnum().toString());
 
+                        
+
                         // Populate User Details
                         TY_UserESS userDetails = new TY_UserESS();
                         userDetails.setUserDetails(userSessSrv.getUserDetails4mSession());
@@ -1120,6 +1123,7 @@ public class POCLocalController
             if (cusItem != null)
             {
 
+                
                 TY_Case_Form caseForm = userSessSrv.getCaseFormB4Submission();
 
                 model.addAttribute("caseTypeStr", cusItem.getCaseTypeEnum().toString());

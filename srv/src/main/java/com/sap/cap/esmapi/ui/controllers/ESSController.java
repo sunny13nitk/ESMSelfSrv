@@ -36,7 +36,6 @@ import com.sap.cap.esmapi.ui.pojos.TY_Case_Form;
 import com.sap.cap.esmapi.ui.srv.intf.IF_ESS_UISrv;
 import com.sap.cap.esmapi.utilities.constants.GC_Constants;
 import com.sap.cap.esmapi.utilities.constants.VWNamesDirectory;
-import com.sap.cap.esmapi.utilities.enums.EnumCaseTypes;
 import com.sap.cap.esmapi.utilities.enums.EnumMessageType;
 import com.sap.cap.esmapi.utilities.enums.EnumVWNames;
 import com.sap.cap.esmapi.utilities.pojos.TY_Message;
@@ -103,12 +102,8 @@ public class ESSController
     @Autowired
     private IF_UserSessionSrv userSessionSrv;
 
-    private final String caseListVWRedirect = "redirect:/lso/";
-    private final String caseFormViewLXSS = "caseFormLSOLXSS";
     private final String caseFormReplyLXSS = "caseFormReplyLSOLXSS";
-    private final String lsoCaseListViewLXSS = "lsoCasesListViewLXSS";
     private final String caseConfirmError = "alreadyConfirmed";
-    private final String invalidToken = "invalid_token";
 
     @GetMapping("/{lob}")
     @PreAuthorize("hasAnyAuthority('" + GC_Constants.gc_role_employee_esm + "', '" + GC_Constants.gc_role_contractor_esm
@@ -170,9 +165,11 @@ public class ESSController
 
                                 else
                                 {
+                                    // ERR_NO_USR=No User customer/employee could be determined/created for user -
+                                    // {0} post login!
 
-                                    throw new EX_ESMAPI(msgSrc.getMessage("ERR_CASE_TYPE_NOCFG", new Object[]
-                                    { catgCusItem.getCaseTypeEnum().toString() }, Locale.ENGLISH));
+                                    throw new EX_ESMAPI(msgSrc.getMessage("ERR_NO_USR", new Object[]
+                                    { userSessionSrv.getUserDetails4mSession().getUserId() }, Locale.ENGLISH));
                                 }
 
                             }
@@ -196,7 +193,10 @@ public class ESSController
             else
             {
                 log.info("User Not Authenticated!");
-                vw = invalidToken;
+                // UNAUTHENTICATED_ACCESS=User - {0} is not authenticated !
+                throw new EX_ESMAPI(msgSrc.getMessage("UNAUTHENTICATED_ACCESS", new Object[]
+                { userSessionSrv.getUserDetails4mSession().getUserId() }, Locale.ENGLISH));
+
             }
         }
         catch (Exception e)
@@ -204,7 +204,9 @@ public class ESSController
             throw new EX_ESMAPI(e.getLocalizedMessage());
         }
 
-        return vw != null ? vw : invalidToken;
+        return vw != null ? vw
+                : VWNamesDirectory.getViewName(EnumVWNames.error, false, msgSrc.getMessage("ERR_INBOX", new Object[]
+                { userSessionSrv.getUserDetails4mSession().getUserId() }, Locale.ENGLISH));
 
     }
 
@@ -212,7 +214,7 @@ public class ESSController
     public String showCaseAsyncForm(Model model)
     {
         userSessionSrv.clearActiveSubmission();
-        String viewCaseForm = caseFormViewLXSS;
+        String viewCaseForm = VWNamesDirectory.getViewName(EnumVWNames.caseForm, false, (String[]) null);
 
         if ((StringUtils.hasText(userSessionSrv.getUserDetails4mSession().getAccountId())
                 || StringUtils.hasText(userSessionSrv.getUserDetails4mSession().getEmployeeId()))
@@ -229,6 +231,9 @@ public class ESSController
                 // User Session --current Form Submission added for Rate Limit Evaulation
                 if (userSessionSrv.isWithinRateLimit())
                 {
+                    // REset Previous Catg
+                    userSessionSrv.setPreviousCategory(null);
+
                     // Populate User Details
                     TY_UserESS userDetails = new TY_UserESS();
                     userDetails.setUserDetails(userSessionSrv.getUserDetails4mSession());
@@ -251,6 +256,7 @@ public class ESSController
                     }
 
                     caseForm.setCaseTxnType(cusItem.getCaseType()); // hidden
+                    caseForm.setLob(cusItem.getCaseTypeEnum().toString()); // hidden
                     model.addAttribute("caseForm", caseForm);
 
                     model.addAttribute("formErrors", null);
@@ -269,18 +275,35 @@ public class ESSController
                     // Attachment file Size
                     model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
 
+                    // View Name for Dynamic Template Header and Title
+                    model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
+                    model.addAttribute("dynamicFragmentHeader",
+                            cusItem.getFragmentHead() != null ? cusItem.getFragmentHead()
+                                    : GC_Constants.gc_HeaderFragmentDefault);
+                    model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
+                    model.addAttribute("dynamicFragmentTitle",
+                            cusItem.getFragmentTitle() != null ? cusItem.getFragmentTitle()
+                                    : GC_Constants.gc_TitleFragmentDefault);
+
+                    // Check if LoB Specific Case Form is configured
+                    if (StringUtils.hasText(cusItem.getCaseFormView()))
+                    {
+                        viewCaseForm = cusItem.getCaseFormView();
+                    }
+
                 }
                 else
                 {
                     // Not Within Rate Limit - REdirect to List View
-                    viewCaseForm = caseListVWRedirect;
+                    viewCaseForm = VWNamesDirectory.getViewName(EnumVWNames.inbox, true,
+                            cusItem.getCaseTypeEnum().toString());
 
                 }
 
             }
             else
             {
-
+                // Handled via central exception handler
                 throw new EX_ESMAPI(msgSrc.getMessage("ERR_CASE_TYPE_NOCFG", new Object[]
                 { userSessionSrv.getCurrentLOBConfig().getCaseTypeEnum().toString() }, Locale.ENGLISH));
             }
@@ -293,7 +316,7 @@ public class ESSController
     @GetMapping("/errForm/")
     public String showErrorCaseForm(Model model)
     {
-
+        String viewCaseForm = VWNamesDirectory.getViewName(EnumVWNames.caseFormError, false, (String[]) null);
         if ((StringUtils.hasText(userSessionSrv.getUserDetails4mSession().getAccountId())
                 || StringUtils.hasText(userSessionSrv.getUserDetails4mSession().getEmployeeId()))
                 && !CollectionUtils.isEmpty(catgCusSrv.getCustomizations())
@@ -306,7 +329,7 @@ public class ESSController
             {
 
                 model.addAttribute("caseTypeStr", cusItem.getCaseTypeEnum().toString());
-
+                viewCaseForm = cusItem.getCaseFormView() != null ? cusItem.getCaseFormView() : viewCaseForm;
                 // Populate User Details
                 TY_UserESS userDetails = new TY_UserESS();
                 userDetails.setUserDetails(userSessionSrv.getUserDetails4mSession());
@@ -324,52 +347,20 @@ public class ESSController
                 }
 
                 caseForm.setCaseTxnType(cusItem.getCaseType()); // hidden
+                caseForm.setLob(cusItem.getCaseTypeEnum().toString()); // hidden
                 caseForm.setCatgDesc(userSessionSrv.getCurrentForm4Submission().getCaseForm().getCatgDesc()); // Curr
                                                                                                               // Catg
                 caseForm.setDescription(userSessionSrv.getCurrentForm4Submission().getCaseForm().getDescription()); // Curr
                                                                                                                     // Notes
                 caseForm.setSubject(userSessionSrv.getCurrentForm4Submission().getCaseForm().getSubject()); // Curr
                                                                                                             // Subject
-
-                if (StringUtils.hasText(userSessionSrv.getCurrentForm4Submission().getCaseForm().getAddEmail())) // Affected
-                                                                                                                 // User
-                                                                                                                 // email
+                //// Affected User email
+                if (StringUtils.hasText(userSessionSrv.getCurrentForm4Submission().getCaseForm().getAddEmail()))
                 {
                     caseForm.setAddEmail(userSessionSrv.getCurrentForm4Submission().getCaseForm().getAddEmail());
                 }
 
-                if (StringUtils.hasText(userSessionSrv.getCurrentForm4Submission().getCaseForm().getCountry()))
-                {
-                    caseForm.setCountry(userSessionSrv.getCurrentForm4Submission().getCaseForm().getCountry());
-                }
-
-                if (StringUtils.hasText(userSessionSrv.getCurrentForm4Submission().getCaseForm().getLanguage()))
-                {
-                    caseForm.setLanguage(userSessionSrv.getCurrentForm4Submission().getCaseForm().getLanguage());
-                }
-
-                if (StringUtils.hasText(userSessionSrv.getCurrentForm4Submission().getCaseForm().getLanguage()))
-                {
-                    caseForm.setLanguage(userSessionSrv.getCurrentForm4Submission().getCaseForm().getLanguage());
-                }
-
                 model.addAttribute("formErrors", userSessionSrv.getFormErrors());
-
-                // Not Feasible to have a Validation Error in Form and Attachment Persisted -
-                // But just to handle theoratically in case there is an Error in Attachment
-                // Persistence only- Remove the attachment otherwise let it persist
-                if (CollectionUtils.isNotEmpty(userSessionSrv.getMessageStack()))
-                {
-                    Optional<TY_Message> attErrO = userSessionSrv.getMessageStack().stream()
-                            .filter(e -> e.getMsgType().equals(EnumMessageType.ERR_ATTACHMENT)).findFirst();
-                    if (!attErrO.isPresent())
-                    {
-                        // Attachment able to presist do not remove it from Current Payload
-                        caseForm.setAttachment(
-                                userSessionSrv.getCurrentForm4Submission().getCaseForm().getAttachment());
-
-                    }
-                }
 
                 // Not Feasible to have a Validation Error in Form and Attachment Persisted -
                 // But just to handle theoratically in case there is an Error in Attachment
@@ -403,6 +394,15 @@ public class ESSController
 
                 // Attachment file Size
                 model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
+                // View Name for Dynamic Template Header and Title
+                model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
+                model.addAttribute("dynamicFragmentHeader",
+                        cusItem.getFragmentHead() != null ? cusItem.getFragmentHead()
+                                : GC_Constants.gc_HeaderFragmentDefault);
+                model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
+                model.addAttribute("dynamicFragmentTitle",
+                        cusItem.getFragmentTitle() != null ? cusItem.getFragmentTitle()
+                                : GC_Constants.gc_TitleFragmentDefault);
 
             }
             else
@@ -414,12 +414,13 @@ public class ESSController
 
         }
 
-        return caseFormViewLXSS;
+        return viewCaseForm;
     }
 
     @GetMapping("/removeAttachment/{fileName}")
     public String removeAttachmentCaseCreate(@PathVariable String fileName, Model model)
     {
+        String viewCaseForm = VWNamesDirectory.getViewName(EnumVWNames.caseFormError, false, (String[]) null);
         if (StringUtils.hasText(fileName) && attSrv != null && userSessionSrv != null)
         {
             userSessionSrv.clearActiveSubmission();
@@ -435,6 +436,7 @@ public class ESSController
             {
 
                 model.addAttribute("caseTypeStr", cusItem.getCaseTypeEnum().toString());
+                viewCaseForm = cusItem.getCaseFormView() != null ? cusItem.getCaseFormView() : viewCaseForm;
 
                 // Populate User Details
                 TY_UserESS userDetails = new TY_UserESS();
@@ -477,12 +479,22 @@ public class ESSController
 
                     // Attachment file Size
                     model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
+
+                    // View Name for Dynamic Template Header and Title
+                    model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
+                    model.addAttribute("dynamicFragmentHeader",
+                            cusItem.getFragmentHead() != null ? cusItem.getFragmentHead()
+                                    : GC_Constants.gc_HeaderFragmentDefault);
+                    model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
+                    model.addAttribute("dynamicFragmentTitle",
+                            cusItem.getFragmentTitle() != null ? cusItem.getFragmentTitle()
+                                    : GC_Constants.gc_TitleFragmentDefault);
                 }
 
             }
         }
 
-        return caseFormViewLXSS;
+        return viewCaseForm;
     }
 
     @GetMapping("/caseReply/removeAttachment/{fileName}")
@@ -667,8 +679,13 @@ public class ESSController
                 }
                 else
                 {
-                    // Not Within Rate Limit - REdirect to List View
-                    viewName = caseListVWRedirect;
+                    TY_CatgCusItem cusItem = userSessionSrv.getCurrentLOBConfig();
+                    if (cusItem != null)
+                    {
+                        // Not Within Rate Limit - REdirect to List View
+                        viewName = VWNamesDirectory.getViewName(EnumVWNames.inbox, true,
+                                cusItem.getCaseTypeEnum().toString());
+                    }
                 }
 
             }
@@ -755,6 +772,7 @@ public class ESSController
     @GetMapping("/refreshForm4SelCatg")
     public String refreshFormCxtx4SelCatg(HttpServletRequest request, Model model)
     {
+        String viewCaseForm = VWNamesDirectory.getViewName(EnumVWNames.caseFormError, false, (String[]) null);
         if (userSessionSrv != null)
         {
             TY_Case_Form caseForm = userSessionSrv.getCaseFormB4Submission();
@@ -775,6 +793,7 @@ public class ESSController
                     if (cusItem != null)
                     {
                         model.addAttribute("caseTypeStr", cusItem.getCaseTypeEnum().toString());
+                        viewCaseForm = cusItem.getCaseFormView() != null ? cusItem.getCaseFormView() : viewCaseForm;
 
                         // Populate User Details
                         TY_UserESS userDetails = new TY_UserESS();
@@ -828,6 +847,17 @@ public class ESSController
 
                         // Attachment file Size
                         model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
+
+                        // View Name for Dynamic Template Header and Title
+                        model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
+                        model.addAttribute("dynamicFragmentHeader",
+                                cusItem.getFragmentHead() != null ? cusItem.getFragmentHead()
+                                        : GC_Constants.gc_HeaderFragmentDefault);
+                        model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
+                        model.addAttribute("dynamicFragmentTitle",
+                                cusItem.getFragmentTitle() != null ? cusItem.getFragmentTitle()
+                                        : GC_Constants.gc_TitleFragmentDefault);
+
                     }
                     else
                     {
@@ -841,20 +871,20 @@ public class ESSController
 
         }
 
-        return caseFormViewLXSS;
+        return viewCaseForm;
     }
 
     @GetMapping("/refreshForm4AttUpload")
     public String refreshCaseFormPostAttachmentUpload(Model model)
     {
-        String viewName = caseFormViewLXSS;
+        String viewCaseForm = VWNamesDirectory.getViewName(EnumVWNames.caseFormError, false, (String[]) null);
 
         if (attSrv != null && userSessionSrv != null)
         {
             TY_CatgCusItem cusItem = userSessionSrv.getCurrentLOBConfig();
             if (cusItem != null)
             {
-
+                viewCaseForm = cusItem.getCaseFormView() != null ? cusItem.getCaseFormView() : viewCaseForm;
                 TY_Case_Form caseForm = userSessionSrv.getCaseFormB4Submission();
 
                 model.addAttribute("caseTypeStr", cusItem.getCaseTypeEnum().toString());
@@ -883,10 +913,20 @@ public class ESSController
                 // Attachment file Size
                 model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
 
+                // View Name for Dynamic Template Header and Title
+                model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
+                model.addAttribute("dynamicFragmentHeader",
+                        cusItem.getFragmentHead() != null ? cusItem.getFragmentHead()
+                                : GC_Constants.gc_HeaderFragmentDefault);
+                model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
+                model.addAttribute("dynamicFragmentTitle",
+                        cusItem.getFragmentTitle() != null ? cusItem.getFragmentTitle()
+                                : GC_Constants.gc_TitleFragmentDefault);
+
             }
 
         }
-        return viewName;
+        return viewCaseForm;
 
     }
 

@@ -21,6 +21,7 @@ public class VWNamesDirectory
         viewsDescMap.add(new TY_ViewMappings(EnumVWNames.inbox, "/ess/{lob}", "essCasesListView"));
         viewsDescMap.add(new TY_ViewMappings(EnumVWNames.caseForm, "/ess/createCase/}", "essCaseForm"));
         viewsDescMap.add(new TY_ViewMappings(EnumVWNames.caseFormError, "/ess/errForm/", "essCaseForm"));
+        viewsDescMap.add(new TY_ViewMappings(EnumVWNames.error, "/err/exception?message={msg}", "error"));
 
         return viewsDescMap;
     }
