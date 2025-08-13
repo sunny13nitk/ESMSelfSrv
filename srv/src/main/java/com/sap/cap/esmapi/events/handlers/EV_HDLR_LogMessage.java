@@ -17,6 +17,8 @@ public class EV_HDLR_LogMessage
     @Autowired
     private IF_HANALoggingSrv dbLogSrv;
 
+   
+
     @EventListener
     public void handleLogMessage(EV_LogMessage evLogMessage)
     {
