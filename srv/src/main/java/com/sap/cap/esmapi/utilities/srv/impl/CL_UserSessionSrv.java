@@ -746,7 +746,8 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
                     log.info(msg); // System Log
 
                     // Logging Framework
-                    TY_Message logMsg = new TY_Message(caseFormAsync.getUserId(), caseFormAsync.getTimestamp(),
+                    TY_Message logMsg = new TY_Message(caseFormAsync.getUserId(),
+                            this.getCurrentLOBConfig().getCaseType(), caseFormAsync.getTimestamp(),
                             EnumStatus.Success, EnumMessageType.SUCC_CASE_SUBM, caseFormAsync.getSubmGuid(), msg);
                     userSessInfo.getMessagesStack().add(logMsg);
                     // Instantiate and Fire the Event : Syncronous processing
@@ -815,6 +816,7 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
 
                             TY_Message message = new TY_Message(
                                     userSessInfo.getUserDetails().getUsAccEmpl().getUserId(),
+                                    this.getCurrentLOBConfig().getCaseType(),
                                     Timestamp.from(Instant.now()), EnumStatus.Success, EnumMessageType.SUCC_ACC_CREATE,
                                     accountId, msgSrc.getMessage("NEW_AC", new Object[]
                                     { userSessInfo.getUserDetails().getUsAccEmpl().getUserId() }, Locale.ENGLISH));
@@ -831,7 +833,8 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
                         { userSessInfo.getUserDetails().getUsAccEmpl().getUserId() }, Locale.ENGLISH));
 
                         TY_Message message = new TY_Message(userSessInfo.getUserDetails().getUsAccEmpl().getUserId(),
-                                Timestamp.from(Instant.now()), EnumStatus.Error, EnumMessageType.ERR_ACC_CREATE,
+                                this.getCurrentLOBConfig().getCaseType(), Timestamp.from(Instant.now()),
+                                EnumStatus.Error, EnumMessageType.ERR_ACC_CREATE,
                                 userSessInfo.getUserDetails().getUsAccEmpl().getUserId(),
                                 msgSrc.getMessage("ERR_API_AC", new Object[]
                                 { userSessInfo.getUserDetails().getUsAccEmpl().getUserId() }, Locale.ENGLISH));
@@ -920,8 +923,8 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
                                 new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(currTS) }, Locale.ENGLISH));
 
                         TY_Message logMsg = new TY_Message(userSessInfo.getUserDetails().getUsAccEmpl().getUserId(),
-                                currTS, EnumStatus.Error, EnumMessageType.ERR_RATELIMIT,
-                                userSessInfo.getUserDetails().getUsAccEmpl().getUserId(),
+                                this.getCurrentLOBConfig().getCaseType(), currTS, EnumStatus.Error,
+                                EnumMessageType.ERR_RATELIMIT, userSessInfo.getUserDetails().getUsAccEmpl().getUserId(),
                                 msgSrc.getMessage("ERR_RATE_LIMIT", new Object[]
                                 { userSessInfo.getUserDetails().getUsAccEmpl().getUserId(),
                                         new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(currTS) }, Locale.ENGLISH));
@@ -1016,8 +1019,8 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
                                 new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(currTS) }, Locale.ENGLISH));
 
                         TY_Message logMsg = new TY_Message(userSessInfo.getUserDetails().getUsAccEmpl().getUserId(),
-                                currTS, EnumStatus.Error, EnumMessageType.ERR_RATELIMIT,
-                                userSessInfo.getUserDetails().getUsAccEmpl().getUserId(),
+                                this.getCurrentLOBConfig().getCaseType(), currTS, EnumStatus.Error,
+                                EnumMessageType.ERR_RATELIMIT, userSessInfo.getUserDetails().getUsAccEmpl().getUserId(),
                                 msgSrc.getMessage("ERR_RATE_LIMIT", new Object[]
                                 { userSessInfo.getUserDetails().getUsAccEmpl().getUserId(),
                                         new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(currTS) }, Locale.ENGLISH));
@@ -1103,6 +1106,7 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
 
                             // Logging Framework
                             TY_Message logMsg = new TY_Message(userSessInfo.getUserDetails().getUsAccEmpl().getUserId(),
+                                    this.getCurrentLOBConfig().getCaseType(),
                                     Timestamp.from(Instant.now()), EnumStatus.Error, EnumMessageType.ERR_PAYLOAD,
                                     userSessInfo.getUserDetails().getUsAccEmpl().getUserId(), msg);
                             userSessInfo.getMessagesStack().add(logMsg);
@@ -1516,7 +1520,8 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
                 log.info(msg); // System Log
 
                 // Logging Framework
-                TY_Message logMsg = new TY_Message(caseReplyAsync.getUserId(), caseReplyAsync.getTimestamp(),
+                TY_Message logMsg = new TY_Message(caseReplyAsync.getUserId(),
+                        this.getCurrentLOBConfig().getCaseType(), caseReplyAsync.getTimestamp(),
                         EnumStatus.Success, EnumMessageType.SUCC_CASE_REPL_SUBM, caseReplyAsync.getSubmGuid(), msg);
                 userSessInfo.getMessagesStack().add(logMsg);
                 // Instantiate and Fire the Event : Syncronous processing
@@ -1973,7 +1978,8 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
         log.error(msg);
 
         TY_Message logMsg = new TY_Message(userSessInfo.getUserDetails().getUsAccEmpl().getUserId(),
-                Timestamp.from(Instant.now()), EnumStatus.Error, EnumMessageType.ERR_SRVCLOUDAPI, params[0], msg);
+                this.getCurrentLOBConfig().getCaseType(), Timestamp.from(Instant.now()),
+                EnumStatus.Error, EnumMessageType.ERR_SRVCLOUDAPI, params[0], msg);
         // this.addMessagetoStack(logMsg); Do Not add to UI
 
         // Instantiate and Fire the Event
@@ -1993,8 +1999,9 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
         log.error(msg);
 
         TY_Message message = new TY_Message(userSessInfo.getUserDetails().getUsAccEmpl().getUserId(),
-                Timestamp.from(Instant.now()), EnumStatus.Error, EnumMessageType.ERR_PAYLOAD,
-                userSessInfo.getUserDetails().getUsAccEmpl().getUserId(), msg);
+                this.getCurrentLOBConfig().getCaseType(), Timestamp.from(Instant.now()),
+                EnumStatus.Error, EnumMessageType.ERR_PAYLOAD, userSessInfo.getUserDetails().getUsAccEmpl().getUserId(),
+                msg);
 
         // For Logging Framework
         userSessInfo.getMessagesStack().add(message);
@@ -2011,8 +2018,9 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
         log.error(msg);
 
         TY_Message message = new TY_Message(userSessInfo.getUserDetails().getUsAccEmpl().getUserId(),
-                Timestamp.from(Instant.now()), EnumStatus.Error, EnumMessageType.ERR_PAYLOAD,
-                userSessInfo.getUserDetails().getUsAccEmpl().getUserId(), msg);
+                this.getCurrentLOBConfig().getCaseType(), Timestamp.from(Instant.now()),
+                EnumStatus.Error, EnumMessageType.ERR_PAYLOAD, userSessInfo.getUserDetails().getUsAccEmpl().getUserId(),
+                msg);
 
         // For Logging Framework
         userSessInfo.getMessagesStack().add(message);
@@ -2031,7 +2039,8 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
 
         log.error(msg);
         TY_Message logMsg = new TY_Message(userSessInfo.getUserDetails().getUsAccEmpl().getUserId(),
-                Timestamp.from(Instant.now()), EnumStatus.Error, EnumMessageType.ERR_CASE_DET_FETCH, caseID, msg);
+                this.getCurrentLOBConfig().getCaseType(), Timestamp.from(Instant.now()),
+                EnumStatus.Error, EnumMessageType.ERR_CASE_DET_FETCH, caseID, msg);
         this.addMessagetoStack(logMsg);
 
         // Instantiate and Fire the Event
@@ -2049,8 +2058,8 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
         { userId, caseID }, Locale.ENGLISH);
 
         log.error(msg);
-        TY_Message logMsg = new TY_Message(userId, Timestamp.from(Instant.now()), EnumStatus.Error,
-                EnumMessageType.ERR_UNAUTH_CASE_ACCESS, caseID, msg);
+        TY_Message logMsg = new TY_Message(userId, this.getCurrentLOBConfig().getCaseType(),
+                Timestamp.from(Instant.now()), EnumStatus.Error, EnumMessageType.ERR_UNAUTH_CASE_ACCESS, caseID, msg);
         this.addMessagetoStack(logMsg);
 
         // Instantiate and Fire the Event
@@ -2069,8 +2078,9 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
 
         // Logging Framework
         TY_Message logMsg = new TY_Message(userSessInfo.getUserDetails().getUsAccEmpl().getUserId(),
-                Timestamp.from(Instant.now()), EnumStatus.Error, EnumMessageType.ERR_PAYLOAD,
-                userSessInfo.getUserDetails().getUsAccEmpl().getUserId(), msg);
+                this.getCurrentLOBConfig().getCaseType(), Timestamp.from(Instant.now()),
+                EnumStatus.Error, EnumMessageType.ERR_PAYLOAD, userSessInfo.getUserDetails().getUsAccEmpl().getUserId(),
+                msg);
         userSessInfo.getMessagesStack().add(logMsg);
 
         // Instantiate and Fire the Event : Syncronous processing
@@ -2087,8 +2097,9 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
 
         // Logging Framework
         TY_Message logMsg = new TY_Message(userSessInfo.getUserDetails().getUsAccEmpl().getUserId(),
-                Timestamp.from(Instant.now()), EnumStatus.Error, EnumMessageType.ERR_PAYLOAD,
-                userSessInfo.getUserDetails().getUsAccEmpl().getUserId(), msg);
+                this.getCurrentLOBConfig().getCaseType(), Timestamp.from(Instant.now()),
+                EnumStatus.Error, EnumMessageType.ERR_PAYLOAD, userSessInfo.getUserDetails().getUsAccEmpl().getUserId(),
+                msg);
         userSessInfo.getMessagesStack().add(logMsg);
 
         // Instantiate and Fire the Event : Syncronous processing
@@ -2109,8 +2120,8 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
         this.addFormErrors(msg);// For Form Display
 
         TY_Message logMsg = new TY_Message(userSessInfo.getUserDetails().getUsAccEmpl().getUserId(),
-                Timestamp.from(Instant.now()), EnumStatus.Error, EnumMessageType.ERR_ATTACHMENT,
-                caseFormAsync.getSubmGuid(), msg);
+                this.getCurrentLOBConfig().getCaseType(), Timestamp.from(Instant.now()),
+                EnumStatus.Error, EnumMessageType.ERR_ATTACHMENT, caseFormAsync.getSubmGuid(), msg);
         this.addMessagetoStack(logMsg);
 
         // Instantiate and Fire the Event
@@ -2128,8 +2139,8 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
 
         log.error(msg);
         TY_Message logMsg = new TY_Message(userSessInfo.getUserDetails().getUsAccEmpl().getUserId(),
-                Timestamp.from(Instant.now()), EnumStatus.Error, EnumMessageType.ERR_ATTACHMENT,
-                caseFormAsync.getSubmGuid(), msg);
+                this.getCurrentLOBConfig().getCaseType(), Timestamp.from(Instant.now()),
+                EnumStatus.Error, EnumMessageType.ERR_ATTACHMENT, caseFormAsync.getSubmGuid(), msg);
         this.addMessagetoStack(logMsg);
 
         // Instantiate and Fire the Event
@@ -2152,7 +2163,8 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
 
         log.error(msg);
         TY_Message logMsg = new TY_Message(userSessInfo.getUserDetails().getUsAccEmpl().getUserId(),
-                Timestamp.from(Instant.now()), EnumStatus.Error, EnumMessageType.ERR_INVALID_ADDUSER,
+                this.getCurrentLOBConfig().getCaseType(), Timestamp.from(Instant.now()),
+                EnumStatus.Error, EnumMessageType.ERR_INVALID_ADDUSER,
                 userSessInfo.getUserDetails().getUsAccEmpl().getUserId(), msg);
         this.addMessagetoStack(logMsg);
 
@@ -2175,8 +2187,8 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
         this.addFormErrors(msg);// For Form Display
 
         TY_Message logMsg = new TY_Message(userSessInfo.getUserDetails().getUsAccEmpl().getUserId(),
-                Timestamp.from(Instant.now()), EnumStatus.Error, EnumMessageType.ERR_ATTACHMENT,
-                caseFormAsync.getSubmGuid(), msg);
+                this.getCurrentLOBConfig().getCaseType(), Timestamp.from(Instant.now()),
+                EnumStatus.Error, EnumMessageType.ERR_ATTACHMENT, caseFormAsync.getSubmGuid(), msg);
         this.addMessagetoStack(logMsg);
 
         // Instantiate and Fire the Event
@@ -2194,8 +2206,8 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
 
         log.error(msg);
         TY_Message logMsg = new TY_Message(userSessInfo.getUserDetails().getUsAccEmpl().getUserId(),
-                Timestamp.from(Instant.now()), EnumStatus.Error, EnumMessageType.ERR_ATTACHMENT,
-                caseFormAsync.getSubmGuid(), msg);
+                this.getCurrentLOBConfig().getCaseType(), Timestamp.from(Instant.now()),
+                EnumStatus.Error, EnumMessageType.ERR_ATTACHMENT, caseFormAsync.getSubmGuid(), msg);
         this.addMessagetoStack(logMsg);
 
         // Instantiate and Fire the Event
@@ -2210,8 +2222,8 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
     {
         if (hanaLogSrv != null)
         {
-            hanaLogSrv.createLog(new TY_Message(userName, Timestamp.from(Instant.now()), EnumStatus.Error,
-                    EnumMessageType.ERR_SRVCLOUDAPI, destName, msg));
+            hanaLogSrv.createLog(new TY_Message(userName, this.getCurrentLOBConfig().getCaseType(),
+                    Timestamp.from(Instant.now()), EnumStatus.Error, EnumMessageType.ERR_SRVCLOUDAPI, destName, msg));
 
         }
         // Should be handled Centrally via Aspect

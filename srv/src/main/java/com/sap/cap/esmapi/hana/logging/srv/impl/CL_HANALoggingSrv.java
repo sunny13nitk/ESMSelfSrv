@@ -20,7 +20,6 @@ import com.sap.cap.esmapi.exceptions.EX_ESMAPI;
 import com.sap.cap.esmapi.hana.logging.srv.intf.IF_HANALoggingSrv;
 import com.sap.cap.esmapi.utilities.constants.GC_Constants;
 import com.sap.cap.esmapi.utilities.pojos.TY_Message;
-import com.sap.cap.esmapi.utilities.srv.intf.IF_UserSessionSrv;
 import com.sap.cds.Result;
 import com.sap.cds.ql.Insert;
 import com.sap.cds.ql.Select;
@@ -47,9 +46,6 @@ public class CL_HANALoggingSrv implements IF_HANALoggingSrv
     @Autowired
     private MessageSource msgSrc;
 
-    @Autowired
-    private IF_UserSessionSrv userSessionSrv;
-
     private final String msgLogsTablePath = "db.esmlogs.esmapplogs"; // Table Path - HANA
     private final String objectID = "objectid";
 
@@ -57,7 +53,7 @@ public class CL_HANALoggingSrv implements IF_HANALoggingSrv
     public Result createLog(TY_Message logMsg) throws EX_ESMAPI
     {
         Result response = null;
-        if (logMsg != null && msgSrc != null && ps != null && userSessionSrv != null)
+        if (logMsg != null && msgSrc != null && ps != null )
         {
             String msg = msgSrc.getMessage("PERS_LOG", new Object[]
             { logMsg.getUserName(), logMsg.getMsgType().toString() }, Locale.ENGLISH);
@@ -78,8 +74,7 @@ public class CL_HANALoggingSrv implements IF_HANALoggingSrv
                 logEntity.put("msgtype", logMsg.getMsgType().toString()); // Message Type
                 logEntity.put("objectid", logMsg.getObjectId()); // Object ID
                 logEntity.put("message", logMsg.getMessage()); // Message Text
-                // Case Type - LOB
-                logEntity.put("casetype", userSessionSrv.getCurrentLOBConfig().getCaseTypeEnum().toString()); 
+
                 {
                     CqnInsert qLogInsert = Insert.into(this.msgLogsTablePath).entry(logEntity);
                     if (qLogInsert != null)

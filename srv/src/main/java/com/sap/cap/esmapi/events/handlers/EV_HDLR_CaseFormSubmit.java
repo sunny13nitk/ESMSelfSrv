@@ -1043,6 +1043,7 @@ public class EV_HDLR_CaseFormSubmit
 
                 log.error(msg);
                 TY_Message logMsg = new TY_Message(evCaseFormSubmit.getPayload().getUserId(),
+                evCaseFormSubmit.getPayload().getCaseForm().getCaseTxnType(),
                                 Timestamp.from(Instant.now()), EnumStatus.Error, EnumMessageType.ERR_CASE_CREATE,
                                 evCaseFormSubmit.getPayload().getSubmGuid(), msg);
 
@@ -1067,6 +1068,7 @@ public class EV_HDLR_CaseFormSubmit
                 // Populate Success message in session
 
                 TY_Message logMsg = new TY_Message(evCaseFormSubmit.getPayload().getUserId(),
+                evCaseFormSubmit.getPayload().getCaseForm().getCaseTxnType(),
                                 Timestamp.from(Instant.now()), EnumStatus.Success, EnumMessageType.SUCC_CASE_CREATE,
                                 evCaseFormSubmit.getPayload().getSubmGuid(), msg);
 
@@ -1084,6 +1086,7 @@ public class EV_HDLR_CaseFormSubmit
 
                 log.error(msg);
                 TY_Message logMsg = new TY_Message(evCaseFormSubmit.getPayload().getUserId(),
+                evCaseFormSubmit.getPayload().getCaseForm().getCaseTxnType(),
                                 Timestamp.from(Instant.now()), EnumStatus.Error, EnumMessageType.ERR_CASE_CATG,
                                 evCaseFormSubmit.getPayload().getSubmGuid(), msg);
 

@@ -110,6 +110,7 @@ public class CL_AttachmentValdationSrv implements IF_AttachmentValdationSrv
         log.error(msg);
 
         TY_Message logMsg = new TY_Message(userSessionSrv.getUserDetails4mSession().getUserId(),
+                userSessionSrv.getCurrentLOBConfig().getCaseType(),
                 Timestamp.from(Instant.now()), EnumStatus.Error, EnumMessageType.ERR_ATTACHMENT,
                 userSessionSrv.getUserDetails4mSession().getUserId(), msg);
 
@@ -143,6 +144,7 @@ public class CL_AttachmentValdationSrv implements IF_AttachmentValdationSrv
                 log.error(msg);
 
                 TY_Message logMsg = new TY_Message(userSessionSrv.getUserDetails4mSession().getUserId(),
+                        userSessionSrv.getCurrentLOBConfig().getCaseType(),
                         Timestamp.from(Instant.now()), EnumStatus.Error, EnumMessageType.ERR_ATTACHMENT_SIZE,
                         userSessionSrv.getUserDetails4mSession().getUserId(), msg);
                 userSessionSrv.addMessagetoStack(logMsg);

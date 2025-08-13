@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class TY_Message
 {
     private String userName;
-    
+    private String lob;
     private Timestamp timestamp;
     private EnumStatus status;
     private EnumMessageType msgType;

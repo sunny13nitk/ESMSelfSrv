@@ -62,8 +62,9 @@ public class GlobalExceptionHdlr
 
 		// Logging Framework
 		TY_Message logMsg = new TY_Message(userSessionSrv.getUserDetails4mSession().getUserId(),
-				Timestamp.from(Instant.now()), EnumStatus.Error, EnumMessageType.ERR_ATTACHMENT_SIZE,
-				userSessionSrv.getUserDetails4mSession().getUserId(), ex.getMessage());
+				userSessionSrv.getCurrentLOBConfig().getCaseType(), Timestamp.from(Instant.now()), EnumStatus.Error,
+				EnumMessageType.ERR_ATTACHMENT_SIZE, userSessionSrv.getUserDetails4mSession().getUserId(),
+				ex.getMessage());
 		userSessionSrv.addMessagetoStack(logMsg);
 
 		log.error(ex.getLocalizedMessage());

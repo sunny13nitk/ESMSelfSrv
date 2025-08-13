@@ -15,7 +15,6 @@ import org.springframework.util.StringUtils;
 
 import com.sap.cap.esmapi.catg.pojos.TY_CatgCus;
 import com.sap.cap.esmapi.events.event.EV_CaseConfirmSubmit;
-import com.sap.cap.esmapi.events.event.EV_CaseReplySubmit;
 import com.sap.cap.esmapi.events.event.EV_LogMessage;
 import com.sap.cap.esmapi.exceptions.EX_ESMAPI;
 import com.sap.cap.esmapi.ui.pojos.TY_CaseConfirmPOJO;
@@ -89,8 +88,9 @@ public class EV_HDLR_CaseConfirmSubmit
         { caseDetails.getCaseId(), caseDetails.getSubmGuid() }, Locale.ENGLISH);
 
         log.info(msg);
-        TY_Message logMsg = new TY_Message(caseDetails.getUserId(), Timestamp.from(Instant.now()), EnumStatus.Success,
-                EnumMessageType.SUCC_CASE_CONFIRM_SAVE, caseDetails.getSubmGuid(), msg);
+        TY_Message logMsg = new TY_Message(caseDetails.getUserId(), caseDetails.getCaseType(),
+                Timestamp.from(Instant.now()), EnumStatus.Success, EnumMessageType.SUCC_CASE_CONFIRM_SAVE,
+                caseDetails.getSubmGuid(), msg);
 
         // Instantiate and Fire the Event
         EV_LogMessage logMsgEvent = new EV_LogMessage((Object) caseDetails.getSubmGuid(), logMsg);
@@ -107,8 +107,9 @@ public class EV_HDLR_CaseConfirmSubmit
                 Locale.ENGLISH);
 
         log.error(msg);
-        TY_Message logMsg = new TY_Message(caseDetails.getUserId(), Timestamp.from(Instant.now()), EnumStatus.Error,
-                EnumMessageType.ERR_CASE_CNF_SAV, caseDetails.getSubmGuid(), msg);
+        TY_Message logMsg = new TY_Message(caseDetails.getUserId(), caseDetails.getCaseType(),
+                Timestamp.from(Instant.now()), EnumStatus.Error, EnumMessageType.ERR_CASE_CNF_SAV,
+                caseDetails.getSubmGuid(), msg);
 
         // Instantiate and Fire the Event
         EV_LogMessage logMsgEvent = new EV_LogMessage((Object) caseDetails.getSubmGuid(), logMsg);

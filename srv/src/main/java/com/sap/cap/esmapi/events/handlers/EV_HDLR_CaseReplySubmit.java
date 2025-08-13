@@ -236,7 +236,8 @@ public class EV_HDLR_CaseReplySubmit
         { string, submId }, Locale.ENGLISH);
 
         log.info(msg);
-        TY_Message logMsg = new TY_Message(evCaseReply.getPayload().getUserId(), Timestamp.from(Instant.now()),
+        TY_Message logMsg = new TY_Message(evCaseReply.getPayload().getUserId(),
+                evCaseReply.getPayload().getCaseReply().getCaseDetails().getCaseType(), Timestamp.from(Instant.now()),
                 EnumStatus.Success, EnumMessageType.SUCC_CASE_REPL_SAVE, evCaseReply.getPayload().getSubmGuid(), msg);
 
         // Instantiate and Fire the Event
@@ -254,7 +255,8 @@ public class EV_HDLR_CaseReplySubmit
                 evCaseReply.getPayload().getUserId(), e.getLocalizedMessage(), }, Locale.ENGLISH);
 
         log.error(msg);
-        TY_Message logMsg = new TY_Message(evCaseReply.getPayload().getUserId(), Timestamp.from(Instant.now()),
+        TY_Message logMsg = new TY_Message(evCaseReply.getPayload().getUserId(),
+        evCaseReply.getPayload().getCaseReply().getCaseDetails().getCaseType(), Timestamp.from(Instant.now()),
                 EnumStatus.Error, EnumMessageType.ERR_CASE_REPL_SAVE, evCaseReply.getPayload().getSubmGuid(), msg);
 
         // Instantiate and Fire the Event
