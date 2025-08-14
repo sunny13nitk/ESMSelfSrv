@@ -544,10 +544,10 @@
 
 
 
-
+   <div th:replace="~{${dynamicTemplateFooter} :: ${dynamicFragmentFooter}}"></div>
 
    <div class="slot" id="slot1" th:if="${rateLimitBreached == true}"></div>
-   <newlxp-footer></newlxp-footer>
+   
 
 
    <script>

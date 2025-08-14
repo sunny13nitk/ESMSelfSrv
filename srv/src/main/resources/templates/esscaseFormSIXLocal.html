@@ -459,7 +459,9 @@
       <!-- Form Row - Ends -->
 
    </div>
-   <newlxp-footer></newlxp-footer>
+   
+   <div th:replace="~{${dynamicTemplateFooter} :: ${dynamicFragmentFooter}}"></div>
+   
 
    <script>
 
