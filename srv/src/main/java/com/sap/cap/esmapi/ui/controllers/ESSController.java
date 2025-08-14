@@ -161,6 +161,9 @@ public class ESSController
                                     model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
                                     model.addAttribute("dynamicFragmentTitle", catgCusItem.getFragmentTitle());
 
+                                    model.addAttribute("dynamicTemplateHeaderBar", "/fragments/HeaderFragmentsBar");
+                                    model.addAttribute("dynamicFragmentHeaderBar", "sixHBar");
+
                                 }
 
                                 else
