@@ -156,15 +156,20 @@ public class ESSController
                                     // Session Active Toast
                                     model.addAttribute("submActive", userSessionSrv.isCurrentSubmissionActive());
 
+                                    // TEmplates
                                     model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
-                                    model.addAttribute("dynamicFragmentHeader", catgCusItem.getFragmentHead());
+                                    model.addAttribute("dynamicFragmentHeader",
+                                            catgCusItem.getFragmentHead() != null ? catgCusItem.getFragmentHead()
+                                                    : GC_Constants.gc_HeaderFragmentDefault);
                                     model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
-                                    model.addAttribute("dynamicFragmentTitle", catgCusItem.getFragmentTitle());
+                                    model.addAttribute("dynamicFragmentTitle",
+                                            catgCusItem.getFragmentTitle() != null ? catgCusItem.getFragmentTitle()
+                                                    : GC_Constants.gc_TitleFragmentDefault);
 
-
-                                    model.addAttribute("dynamicTemplateFooter","fragments/FooterFragments");
-                                    model.addAttribute("dynamicFragmentFooter", "sixF");
-                                    
+                                    model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
+                                    model.addAttribute("dynamicFragmentFooter",
+                                            catgCusItem.getFragmentFooter() != null ? catgCusItem.getFragmentFooter()
+                                                    : GC_Constants.gc_FooterFragmentDefault);
 
                                 }
 
@@ -280,7 +285,6 @@ public class ESSController
                     // Attachment file Size
                     model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
 
-                    // View Name for Dynamic Template Header and Title
                     model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
                     model.addAttribute("dynamicFragmentHeader",
                             cusItem.getFragmentHead() != null ? cusItem.getFragmentHead()
@@ -289,6 +293,11 @@ public class ESSController
                     model.addAttribute("dynamicFragmentTitle",
                             cusItem.getFragmentTitle() != null ? cusItem.getFragmentTitle()
                                     : GC_Constants.gc_TitleFragmentDefault);
+
+                    model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
+                    model.addAttribute("dynamicFragmentFooter",
+                            cusItem.getFragmentFooter() != null ? cusItem.getFragmentFooter()
+                                    : GC_Constants.gc_FooterFragmentDefault);
 
                     // Check if LoB Specific Case Form is configured
                     if (StringUtils.hasText(cusItem.getCaseFormView()))
@@ -409,6 +418,11 @@ public class ESSController
                         cusItem.getFragmentTitle() != null ? cusItem.getFragmentTitle()
                                 : GC_Constants.gc_TitleFragmentDefault);
 
+                model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
+                model.addAttribute("dynamicFragmentFooter",
+                        cusItem.getFragmentFooter() != null ? cusItem.getFragmentFooter()
+                                : GC_Constants.gc_FooterFragmentDefault);
+
             }
             else
             {
@@ -494,6 +508,11 @@ public class ESSController
                     model.addAttribute("dynamicFragmentTitle",
                             cusItem.getFragmentTitle() != null ? cusItem.getFragmentTitle()
                                     : GC_Constants.gc_TitleFragmentDefault);
+
+                    model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
+                    model.addAttribute("dynamicFragmentFooter",
+                            cusItem.getFragmentFooter() != null ? cusItem.getFragmentFooter()
+                                    : GC_Constants.gc_FooterFragmentDefault);
                 }
 
             }
@@ -863,6 +882,11 @@ public class ESSController
                                 cusItem.getFragmentTitle() != null ? cusItem.getFragmentTitle()
                                         : GC_Constants.gc_TitleFragmentDefault);
 
+                        model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
+                        model.addAttribute("dynamicFragmentFooter",
+                                cusItem.getFragmentFooter() != null ? cusItem.getFragmentFooter()
+                                        : GC_Constants.gc_FooterFragmentDefault);
+
                     }
                     else
                     {
@@ -927,6 +951,11 @@ public class ESSController
                 model.addAttribute("dynamicFragmentTitle",
                         cusItem.getFragmentTitle() != null ? cusItem.getFragmentTitle()
                                 : GC_Constants.gc_TitleFragmentDefault);
+
+                model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
+                model.addAttribute("dynamicFragmentFooter",
+                        cusItem.getFragmentFooter() != null ? cusItem.getFragmentFooter()
+                                : GC_Constants.gc_FooterFragmentDefault);
 
             }
 

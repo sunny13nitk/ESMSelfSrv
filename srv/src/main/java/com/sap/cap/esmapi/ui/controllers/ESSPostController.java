@@ -225,6 +225,11 @@ public class ESSPostController
                 model.addAttribute("dynamicFragmentTitle",
                         cusItem.getFragmentTitle() != null ? cusItem.getFragmentTitle()
                                 : GC_Constants.gc_TitleFragmentDefault);
+
+                model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
+                model.addAttribute("dynamicFragmentFooter",
+                        cusItem.getFragmentFooter() != null ? cusItem.getFragmentFooter()
+                                : GC_Constants.gc_FooterFragmentDefault);
             }
 
             log.info("Processing of Case Attachment Upload Form - UI layer :Ends....");
@@ -366,6 +371,11 @@ public class ESSPostController
                     model.addAttribute("dynamicFragmentTitle",
                             cusItem.getFragmentTitle() != null ? cusItem.getFragmentTitle()
                                     : GC_Constants.gc_TitleFragmentDefault);
+
+                    model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
+                    model.addAttribute("dynamicFragmentFooter",
+                            cusItem.getFragmentFooter() != null ? cusItem.getFragmentFooter()
+                                    : GC_Constants.gc_FooterFragmentDefault);
                 }
                 else
                 {

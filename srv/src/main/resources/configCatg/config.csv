@@ -1,3 +1,3 @@
 caseTypeEnum,caseType,appNoteTypes,statusSchema,replyNoteType,catgRankEnabled,catgsranksonlyShow,confirmStatus,fragmentHead,fragmentTitle,caseFormView,logouturl
 Learning,ZLSS,ZSF1|S001,ZL,ZSF1,true,true,Closed,,,,https://learninghub.sap.com/logout
-six,ZSIX,ZSF1|S001,ZS,ZSF1,true,true,Closed,sixH,sixT,essCaseFormSIX,https://six.sap.com/logout
+six,ZSIX,ZSF1|S001,ZS,ZSF1,true,true,Closed,sixH,sixT,sixF,essCaseFormSIX,https://six.sap.com/logout
