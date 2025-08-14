@@ -159,17 +159,23 @@ public class ESSController
                                     // TEmplates
                                     model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
                                     model.addAttribute("dynamicFragmentHeader",
-                                            catgCusItem.getFragmentHead() != null ? catgCusItem.getFragmentHead()
-                                                    : GC_Constants.gc_HeaderFragmentDefault);
+                                            (catgCusItem.getFragmentHead() != null
+                                                    && !catgCusItem.getFragmentHead().trim().isBlank())
+                                                            ? catgCusItem.getFragmentHead()
+                                                            : GC_Constants.gc_HeaderFragmentDefault);
                                     model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
                                     model.addAttribute("dynamicFragmentTitle",
-                                            catgCusItem.getFragmentTitle() != null ? catgCusItem.getFragmentTitle()
-                                                    : GC_Constants.gc_TitleFragmentDefault);
+                                            (catgCusItem.getFragmentTitle() != null
+                                                    && !catgCusItem.getFragmentTitle().trim().isBlank())
+                                                            ? catgCusItem.getFragmentTitle()
+                                                            : GC_Constants.gc_TitleFragmentDefault);
 
                                     model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
                                     model.addAttribute("dynamicFragmentFooter",
-                                            catgCusItem.getFragmentFooter() != null ? catgCusItem.getFragmentFooter()
-                                                    : GC_Constants.gc_FooterFragmentDefault);
+                                            (catgCusItem.getFragmentFooter() != null
+                                                    && !catgCusItem.getFragmentFooter().trim().isBlank())
+                                                            ? catgCusItem.getFragmentFooter()
+                                                            : GC_Constants.gc_FooterFragmentDefault);
 
                                 }
 
@@ -287,16 +293,19 @@ public class ESSController
 
                     model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
                     model.addAttribute("dynamicFragmentHeader",
-                            cusItem.getFragmentHead() != null ? cusItem.getFragmentHead()
+                            (cusItem.getFragmentHead() != null && !cusItem.getFragmentHead().trim().isBlank())
+                                    ? cusItem.getFragmentHead()
                                     : GC_Constants.gc_HeaderFragmentDefault);
                     model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
                     model.addAttribute("dynamicFragmentTitle",
-                            cusItem.getFragmentTitle() != null ? cusItem.getFragmentTitle()
+                            (cusItem.getFragmentTitle() != null && !cusItem.getFragmentTitle().trim().isBlank())
+                                    ? cusItem.getFragmentTitle()
                                     : GC_Constants.gc_TitleFragmentDefault);
 
                     model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
                     model.addAttribute("dynamicFragmentFooter",
-                            cusItem.getFragmentFooter() != null ? cusItem.getFragmentFooter()
+                            (cusItem.getFragmentFooter() != null && !cusItem.getFragmentFooter().trim().isBlank())
+                                    ? cusItem.getFragmentFooter()
                                     : GC_Constants.gc_FooterFragmentDefault);
 
                     // Check if LoB Specific Case Form is configured
@@ -411,16 +420,19 @@ public class ESSController
                 // View Name for Dynamic Template Header and Title
                 model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
                 model.addAttribute("dynamicFragmentHeader",
-                        cusItem.getFragmentHead() != null ? cusItem.getFragmentHead()
+                        (cusItem.getFragmentHead() != null && !cusItem.getFragmentHead().trim().isBlank())
+                                ? cusItem.getFragmentHead()
                                 : GC_Constants.gc_HeaderFragmentDefault);
                 model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
                 model.addAttribute("dynamicFragmentTitle",
-                        cusItem.getFragmentTitle() != null ? cusItem.getFragmentTitle()
+                        (cusItem.getFragmentTitle() != null && !cusItem.getFragmentTitle().trim().isBlank())
+                                ? cusItem.getFragmentTitle()
                                 : GC_Constants.gc_TitleFragmentDefault);
 
                 model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
                 model.addAttribute("dynamicFragmentFooter",
-                        cusItem.getFragmentFooter() != null ? cusItem.getFragmentFooter()
+                        (cusItem.getFragmentFooter() != null && !cusItem.getFragmentFooter().trim().isBlank())
+                                ? cusItem.getFragmentFooter()
                                 : GC_Constants.gc_FooterFragmentDefault);
 
             }
@@ -502,16 +514,19 @@ public class ESSController
                     // View Name for Dynamic Template Header and Title
                     model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
                     model.addAttribute("dynamicFragmentHeader",
-                            cusItem.getFragmentHead() != null ? cusItem.getFragmentHead()
+                            (cusItem.getFragmentHead() != null && !cusItem.getFragmentHead().trim().isBlank())
+                                    ? cusItem.getFragmentHead()
                                     : GC_Constants.gc_HeaderFragmentDefault);
                     model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
                     model.addAttribute("dynamicFragmentTitle",
-                            cusItem.getFragmentTitle() != null ? cusItem.getFragmentTitle()
+                            (cusItem.getFragmentTitle() != null && !cusItem.getFragmentTitle().trim().isBlank())
+                                    ? cusItem.getFragmentTitle()
                                     : GC_Constants.gc_TitleFragmentDefault);
 
                     model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
                     model.addAttribute("dynamicFragmentFooter",
-                            cusItem.getFragmentFooter() != null ? cusItem.getFragmentFooter()
+                            (cusItem.getFragmentFooter() != null && !cusItem.getFragmentFooter().trim().isBlank())
+                                    ? cusItem.getFragmentFooter()
                                     : GC_Constants.gc_FooterFragmentDefault);
                 }
 
@@ -875,16 +890,19 @@ public class ESSController
                         // View Name for Dynamic Template Header and Title
                         model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
                         model.addAttribute("dynamicFragmentHeader",
-                                cusItem.getFragmentHead() != null ? cusItem.getFragmentHead()
+                                (cusItem.getFragmentHead() != null && !cusItem.getFragmentHead().trim().isBlank())
+                                        ? cusItem.getFragmentHead()
                                         : GC_Constants.gc_HeaderFragmentDefault);
                         model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
                         model.addAttribute("dynamicFragmentTitle",
-                                cusItem.getFragmentTitle() != null ? cusItem.getFragmentTitle()
+                                (cusItem.getFragmentTitle() != null && !cusItem.getFragmentTitle().trim().isBlank())
+                                        ? cusItem.getFragmentTitle()
                                         : GC_Constants.gc_TitleFragmentDefault);
 
                         model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
                         model.addAttribute("dynamicFragmentFooter",
-                                cusItem.getFragmentFooter() != null ? cusItem.getFragmentFooter()
+                                (cusItem.getFragmentFooter() != null && !cusItem.getFragmentFooter().trim().isBlank())
+                                        ? cusItem.getFragmentFooter()
                                         : GC_Constants.gc_FooterFragmentDefault);
 
                     }
@@ -945,16 +963,19 @@ public class ESSController
                 // View Name for Dynamic Template Header and Title
                 model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
                 model.addAttribute("dynamicFragmentHeader",
-                        cusItem.getFragmentHead() != null ? cusItem.getFragmentHead()
+                        (cusItem.getFragmentHead() != null && !cusItem.getFragmentHead().trim().isBlank())
+                                ? cusItem.getFragmentHead()
                                 : GC_Constants.gc_HeaderFragmentDefault);
                 model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
                 model.addAttribute("dynamicFragmentTitle",
-                        cusItem.getFragmentTitle() != null ? cusItem.getFragmentTitle()
+                        (cusItem.getFragmentTitle() != null && !cusItem.getFragmentTitle().trim().isBlank())
+                                ? cusItem.getFragmentTitle()
                                 : GC_Constants.gc_TitleFragmentDefault);
 
                 model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
                 model.addAttribute("dynamicFragmentFooter",
-                        cusItem.getFragmentFooter() != null ? cusItem.getFragmentFooter()
+                        (cusItem.getFragmentFooter() != null && !cusItem.getFragmentFooter().trim().isBlank())
+                                ? cusItem.getFragmentFooter()
                                 : GC_Constants.gc_FooterFragmentDefault);
 
             }

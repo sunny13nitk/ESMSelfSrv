@@ -70,8 +70,8 @@ public class GC_Constants
     public static final String gc_HeaderFragments = "fragments/HeaderFragments";
     public static final String gc_FooterFragments = "fragments/FooterFragments";
     public static final String gc_TitleFragments = "fragments/TitleFragments";
-    public static final String gc_HeaderFragmentDefault = "genT";
-    public static final String gc_TitleFragmentDefault = "genH";
+    public static final String gc_HeaderFragmentDefault = "genH";
+    public static final String gc_TitleFragmentDefault = "genT";
     public static final String gc_FooterFragmentDefault = "genF";
 
 }

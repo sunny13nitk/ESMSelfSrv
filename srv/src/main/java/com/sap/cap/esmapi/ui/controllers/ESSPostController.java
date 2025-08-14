@@ -219,16 +219,19 @@ public class ESSPostController
                 // View Name for Dynamic Template Header and Title
                 model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
                 model.addAttribute("dynamicFragmentHeader",
-                        cusItem.getFragmentHead() != null ? cusItem.getFragmentHead()
+                        (cusItem.getFragmentHead() != null && !cusItem.getFragmentHead().trim().isBlank())
+                                ? cusItem.getFragmentHead()
                                 : GC_Constants.gc_HeaderFragmentDefault);
                 model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
                 model.addAttribute("dynamicFragmentTitle",
-                        cusItem.getFragmentTitle() != null ? cusItem.getFragmentTitle()
+                        (cusItem.getFragmentTitle() != null && !cusItem.getFragmentTitle().trim().isBlank())
+                                ? cusItem.getFragmentTitle()
                                 : GC_Constants.gc_TitleFragmentDefault);
 
                 model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
                 model.addAttribute("dynamicFragmentFooter",
-                        cusItem.getFragmentFooter() != null ? cusItem.getFragmentFooter()
+                        (cusItem.getFragmentFooter() != null && !cusItem.getFragmentFooter().trim().isBlank())
+                                ? cusItem.getFragmentFooter()
                                 : GC_Constants.gc_FooterFragmentDefault);
             }
 
@@ -361,20 +364,21 @@ public class ESSPostController
                     }
 
                     // Attachment file Size
-                    model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
-                    // View Name for Dynamic Template Header and Title
                     model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
                     model.addAttribute("dynamicFragmentHeader",
-                            cusItem.getFragmentHead() != null ? cusItem.getFragmentHead()
+                            (cusItem.getFragmentHead() != null && !cusItem.getFragmentHead().trim().isBlank())
+                                    ? cusItem.getFragmentHead()
                                     : GC_Constants.gc_HeaderFragmentDefault);
                     model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
                     model.addAttribute("dynamicFragmentTitle",
-                            cusItem.getFragmentTitle() != null ? cusItem.getFragmentTitle()
+                            (cusItem.getFragmentTitle() != null && !cusItem.getFragmentTitle().trim().isBlank())
+                                    ? cusItem.getFragmentTitle()
                                     : GC_Constants.gc_TitleFragmentDefault);
 
                     model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
                     model.addAttribute("dynamicFragmentFooter",
-                            cusItem.getFragmentFooter() != null ? cusItem.getFragmentFooter()
+                            (cusItem.getFragmentFooter() != null && !cusItem.getFragmentFooter().trim().isBlank())
+                                    ? cusItem.getFragmentFooter()
                                     : GC_Constants.gc_FooterFragmentDefault);
                 }
                 else

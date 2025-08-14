@@ -133,10 +133,26 @@ public class POCLocalController
 
                             // Even if No Cases - spl. for Newly Create Acc - to enable REfresh button
                             model.addAttribute("sessMsgs", userSessSrv.getSessionMessages());
+
                             model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
-                            model.addAttribute("dynamicFragmentHeader", catgCusItem.getFragmentHead());
+                            model.addAttribute("dynamicFragmentHeader",
+                                    (catgCusItem.getFragmentHead() != null
+                                            && !catgCusItem.getFragmentHead().trim().isBlank())
+                                                    ? catgCusItem.getFragmentHead()
+                                                    : GC_Constants.gc_HeaderFragmentDefault);
                             model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
-                            model.addAttribute("dynamicFragmentTitle", catgCusItem.getFragmentTitle());
+                            model.addAttribute("dynamicFragmentTitle",
+                                    (catgCusItem.getFragmentTitle() != null
+                                            && !catgCusItem.getFragmentTitle().trim().isBlank())
+                                                    ? catgCusItem.getFragmentTitle()
+                                                    : GC_Constants.gc_TitleFragmentDefault);
+
+                            model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
+                            model.addAttribute("dynamicFragmentFooter",
+                                    (catgCusItem.getFragmentFooter() != null
+                                            && !catgCusItem.getFragmentFooter().trim().isBlank())
+                                                    ? catgCusItem.getFragmentFooter()
+                                                    : GC_Constants.gc_FooterFragmentDefault);
 
                         }
 
@@ -222,10 +238,24 @@ public class POCLocalController
 
                     // Attachment file Size
                     model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
+
                     model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
-                    model.addAttribute("dynamicFragmentHeader", catgCusItem.getFragmentHead());
+                    model.addAttribute("dynamicFragmentHeader",
+                            (catgCusItem.getFragmentHead() != null && !catgCusItem.getFragmentHead().trim().isBlank())
+                                    ? catgCusItem.getFragmentHead()
+                                    : GC_Constants.gc_HeaderFragmentDefault);
                     model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
-                    model.addAttribute("dynamicFragmentTitle", catgCusItem.getFragmentTitle());
+                    model.addAttribute("dynamicFragmentTitle",
+                            (catgCusItem.getFragmentTitle() != null && !catgCusItem.getFragmentTitle().trim().isBlank())
+                                    ? catgCusItem.getFragmentTitle()
+                                    : GC_Constants.gc_TitleFragmentDefault);
+
+                    model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
+                    model.addAttribute("dynamicFragmentFooter",
+                            (catgCusItem.getFragmentFooter() != null
+                                    && !catgCusItem.getFragmentFooter().trim().isBlank())
+                                            ? catgCusItem.getFragmentFooter()
+                                            : GC_Constants.gc_FooterFragmentDefault);
 
                     // Check if LoB Specific Case Form is configured
                     if (StringUtils.hasText(catgCusItem.getCaseFormView()))
@@ -371,14 +401,23 @@ public class POCLocalController
                 model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
 
                 // View Name for Dynamic Template Header and Title
+
                 model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
                 model.addAttribute("dynamicFragmentHeader",
-                        cusItem.getFragmentHead() != null ? cusItem.getFragmentHead()
+                        (cusItem.getFragmentHead() != null && !cusItem.getFragmentHead().trim().isBlank())
+                                ? cusItem.getFragmentHead()
                                 : GC_Constants.gc_HeaderFragmentDefault);
                 model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
                 model.addAttribute("dynamicFragmentTitle",
-                        cusItem.getFragmentTitle() != null ? cusItem.getFragmentTitle()
+                        (cusItem.getFragmentTitle() != null && !cusItem.getFragmentTitle().trim().isBlank())
+                                ? cusItem.getFragmentTitle()
                                 : GC_Constants.gc_TitleFragmentDefault);
+
+                model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
+                model.addAttribute("dynamicFragmentFooter",
+                        (cusItem.getFragmentFooter() != null && !cusItem.getFragmentFooter().trim().isBlank())
+                                ? cusItem.getFragmentFooter()
+                                : GC_Constants.gc_FooterFragmentDefault);
             }
 
             log.info("Processing of Case Attachment Upload Form - UI layer :Ends....");
@@ -467,9 +506,21 @@ public class POCLocalController
                 model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
 
                 model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
-                model.addAttribute("dynamicFragmentHeader", cusItem.getFragmentHead());
+                model.addAttribute("dynamicFragmentHeader",
+                        (cusItem.getFragmentHead() != null && !cusItem.getFragmentHead().trim().isBlank())
+                                ? cusItem.getFragmentHead()
+                                : GC_Constants.gc_HeaderFragmentDefault);
                 model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
-                model.addAttribute("dynamicFragmentTitle", cusItem.getFragmentTitle());
+                model.addAttribute("dynamicFragmentTitle",
+                        (cusItem.getFragmentTitle() != null && !cusItem.getFragmentTitle().trim().isBlank())
+                                ? cusItem.getFragmentTitle()
+                                : GC_Constants.gc_TitleFragmentDefault);
+
+                model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
+                model.addAttribute("dynamicFragmentFooter",
+                        (cusItem.getFragmentFooter() != null && !cusItem.getFragmentFooter().trim().isBlank())
+                                ? cusItem.getFragmentFooter()
+                                : GC_Constants.gc_FooterFragmentDefault);
 
             }
             else
@@ -632,9 +683,21 @@ public class POCLocalController
                     model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
 
                     model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
-                    model.addAttribute("dynamicFragmentHeader", cusItem.getFragmentHead());
+                    model.addAttribute("dynamicFragmentHeader",
+                            (cusItem.getFragmentHead() != null && !cusItem.getFragmentHead().trim().isBlank())
+                                    ? cusItem.getFragmentHead()
+                                    : GC_Constants.gc_HeaderFragmentDefault);
                     model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
-                    model.addAttribute("dynamicFragmentTitle", cusItem.getFragmentTitle());
+                    model.addAttribute("dynamicFragmentTitle",
+                            (cusItem.getFragmentTitle() != null && !cusItem.getFragmentTitle().trim().isBlank())
+                                    ? cusItem.getFragmentTitle()
+                                    : GC_Constants.gc_TitleFragmentDefault);
+
+                    model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
+                    model.addAttribute("dynamicFragmentFooter",
+                            (cusItem.getFragmentFooter() != null && !cusItem.getFragmentFooter().trim().isBlank())
+                                    ? cusItem.getFragmentFooter()
+                                    : GC_Constants.gc_FooterFragmentDefault);
                     // Check if LoB Specific Case Form is configured
                     if (StringUtils.hasText(cusItem.getCaseFormView()))
                     {
@@ -1090,11 +1153,22 @@ public class POCLocalController
 
                         // Attachment file Size
                         model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
-
                         model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
-                        model.addAttribute("dynamicFragmentHeader", cusItem.getFragmentHead());
+                        model.addAttribute("dynamicFragmentHeader",
+                                (cusItem.getFragmentHead() != null && !cusItem.getFragmentHead().trim().isBlank())
+                                        ? cusItem.getFragmentHead()
+                                        : GC_Constants.gc_HeaderFragmentDefault);
                         model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
-                        model.addAttribute("dynamicFragmentTitle", cusItem.getFragmentTitle());
+                        model.addAttribute("dynamicFragmentTitle",
+                                (cusItem.getFragmentTitle() != null && !cusItem.getFragmentTitle().trim().isBlank())
+                                        ? cusItem.getFragmentTitle()
+                                        : GC_Constants.gc_TitleFragmentDefault);
+
+                        model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
+                        model.addAttribute("dynamicFragmentFooter",
+                                (cusItem.getFragmentFooter() != null && !cusItem.getFragmentFooter().trim().isBlank())
+                                        ? cusItem.getFragmentFooter()
+                                        : GC_Constants.gc_FooterFragmentDefault);
                         // Check if LoB Specific Case Form is configured
                         if (StringUtils.hasText(cusItem.getCaseFormView()))
                         {
@@ -1158,11 +1232,22 @@ public class POCLocalController
 
                 // Attachment file Size
                 model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
-
                 model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
-                model.addAttribute("dynamicFragmentHeader", cusItem.getFragmentHead());
+                model.addAttribute("dynamicFragmentHeader",
+                        (cusItem.getFragmentHead() != null && !cusItem.getFragmentHead().trim().isBlank())
+                                ? cusItem.getFragmentHead()
+                                : GC_Constants.gc_HeaderFragmentDefault);
                 model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
-                model.addAttribute("dynamicFragmentTitle", cusItem.getFragmentTitle());
+                model.addAttribute("dynamicFragmentTitle",
+                        (cusItem.getFragmentTitle() != null && !cusItem.getFragmentTitle().trim().isBlank())
+                                ? cusItem.getFragmentTitle()
+                                : GC_Constants.gc_TitleFragmentDefault);
+
+                model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
+                model.addAttribute("dynamicFragmentFooter",
+                        (cusItem.getFragmentFooter() != null && !cusItem.getFragmentFooter().trim().isBlank())
+                                ? cusItem.getFragmentFooter()
+                                : GC_Constants.gc_FooterFragmentDefault);
 
             }
 
