@@ -19,7 +19,9 @@ public class VWNamesDirectoryLocal
         ArrayList<TY_ViewMappings> viewsDescMap = new ArrayList<TY_ViewMappings>();
 
         viewsDescMap.add(new TY_ViewMappings(EnumVWNames.inbox, "/poclocal/{lob}", "essCasesListView"));
-         viewsDescMap.add(new TY_ViewMappings(EnumVWNames.caseFormError, "/poclocal/errForm/", "caseFormPOCLocalLXSS"));
+        viewsDescMap.add(new TY_ViewMappings(EnumVWNames.caseFormError, "/poclocal/errForm/", "caseFormPOCLocalLXSS"));
+        viewsDescMap.add(
+                new TY_ViewMappings(EnumVWNames.caseReply, "/poclocal/caseDetails/{caseID}", "esscaseFormReplyLocal"));
 
         return viewsDescMap;
     }

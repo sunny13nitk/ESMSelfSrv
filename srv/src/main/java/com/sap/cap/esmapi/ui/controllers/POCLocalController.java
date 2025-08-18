@@ -1256,6 +1256,9 @@ public class POCLocalController
 
     }
 
+
+
+    
     @PostMapping(value = "/uploadAJAX")
     public boolean uploadFileAttachments(@ModelAttribute("caseForm") TY_Case_Form caseForm, Model model)
     {
