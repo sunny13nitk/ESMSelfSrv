@@ -231,6 +231,7 @@ public class ESSController
     {
         userSessionSrv.clearActiveSubmission();
         String viewCaseForm = VWNamesDirectory.getViewName(EnumVWNames.caseForm, false, (String[]) null);
+        log.info("Case Form View : " + viewCaseForm);
 
         if ((StringUtils.hasText(userSessionSrv.getUserDetails4mSession().getAccountId())
                 || StringUtils.hasText(userSessionSrv.getUserDetails4mSession().getEmployeeId()))
@@ -242,6 +243,7 @@ public class ESSController
             {
 
                 model.addAttribute("caseTypeStr", cusItem.getCaseTypeEnum().toString());
+                log.info("Case Type : " + cusItem.getCaseTypeEnum().toString());
 
                 // Before case form Inititation we must check the Rate Limit for the Current
                 // User Session --current Form Submission added for Rate Limit Evaulation
@@ -296,22 +298,26 @@ public class ESSController
                             (cusItem.getFragmentHead() != null && !cusItem.getFragmentHead().trim().isBlank())
                                     ? cusItem.getFragmentHead()
                                     : GC_Constants.gc_HeaderFragmentDefault);
+                    log.info("Dynamic Header Fragment : " + model.getAttribute("dynamicFragmentHeader"));
                     model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
                     model.addAttribute("dynamicFragmentTitle",
                             (cusItem.getFragmentTitle() != null && !cusItem.getFragmentTitle().trim().isBlank())
                                     ? cusItem.getFragmentTitle()
                                     : GC_Constants.gc_TitleFragmentDefault);
+                    log.info("Dynamic Title Fragment : " + model.getAttribute("dynamicFragmentTitle"));
 
                     model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
                     model.addAttribute("dynamicFragmentFooter",
                             (cusItem.getFragmentFooter() != null && !cusItem.getFragmentFooter().trim().isBlank())
                                     ? cusItem.getFragmentFooter()
                                     : GC_Constants.gc_FooterFragmentDefault);
+                    log.info("Dynamic Footer Fragment : " + model.getAttribute("dynamicFragmentFooter"));
 
                     // Check if LoB Specific Case Form is configured
                     if (StringUtils.hasText(cusItem.getCaseFormView()))
                     {
                         viewCaseForm = cusItem.getCaseFormView();
+                        log.info("Case Form View : " + viewCaseForm);
                     }
 
                 }
