@@ -174,7 +174,9 @@ public class ESSPostController
             {
 
                 model.addAttribute("caseTypeStr", cusItem.getCaseTypeEnum().toString());
-                viewName = cusItem.getCaseFormView() != null ? cusItem.getCaseFormView() : viewName;
+                viewName = (cusItem.getCaseFormView() != null && !cusItem.getCaseFormView().trim().isBlank())
+                        ? cusItem.getCaseFormView()
+                        : viewName;
 
                 // Populate User Details
                 TY_UserESS userDetails = new TY_UserESS();
@@ -321,7 +323,9 @@ public class ESSPostController
                 {
 
                     model.addAttribute("caseTypeStr", cusItem.getCaseTypeEnum().toString());
-                    viewCaseForm = cusItem.getCaseFormView() != null ? cusItem.getCaseFormView() : viewCaseForm;
+                    viewCaseForm = (cusItem.getCaseFormView() != null && !cusItem.getCaseFormView().trim().isBlank())
+                            ? cusItem.getCaseFormView()
+                            : viewCaseForm;
 
                     // Populate User Details
                     TY_UserESS userDetails = new TY_UserESS();

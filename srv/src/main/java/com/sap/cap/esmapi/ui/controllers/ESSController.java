@@ -358,7 +358,9 @@ public class ESSController
             {
 
                 model.addAttribute("caseTypeStr", cusItem.getCaseTypeEnum().toString());
-                viewCaseForm = cusItem.getCaseFormView() != null ? cusItem.getCaseFormView() : viewCaseForm;
+                viewCaseForm = (cusItem.getCaseFormView() != null && !cusItem.getCaseFormView().trim().isBlank())
+                        ? cusItem.getCaseFormView()
+                        : viewCaseForm;
                 // Populate User Details
                 TY_UserESS userDetails = new TY_UserESS();
                 userDetails.setUserDetails(userSessionSrv.getUserDetails4mSession());
@@ -473,7 +475,9 @@ public class ESSController
             {
 
                 model.addAttribute("caseTypeStr", cusItem.getCaseTypeEnum().toString());
-                viewCaseForm = cusItem.getCaseFormView() != null ? cusItem.getCaseFormView() : viewCaseForm;
+                viewCaseForm = (cusItem.getCaseFormView() != null && !cusItem.getCaseFormView().trim().isBlank())
+                        ? cusItem.getCaseFormView()
+                        : viewCaseForm;
 
                 // Populate User Details
                 TY_UserESS userDetails = new TY_UserESS();
@@ -818,7 +822,8 @@ public class ESSController
     public String refreshFormCxtx4SelCatg(HttpServletRequest request, Model model)
     {
         String viewCaseForm = VWNamesDirectory.getViewName(EnumVWNames.caseForm, false, (String[]) null);
-        log.info("Refreshing Case Form for Category Selection... Case Form View: "  + viewCaseForm); ;
+        log.info("Refreshing Case Form for Category Selection... Case Form View: " + viewCaseForm);
+        ;
         if (userSessionSrv != null)
         {
             TY_Case_Form caseForm = userSessionSrv.getCaseFormB4Submission();
@@ -839,7 +844,9 @@ public class ESSController
                     if (cusItem != null)
                     {
                         model.addAttribute("caseTypeStr", cusItem.getCaseTypeEnum().toString());
-                        viewCaseForm = cusItem.getCaseFormView() != null ? cusItem.getCaseFormView() : viewCaseForm;
+                        viewCaseForm = (cusItem.getCaseFormView() != null
+                                && !cusItem.getCaseFormView().trim().isBlank()) ? cusItem.getCaseFormView()
+                                        : viewCaseForm;
                         log.info("Case View : " + viewCaseForm);
                         // Populate User Details
                         TY_UserESS userDetails = new TY_UserESS();
@@ -938,7 +945,9 @@ public class ESSController
             TY_CatgCusItem cusItem = userSessionSrv.getCurrentLOBConfig();
             if (cusItem != null)
             {
-                viewCaseForm = cusItem.getCaseFormView() != null ? cusItem.getCaseFormView() : viewCaseForm;
+                viewCaseForm = (cusItem.getCaseFormView() != null && !cusItem.getCaseFormView().trim().isBlank())
+                        ? cusItem.getCaseFormView()
+                        : viewCaseForm;
                 TY_Case_Form caseForm = userSessionSrv.getCaseFormB4Submission();
 
                 model.addAttribute("caseTypeStr", cusItem.getCaseTypeEnum().toString());
