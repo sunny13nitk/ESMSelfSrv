@@ -818,6 +818,7 @@ public class ESSController
     public String refreshFormCxtx4SelCatg(HttpServletRequest request, Model model)
     {
         String viewCaseForm = VWNamesDirectory.getViewName(EnumVWNames.caseForm, false, (String[]) null);
+        log.info("Refreshing Case Form for Category Selection... Case Form View: "  + viewCaseForm); ;
         if (userSessionSrv != null)
         {
             TY_Case_Form caseForm = userSessionSrv.getCaseFormB4Submission();
@@ -839,7 +840,7 @@ public class ESSController
                     {
                         model.addAttribute("caseTypeStr", cusItem.getCaseTypeEnum().toString());
                         viewCaseForm = cusItem.getCaseFormView() != null ? cusItem.getCaseFormView() : viewCaseForm;
-
+                        log.info("Case View : " + viewCaseForm);
                         // Populate User Details
                         TY_UserESS userDetails = new TY_UserESS();
                         userDetails.setUserDetails(userSessionSrv.getUserDetails4mSession());
