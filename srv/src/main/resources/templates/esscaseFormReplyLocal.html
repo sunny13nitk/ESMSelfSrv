@@ -308,16 +308,16 @@
                                 </blockquote>
                             </div>
 
-                            <div class="cell-7">
+                            <div class="cell-6">
                                 <span class="remark dark" th:if="${caseEditForm.getCaseDetails().description != null}"
                                     th:text="${caseEditForm.getCaseDetails().description }">
                                 </span>
                             </div>
 
                             <!-- Customize Button - Col Start -->
-                            <div class="cell -1" style="margin-left: 3px; margin-top: 27px">
-                                <a href="#" class="button primary rounded outline" th:href="@{/poclocal/}"
-                                    role="button">
+                            <div class="cell -2" style="margin-left: 3px; margin-top: 27px">
+                                <a href="#" class="button primary rounded outline"
+                                    th:href="@{'/poclocal/' + ${caseEditForm.getCaseDetails().lob}}" role="button">
                                     <span class="mif-backward icon" style="margin-left: 0px"></span>
                                     <span style="margin-left: 3px">Back</span>
                                 </a>
@@ -337,6 +337,7 @@
                             <input type="hidden" th:field="*{caseDetails.status}" />
                             <input type="hidden" th:field="*{caseDetails.description}" />
                             <input type="hidden" th:field="*{caseDetails.eTag}" />
+                            <input type="hidden" th:field="*{caseDetails.lob}" />
 
                             <!-- <input type="hidden" th:field="*{caseDetails.statusTransitionCFG}" /> -->
                             <!-- Hidden Fields - Carried over in Form to Controller -->
@@ -349,20 +350,17 @@
 
                             <div th:if="*{caseDetails.statusTransitionCFG.transCfg.editAllowed == true}"
                                 class="colspan-9 offset-1" style="margin-top: 15px; margin-bottom: 10px">
-                                <label>Reply</label>
-
-                                <p id="chars-counter" style="margin-top: -1px">
-                                    You enter 0 char(s)
-                                </p>
-
-                                <textarea data-role="textarea" th:unescaped="true"
-                                    data-prepend="<span class='mif-leanpub mif-3x'></span>" data-cls-prepend="bg-light"
-                                    th:field="*{reply}" data-chars-counter="#chars-counter"
-                                    data-chars-counter-template="You enter $1 char(s)"
+                                <label
+                                    style="font-size: 1.1em; font-weight: bolder; font-family: Arial, Helvetica, sans-serif;color: #007db8">Reply</label>
+                                <textarea data-role="textarea" th:unescaped="true" data-cls-prepend="bg-light"
+                                    th:field="*{reply}"
                                     data-clear-button-icon="<span class='mif-cross fg-black'></span>">
                                 </textarea>
 
-                                <small class="text-muted">Enter your response here.</small>
+                                <small class="text-muted"
+                                    style="color: #007db8; font-family: Arial, Helvetica, sans-serif;">Enter
+                                    your response
+                                    here. </small>
                             </div>
 
                             <!-- Notes Iterations - Begin -->
@@ -373,8 +371,8 @@
                                 <div th:if="${note != null && iterStat.index == 0}">
 
                                     <div th:if="${note.isAgentNote() == true}" data-role="panel"
-                                        data-title-caption="Support Team Response"
-                                        data-cls-panel="shadow-1" data-cls-title="bg-lightOlive fg-white"
+                                        data-title-caption="Support Team Response" data-cls-panel="shadow-1"
+                                        data-cls-title="bg-lightGray fg-black"
                                         data-title-icon="<span class='mif-clipboard'></span>" data-collapsed="false"
                                         data-collapsible="true" data-cls-content="bg-transparent fg-black"
                                         class="colspan-9 offset-1">
@@ -386,10 +384,17 @@
                                                 <h6 style="color: #325254" th:if="${note.createdByName != null}">
                                                     <span style="margin-left: 10px;"
                                                         class="mif-user-secret fg-olive"></span>
-                                                    <!-- <span style="margin-left: 5px;"
-                                                th:text="${#strings.arraySplit(note.createdByName,' ')[0]  + ' , SAP Learning Support Team' }"></span> -->
-                                                    <span style="margin-left: 5px; font-size: .90em"
+                                                    <span
+                                                        th:if="${#strings.arraySplit(note.createdByName,' ').length>1}"
+                                                        style="margin-left: 5px; font-size: .90em"
+                                                        th:text="${#strings.arraySplit(note.createdByName,' ')[1] }"></span>
+
+                                                    <span
+                                                        th:if="${#strings.arraySplit(note.createdByName,' ').length<=1}"
+                                                        style="margin-left: 5px; font-size: .90em"
                                                         th:text="${#strings.arraySplit(note.createdByName,' ')[0] }"></span>
+
+
                                                     <span style="margin-left: 20px;"
                                                         class="mif-alarm-on fg-olive"></span>
                                                     <span style="margin-left: 5px;font-size: .90em"
@@ -399,7 +404,6 @@
                                             </div>
                                             <div style="font-size: 1.1em; overflow:auto; " th:utext="${note.content}">
                                             </div>
-                                            <!-- </div> -->
                                         </div>
                                     </div>
                                     <div th:if="${note.isAgentNote() != true}" data-role="panel"
@@ -415,14 +419,22 @@
 
                                                 <h6 style="color: #325254" th:if="${note.createdByName != null}">
                                                     <span style="margin-left: 10px;" class="mif-user fg-blue"></span>
-                                                    <span style="margin-left: 5px; font-size: .90em"
+                                                    <span
+                                                        th:if="${#strings.arraySplit(note.createdByName,' ').length>1}"
+                                                        style="margin-left: 5px; font-size: .90em"
+                                                        th:text="${#strings.arraySplit(note.createdByName,' ')[1] }"></span>
+
+                                                    <span
+                                                        th:if="${#strings.arraySplit(note.createdByName,' ').length<=1}"
+                                                        style="margin-left: 5px; font-size: .90em"
                                                         th:text="${#strings.arraySplit(note.createdByName,' ')[0] }"></span>
+
+
                                                     <span style="margin-left: 20px;"
                                                         class="mif-alarm-on fg-blue"></span>
                                                     <span style="margin-left: 5px; font-size: .90em"
                                                         th:text="${#temporals.format(note.timestamp, 'yyyy-MM-dd HH:mm:ss')}"></span>
                                                 </h6>
-
                                             </div>
                                             <div style="font-size: 1.1em; overflow:auto; " th:utext="${note.content}">
                                             </div>
@@ -436,8 +448,8 @@
                                 <div th:if="${note != null && iterStat.index > 0}">
 
                                     <div th:if="${note.isAgentNote() == true}" data-role="panel"
-                                        data-title-caption="SAP Learning Support Team Response"
-                                        data-cls-panel="shadow-1" data-cls-title="bg-lightOlive fg-white"
+                                        data-title-caption="Support Team Response" data-cls-panel="shadow-1"
+                                        data-cls-title="bg-lightOlive fg-white"
                                         data-title-icon="<span class='mif-clipboard'></span>" data-collapsed="true"
                                         data-collapsible="true" data-cls-content="bg-transparent fg-black"
                                         class="colspan-9 offset-1">
@@ -447,12 +459,19 @@
                                             <div>
 
                                                 <h6 style="color: #325254" th:if="${note.createdByName != null}">
-                                                    <span style="margin-left: 10px;"
-                                                        class="mif-user-secret fg-olive"></span>
+                                                    <span style="margin-left: 10px;" class="mif-user fg-olive"></span>
                                                     <!-- <span style="margin-left: 5px;"
-                                            th:text="${#strings.arraySplit(note.createdByName,' ')[0]  + ' , SAP Learning Support Team' }"></span> -->
-                                                    <span style="margin-left: 5px; font-size: .90em"
+                                 th:text="${#strings.arraySplit(note.createdByName,' ')[0]  + ' , SAP Learning Support Team' }"></span> -->
+                                                    <span
+                                                        th:if="${#strings.arraySplit(note.createdByName,' ').length>1}"
+                                                        style="margin-left: 5px; font-size: .90em"
+                                                        th:text="${#strings.arraySplit(note.createdByName,' ')[1] }"></span>
+
+                                                    <span
+                                                        th:if="${#strings.arraySplit(note.createdByName,' ').length<=1}"
+                                                        style="margin-left: 5px; font-size: .90em"
                                                         th:text="${#strings.arraySplit(note.createdByName,' ')[0] }"></span>
+
                                                     <span style="margin-left: 20px;"
                                                         class="mif-alarm-on fg-olive"></span>
                                                     <span style="margin-left: 5px;font-size: .90em"
@@ -460,7 +479,8 @@
                                                 </h6>
 
                                             </div>
-                                            <div style="font-size: 1.1em;" th:utext="${note.content}"></div>
+                                            <div style="font-size: 1.1em;overflow:auto;" th:utext="${note.content}">
+                                            </div>
                                             <!-- </div> -->
                                         </div>
                                     </div>
@@ -477,7 +497,14 @@
 
                                                 <h6 style="color: #325254" th:if="${note.createdByName != null}">
                                                     <span style="margin-left: 10px;" class="mif-user fg-blue"></span>
-                                                    <span style="margin-left: 5px; font-size: .90em"
+                                                    <span
+                                                        th:if="${#strings.arraySplit(note.createdByName,' ').length>1}"
+                                                        style="margin-left: 5px; font-size: .90em"
+                                                        th:text="${#strings.arraySplit(note.createdByName,' ')[1] }"></span>
+
+                                                    <span
+                                                        th:if="${#strings.arraySplit(note.createdByName,' ').length<=1}"
+                                                        style="margin-left: 5px; font-size: .90em"
                                                         th:text="${#strings.arraySplit(note.createdByName,' ')[0] }"></span>
                                                     <span style="margin-left: 20px;"
                                                         class="mif-alarm-on fg-blue"></span>
@@ -500,24 +527,20 @@
 
                             <div th:if="*{caseDetails.statusTransitionCFG.transCfg.editAllowed == true}"
                                 class="colspan-9 offset-1" style="margin-top: 15px; margin-bottom: 10px">
-                                <label>Attachment(s) - Choose the File and Upload to Attach to the Case</label>
 
                                 <div class="row" style="margin-top: 10px;">
 
                                     <div class="cell-10 flex-align-self-start">
                                         <input type="file" data-role="file" name="attachment" th:field="*{attachment}"
-                                            data-mode="drop">
+                                            data-mode="drop" onchange="handleFileSelection(this)">
 
                                         <small class="text-muted">Max file size allowed : <span style="color: #B1365B"
                                                 th:text="${attSize}"></span> MB! </small>
-                                    </div>
 
-                                    <div class="cell-1 flex-align-self-end">
-                                        <button class="button rounded primary outline" name="action" value="upload"
-                                            style="margin-top: 70px">
-                                            <span class="mif-file-upload" style="margin-left: 0px"> </span> <span
-                                                style="margin-left: 3px">Upload</span>
-                                        </button>
+                                        <small class="text-muted" style="margin-left: 200px;">Allowed file type(s) :
+                                            <span
+                                                style="color: slategray; margin: 10px;">pdf|docx|doc|txt|csv|xlsx|xls|mp4|msg|png|jpg|jpeg</span>
+                                        </small>
                                     </div>
 
                                     <div class="colspan-9 offset-1" style="margin-top: 5px; margin-bottom: 10px"
@@ -603,16 +626,17 @@
 
 
 
-                                <div th:if="*{caseDetails.statusTransitionCFG.transCfg.editAllowed == true}"
-                                    class="case-form-reply-buttons"
+                                <div class="colspan-3 offset-4" 
+                                    th:if="*{caseDetails.statusTransitionCFG.transCfg.editAllowed == true}"
                                     style="margin-top: 30px; margin-bottom: 10px; margin-right: 20px;">
                                     <button class="ds-button ds-button--primary" data-hint-text="Submit Reply"
                                         name="action" value="saveCaseEdit">
                                         Reply
                                     </button>
 
-                                    <a href="#" class="ds-button ds-button--secondary" th:href="@{/poclocal/}"
-                                        role="button" data-hint-text="Cancel Case Submission.">
+                                    <a href="#" class="ds-button ds-button--secondary"
+                                        th:href="@{'/poclocal/'+ ${caseEditForm.getCaseDetails().lob}}" role="button"
+                                        data-hint-text="Cancel Case Submission.">
                                         Cancel
                                     </a>
                                 </div>
@@ -629,6 +653,172 @@
 
     <newlxp-footer></newlxp-footer>
 
+    <script>
+
+        $(document).ready(function ()
+        {
+            var clicked = false;
+            $("#SubmitCaseBtn").on("click", function (event)
+            {
+                if (clicked)
+                {
+                    event.preventDefault();
+                    return;
+                }
+                clicked = true;
+                var $this = $(this);
+                $this.addClass('disabled');
+                setTimeout(function ()
+                {
+                    clicked = false;
+                    $this.removeClass('disabled');
+                }, 4000); // Set your desired delay in milliseconds here - 4s currently
+            });
+        });
+        function runToast()
+        {
+            var toast = Metro.toast.create("Rate Limit Exceeded!! ", function ()
+            {
+                alert('Rate Limit Exceeded!! You can only submit a maximum of 2 incidents in a 5 min slot for an Active Session.')
+            });
+
+        }
+
+        $(document).ready(function ()
+        {
+            $('div.slot').each(function (i, d)
+            {
+                runToast.call($(this));
+            });
+        });
+
+        const scripts = {
+            'lxpWebComponents': {
+                src: '/web-components.js',
+                loaded: false
+            }
+        };
+
+        function load(...scripts)
+        {
+            return Promise.all(scripts.map((script) => loadScript(script)));
+        }
+
+        function loadScript(name)
+        {
+            return new Promise((resolve, reject) =>
+            {
+                // Resolve if already loaded
+                if (scripts[name].loaded)
+                {
+                    resolve({ script: name, loaded: true, status: 'Already Loaded' });
+                } else
+                {
+                    // Load script
+                    const script = document.createElement('script');
+                    script.type = 'text/javascript';
+                    // TODO: uncomment for local testing while distensions are not configured. Remove after destinations configuring.
+                    // script.src = 'https://support.learning-test.sap.com/web-components.js';
+                    script.src = scripts[name].src;
+                    if (script.readyState)
+                    {
+                        // IE
+                        script.onreadystatechange = () =>
+                        {
+                            if (
+                                script.readyState === 'loaded' ||
+                                script.readyState === 'complete'
+                            )
+                            {
+                                script.onreadystatechange = null;
+                                scripts[name].loaded = true;
+                                resolve({ script: name, loaded: true, status: 'Loaded' });
+                            }
+                        };
+                    } else
+                    {
+                        // Others
+                        script.onload = () =>
+                        {
+                            scripts[name].loaded = true;
+                            resolve({ script: name, loaded: true, status: 'Loaded' });
+                        };
+                    }
+                    script.onerror = (error) =>
+                        resolve({ script: name, loaded: false, status: 'Not loaded' });
+                    document.body.appendChild(script);
+                }
+            });
+        }
+
+        load('lxpWebComponents').then((data) =>
+        {
+            if (data.loaded)
+            {
+                console.log('LXP Web-components were successfully loaded.');
+            } else
+            {
+                console.log('LXP Web-components are not loaded.');
+            }
+        })
+            .catch((error) => console.error(error))
+
+
+
+
+        function handleFileSelection(inputElement)
+        {
+            if (inputElement.files.length > 0)
+            {
+                // File was selected, proceed with server event trigger
+                // triggerServerEvent(inputElement.files);
+                console.log("File selected: " + inputElement.files[0].name);
+                // File was selected, proceed with server event trigger
+                triggerServerEvent(inputElement.files);
+
+            } else
+            {
+                // No file selected, handle as needed
+                console.log("No file selected.");
+            }
+        }
+
+        function triggerServerEvent(files)
+        {
+
+            var formData = new FormData($("#caseEditForm")[0]);
+
+            $.ajax({
+                type: "POST",
+                url: "/post/uploadAJAXReply",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (attUploaded)
+                {
+                    if (attUploaded === true)
+                    {
+                        console.log("File(s) Upload Success");
+                        window.location.href = '/poclocal/refreshFormReply4AttUpload'; // redirect     //this would be GET
+                    }
+                    else
+                    {
+                        console.log("File(s) Upload Failed");
+                        window.location.href = '/poclocal/refreshFormReply4AttUpload'; // redirect     //this would be GET
+                    }
+                    // Handle the response from the server if needed
+                },
+                error: function (error)
+                {
+                    console.error("Error uploading file(s):", error);
+                    window.location.href = '/poclocal/refreshFormReply4AttUpload'; // redirect     //this would be GET
+                }
+
+
+            });
+        }
+    </script>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script th:inline="javascript">
 
@@ -641,9 +831,6 @@
 
     <!-- Metro 4 -->
     <script src="https://cdn.metroui.org.ua/v4.3.2/js/metro.min.js"></script>
-
-    <!-- Load Web Components -- START -->
-    <!-- <script type="text/javascript" th:src="@{/js/web_components_loading.js}"></script> -->
 </body>
 
 </html>

@@ -89,15 +89,9 @@ public class POCLocalController
     @Autowired
     private IF_SrvCloudAPI apiSrv;
 
-    // #TEST - End
-
-    private final String caseListVWRedirect = "redirect:/poclocal/";
-    private final String caseFormErrorRedirect = "redirect:/poclocal/errForm/";
-    private final String caseFormView = "caseFormPOCLocalLXSS";
-    private final String caseFormReply = "caseFormReplyPOCLocalLXSS";
     private final String caseConfirmError = "alreadyConfirmed";
-    private final String succRedirect = "redirect:/poclocal/success";
-    private final String caseFormReplyErrorRedirect = "redirect:/poclocal/errCaseReply/";
+
+    // #TEST - End
 
     @GetMapping("/{lob}")
     public String showCasesList(@PathVariable(name = "lob") String lob, Model model)
@@ -176,7 +170,7 @@ public class POCLocalController
     @GetMapping("/createCase/")
     public String showCaseAsyncForm(Model model)
     {
-        String viewCaseForm = caseFormView;
+        String viewCaseForm = VWNamesDirectoryLocal.getViewName(EnumVWNames.caseForm, false, (String[]) null);
 
         if ((StringUtils.hasText(userSessSrv.getUserDetails4mSession().getAccountId())
                 || StringUtils.hasText(userSessSrv.getUserDetails4mSession().getEmployeeId()))
@@ -267,7 +261,8 @@ public class POCLocalController
                 else
                 {
                     // Not Within Rate Limit - REdirect to List View
-                    viewCaseForm = caseListVWRedirect;
+                    viewCaseForm = VWNamesDirectoryLocal.getViewName(EnumVWNames.inbox, true,
+                            userSessSrv.getCurrentLOBConfig().getCaseTypeEnum().toString());
 
                 }
 
@@ -330,7 +325,7 @@ public class POCLocalController
     @PostMapping(value = "/saveCase", params = "action=upload")
     public String uploadAttachments(@ModelAttribute("caseForm") TY_Case_Form caseForm, Model model)
     {
-        String viewName = caseFormView;
+        String viewName = VWNamesDirectoryLocal.getViewName(EnumVWNames.caseForm, false, (String[]) null);
 
         List<String> attMsgs = Collections.emptyList();
 
@@ -431,7 +426,7 @@ public class POCLocalController
     public String showErrorCaseForm(Model model)
     {
 
-        String viewCaseForm = caseFormView;
+        String viewCaseForm = VWNamesDirectoryLocal.getViewName(EnumVWNames.caseForm, false, (String[]) null);
 
         if ((StringUtils.hasText(userSessSrv.getUserDetails4mSession().getAccountId())
                 || StringUtils.hasText(userSessSrv.getUserDetails4mSession().getEmployeeId()))
@@ -444,7 +439,9 @@ public class POCLocalController
             {
 
                 model.addAttribute("caseTypeStr", cusItem.getCaseTypeEnum().toString());
-                viewCaseForm = cusItem.getCaseFormView() != null ? cusItem.getCaseFormView() : caseFormView;
+                viewCaseForm = (cusItem.getCaseFormView() != null && !cusItem.getCaseFormView().trim().isBlank())
+                        ? cusItem.getCaseFormView()
+                        : viewCaseForm;
 
                 // Populate User Details
                 TY_UserESS userDetails = new TY_UserESS();
@@ -546,7 +543,7 @@ public class POCLocalController
     public String refreshCaseForm4Catg(@ModelAttribute("caseForm") TY_Case_Form caseForm, Model model)
     {
 
-        String viewCaseForm = caseFormView;
+        String viewCaseForm = VWNamesDirectoryLocal.getViewName(EnumVWNames.caseForm, false, (String[]) null);
         if (caseForm != null && userSessSrv != null)
         {
 
@@ -645,6 +642,10 @@ public class POCLocalController
                 userDetails.setUserDetails(userSessSrv.getUserDetails4mSession());
                 model.addAttribute("userInfo", userDetails);
 
+                caseFormView = (cusItem.getCaseFormView() != null && !cusItem.getCaseFormView().trim().isBlank())
+                        ? cusItem.getCaseFormView()
+                        : VWNamesDirectoryLocal.getViewName(EnumVWNames.caseForm, false, (String[]) null);
+
                 // Get Case from Session Service
 
                 TY_Case_Form caseForm = userSessSrv.getCaseFormB4Submission();
@@ -698,11 +699,6 @@ public class POCLocalController
                             (cusItem.getFragmentFooter() != null && !cusItem.getFragmentFooter().trim().isBlank())
                                     ? cusItem.getFragmentFooter()
                                     : GC_Constants.gc_FooterFragmentDefault);
-                    // Check if LoB Specific Case Form is configured
-                    if (StringUtils.hasText(cusItem.getCaseFormView()))
-                    {
-                        caseFormView = cusItem.getCaseFormView();
-                    }
 
                 }
 
@@ -714,6 +710,7 @@ public class POCLocalController
     @GetMapping("/caseReply/removeAttachment/{fileName}")
     public String removeAttachmentCaseReply(@PathVariable String fileName, Model model)
     {
+        String caseFormReply = VWNamesDirectoryLocal.getViewName(EnumVWNames.caseReply, false, (String[]) null);
         if (StringUtils.hasText(fileName) && attSrv != null && userSessSrv != null)
         {
             if (attSrv.checkIFExists(fileName))
@@ -771,6 +768,29 @@ public class POCLocalController
 
                 // Attachment file Size
                 model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
+
+                TY_CatgCusItem cusItem = userSessSrv.getCurrentLOBConfig();
+                if (cusItem != null)
+                {
+
+                    model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
+                    model.addAttribute("dynamicFragmentHeader",
+                            (cusItem.getFragmentHead() != null && !cusItem.getFragmentHead().trim().isBlank())
+                                    ? cusItem.getFragmentHead()
+                                    : GC_Constants.gc_HeaderFragmentDefault);
+                    model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
+                    model.addAttribute("dynamicFragmentTitle",
+                            (cusItem.getFragmentTitle() != null && !cusItem.getFragmentTitle().trim().isBlank())
+                                    ? cusItem.getFragmentTitle()
+                                    : GC_Constants.gc_TitleFragmentDefault);
+
+                    model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
+                    model.addAttribute("dynamicFragmentFooter",
+                            (cusItem.getFragmentFooter() != null && !cusItem.getFragmentFooter().trim().isBlank())
+                                    ? cusItem.getFragmentFooter()
+                                    : GC_Constants.gc_FooterFragmentDefault);
+                }
+
             }
         }
 
@@ -783,7 +803,8 @@ public class POCLocalController
             throws EX_ESMAPI, IOException
     {
 
-        String viewName = caseListVWRedirect;
+        String viewName = VWNamesDirectoryLocal.getViewName(EnumVWNames.inbox, true,
+                userSessSrv.getCurrentLOBConfig().getCaseTypeEnum().toString());
         if (caseReplyForm != null && userSessSrv != null)
         {
 
@@ -793,7 +814,7 @@ public class POCLocalController
             if (!userSessSrv.SubmitCaseReply(caseReplyForm))
             {
                 // Redirect to Error Processing of Form
-                viewName = caseFormReplyErrorRedirect;
+                viewName = VWNamesDirectoryLocal.getViewName(EnumVWNames.caseReply, true, (String[]) null);
             }
             else
             {
@@ -816,7 +837,7 @@ public class POCLocalController
     @PostMapping(value = "/saveCaseReply", params = "action=upload")
     public String uploadCaseReplyAttachment(@ModelAttribute("caseEditForm") TY_CaseEdit_Form caseReplyForm, Model model)
     {
-
+        String caseFormReply = VWNamesDirectoryLocal.getViewName(EnumVWNames.caseReply, false, (String[]) null);
         List<String> attMsgs = Collections.emptyList();
         if (caseReplyForm != null && userSessSrv != null)
         {
@@ -865,6 +886,28 @@ public class POCLocalController
                 // Attachment file Size
                 model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
 
+                TY_CatgCusItem cusItem = userSessSrv.getCurrentLOBConfig();
+                if (cusItem != null)
+                {
+
+                    model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
+                    model.addAttribute("dynamicFragmentHeader",
+                            (cusItem.getFragmentHead() != null && !cusItem.getFragmentHead().trim().isBlank())
+                                    ? cusItem.getFragmentHead()
+                                    : GC_Constants.gc_HeaderFragmentDefault);
+                    model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
+                    model.addAttribute("dynamicFragmentTitle",
+                            (cusItem.getFragmentTitle() != null && !cusItem.getFragmentTitle().trim().isBlank())
+                                    ? cusItem.getFragmentTitle()
+                                    : GC_Constants.gc_TitleFragmentDefault);
+
+                    model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
+                    model.addAttribute("dynamicFragmentFooter",
+                            (cusItem.getFragmentFooter() != null && !cusItem.getFragmentFooter().trim().isBlank())
+                                    ? cusItem.getFragmentFooter()
+                                    : GC_Constants.gc_FooterFragmentDefault);
+                }
+
             }
         }
 
@@ -874,6 +917,7 @@ public class POCLocalController
     @GetMapping("/errCaseReply/")
     public String showErrorCaseReplyForm(Model model)
     {
+        String caseFormReply = VWNamesDirectoryLocal.getViewName(EnumVWNames.caseReply, false, (String[]) null);
         if (userSessSrv != null)
         {
 
@@ -918,6 +962,28 @@ public class POCLocalController
                     // Attachment file Size
                     model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
 
+                    TY_CatgCusItem cusItem = userSessSrv.getCurrentLOBConfig();
+                    if (cusItem != null)
+                    {
+
+                        model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
+                        model.addAttribute("dynamicFragmentHeader",
+                                (cusItem.getFragmentHead() != null && !cusItem.getFragmentHead().trim().isBlank())
+                                        ? cusItem.getFragmentHead()
+                                        : GC_Constants.gc_HeaderFragmentDefault);
+                        model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
+                        model.addAttribute("dynamicFragmentTitle",
+                                (cusItem.getFragmentTitle() != null && !cusItem.getFragmentTitle().trim().isBlank())
+                                        ? cusItem.getFragmentTitle()
+                                        : GC_Constants.gc_TitleFragmentDefault);
+
+                        model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
+                        model.addAttribute("dynamicFragmentFooter",
+                                (cusItem.getFragmentFooter() != null && !cusItem.getFragmentFooter().trim().isBlank())
+                                        ? cusItem.getFragmentFooter()
+                                        : GC_Constants.gc_FooterFragmentDefault);
+                    }
+
                 }
 
             }
@@ -936,6 +1002,7 @@ public class POCLocalController
     @GetMapping("/caseDetails/{caseID}")
     public String getCaseDetails(@PathVariable String caseID, Model model)
     {
+        String caseFormReply = VWNamesDirectoryLocal.getViewName(EnumVWNames.caseReply, false, (String[]) null);
         if (StringUtils.hasText(caseID))
         {
             if (userSessSrv != null)
@@ -967,8 +1034,32 @@ public class POCLocalController
                             attSrv.initialize();
                         }
 
-                        // Attachment file Size
-                        model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
+                        TY_CatgCusItem catgCusItem = userSessSrv.getCurrentLOBConfig();
+                        if (catgCusItem != null)
+                        {
+                            // Attachment file Size
+                            model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
+
+                            model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
+                            model.addAttribute("dynamicFragmentHeader",
+                                    (catgCusItem.getFragmentHead() != null
+                                            && !catgCusItem.getFragmentHead().trim().isBlank())
+                                                    ? catgCusItem.getFragmentHead()
+                                                    : GC_Constants.gc_HeaderFragmentDefault);
+                            model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
+                            model.addAttribute("dynamicFragmentTitle",
+                                    (catgCusItem.getFragmentTitle() != null
+                                            && !catgCusItem.getFragmentTitle().trim().isBlank())
+                                                    ? catgCusItem.getFragmentTitle()
+                                                    : GC_Constants.gc_TitleFragmentDefault);
+
+                            model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
+                            model.addAttribute("dynamicFragmentFooter",
+                                    (catgCusItem.getFragmentFooter() != null
+                                            && !catgCusItem.getFragmentFooter().trim().isBlank())
+                                                    ? catgCusItem.getFragmentFooter()
+                                                    : GC_Constants.gc_FooterFragmentDefault);
+                        }
 
                     }
                 }
@@ -981,6 +1072,7 @@ public class POCLocalController
         }
 
         return caseFormReply;
+
     }
 
     @GetMapping("/confirmCase/{caseID}")
@@ -1088,7 +1180,7 @@ public class POCLocalController
     @GetMapping("/refreshForm4SelCatg")
     public String refreshFormCxtx4SelCatg(HttpServletRequest request, Model model)
     {
-        String caseViewForm = null;
+        String caseViewForm = VWNamesDirectoryLocal.getViewName(EnumVWNames.caseForm, false, (String[]) null);
         if (userSessSrv != null)
         {
             TY_Case_Form caseForm = userSessSrv.getCaseFormB4Submission();
@@ -1174,10 +1266,7 @@ public class POCLocalController
                         {
                             caseViewForm = cusItem.getCaseFormView();
                         }
-                        else
-                        {
-                            caseViewForm = caseFormView;
-                        }
+
                     }
                     else
                     {
@@ -1256,13 +1345,11 @@ public class POCLocalController
 
     }
 
-
-
-    
     @PostMapping(value = "/uploadAJAX")
     public boolean uploadFileAttachments(@ModelAttribute("caseForm") TY_Case_Form caseForm, Model model)
     {
         Boolean uploadSuccess = false;
+
         if (caseForm != null && attSrv != null && userSessSrv != null)
         {
 
@@ -1277,7 +1364,9 @@ public class POCLocalController
                     {
                         // Attachment to Local Storage Persistence Error
                         uploadSuccess = false;
-                        userSessSrv.addFormErrors(caseFormErrorRedirect);
+                        userSessSrv.addFormErrors(msgSrc.getMessage("ERR_ATT_BYTES", new Object[]
+                        { caseForm.getAttachment().getOriginalFilename(), attSrv.getSessionMessages().get(0) },
+                                Locale.ENGLISH));
 
                     }
                     else
@@ -1313,6 +1402,63 @@ public class POCLocalController
         }
 
         return uploadSuccess;
+    }
+
+    @PostMapping(value = "/uploadAJAXReply")
+    public boolean uploadFileAttachmentsReply(@ModelAttribute("caseEditForm") TY_CaseEdit_Form caseReplyForm)
+    {
+        boolean uploadSuccess = false;
+
+        if (caseReplyForm != null && userSessSrv != null)
+        {
+            log.info("Processing of Case Attachment Upload Form - UI layer :Begins....");
+            if (StringUtils.hasText(caseReplyForm.getCaseDetails().getCaseGuid()))
+            {
+                // Get Case Details
+                TY_CaseEdit_Form caseEditForm = userSessSrv
+                        .getCaseDetails4Edit(caseReplyForm.getCaseDetails().getCaseGuid());
+
+                // Super Impose Reply from User Form 4m Session
+                caseEditForm.setReply(caseReplyForm.getReply());
+
+                // Clear form for New Attachment as Current Attachment already in Container
+                caseEditForm.setAttachment(null);
+
+                if (caseReplyForm.getAttachment() != null)
+                {
+                    if (StringUtils.hasText(caseReplyForm.getAttachment().getOriginalFilename()))
+                    {
+                        // Clear Attachment Service Session Messages for subsequent roundtip
+                        attSrv.clearSessionMessages();
+                        if (!attSrv.addAttachment(caseReplyForm.getAttachment()))
+                        {
+                            // Attachment to Local Storage Persistence Error
+                            // attMsgs = attSrv.getSessionMessages();
+                            uploadSuccess = false;
+                            // ERR_ATT_BYTES= Error Accessing Binary Data from attachment - {0}, Details -
+                            // {1}. Not able to upload.
+                            userSessSrv.addFormErrors(msgSrc.getMessage("ERR_ATT_BYTES", new Object[]
+                            { caseReplyForm.getAttachment().getOriginalFilename(), attSrv.getSessionMessages().get(0) },
+                                    Locale.ENGLISH));
+                            log.error("Attachment to Local Storage Persistence Error");
+
+                        }
+                        else
+                        {
+                            uploadSuccess = true;
+                        }
+
+                    }
+
+                }
+                userSessSrv.setCaseEditFormB4Submission(caseEditForm);
+
+            }
+
+        }
+
+        return uploadSuccess;
+
     }
 
 }

@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class TY_CaseDetails
 {
     private String caseId;
+    private String lob;
     private String caseGuid;
     private String caseType;
     private String origin;
