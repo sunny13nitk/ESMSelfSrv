@@ -326,7 +326,7 @@
                         </div>
 
                         <!-- Form -->
-                        <form th:object="${caseEditForm}" enctype="multipart/form-data"
+                        <form id="caseEditForm" th:object="${caseEditForm}" enctype="multipart/form-data"
                             th:action="@{/poclocal/saveCaseReply}" method="post">
 
                             <!-- Hidden Fields - Carried over in Form to Controller -->
@@ -449,7 +449,7 @@
 
                                     <div th:if="${note.isAgentNote() == true}" data-role="panel"
                                         data-title-caption="Support Team Response" data-cls-panel="shadow-1"
-                                        data-cls-title="bg-lightOlive fg-white"
+                                        data-cls-title="bg-lightGray fg-black"
                                         data-title-icon="<span class='mif-clipboard'></span>" data-collapsed="true"
                                         data-collapsible="true" data-cls-content="bg-transparent fg-black"
                                         class="colspan-9 offset-1">
@@ -790,7 +790,7 @@
 
             $.ajax({
                 type: "POST",
-                url: "/post/uploadAJAXReply",
+                url: "/poclocal/uploadAJAXReply",
                 data: formData,
                 processData: false,
                 contentType: false,

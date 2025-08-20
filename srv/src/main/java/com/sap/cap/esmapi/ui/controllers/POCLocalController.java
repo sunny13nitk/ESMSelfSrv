@@ -1003,71 +1003,79 @@ public class POCLocalController
     public String getCaseDetails(@PathVariable String caseID, Model model)
     {
         String caseFormReply = VWNamesDirectoryLocal.getViewName(EnumVWNames.caseReply, false, (String[]) null);
+        userSessSrv.clearActiveSubmission();
+        log.info("Navigating to case with UUID : " + caseID);
         if (StringUtils.hasText(caseID))
         {
             if (userSessSrv != null)
             {
 
-                try
+                // Before case form Inititation we must check the Rate Limit for the Current
+                // User Session --current Form Submission added for Rate Limit Evaulation
+                if (userSessSrv.checkRateLimit())
                 {
-
-                    // Populate User Details
-                    TY_UserESS userDetails = new TY_UserESS();
-                    userDetails.setUserDetails(userSessSrv.getUserDetails4mSession());
-                    model.addAttribute("userInfo", userDetails);
-
-                    // Get Case Details
-                    TY_CaseEdit_Form caseEditForm = userSessSrv.getCaseDetails4Edit(caseID);
-                    if (caseEditForm != null)
+                    try
                     {
-                        model.addAttribute("caseEditForm", caseEditForm);
-                        if (CollectionUtils.isNotEmpty(caseEditForm.getCaseDetails().getNotes()))
+
+                        // Populate User Details
+                        TY_UserESS userDetails = new TY_UserESS();
+                        userDetails.setUserDetails(userSessSrv.getUserDetails4mSession());
+                        model.addAttribute("userInfo", userDetails);
+
+                        // Get Case Details
+                        TY_CaseEdit_Form caseEditForm = userSessSrv.getCaseDetails4Edit(caseID);
+                        if (caseEditForm != null)
                         {
-                            log.info("# External Notes Bound for Case ID - "
-                                    + caseEditForm.getCaseDetails().getNotes().size());
+                            model.addAttribute("caseEditForm", caseEditForm);
+                            if (CollectionUtils.isNotEmpty(caseEditForm.getCaseDetails().getNotes()))
+                            {
+                                log.info("# External Notes Bound for Case ID - "
+                                        + caseEditForm.getCaseDetails().getNotes().size());
+
+                            }
+
+                            // Initialize Attachments Session Service
+                            if (attSrv != null)
+                            {
+                                attSrv.initialize();
+                            }
+
+                            TY_CatgCusItem catgCusItem = userSessSrv.getCurrentLOBConfig();
+                            if (catgCusItem != null)
+                            {
+                                // Attachment file Size
+                                model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
+
+                                model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
+                                model.addAttribute("dynamicFragmentHeader",
+                                        (catgCusItem.getFragmentHead() != null
+                                                && !catgCusItem.getFragmentHead().trim().isBlank())
+                                                        ? catgCusItem.getFragmentHead()
+                                                        : GC_Constants.gc_HeaderFragmentDefault);
+                                model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
+                                model.addAttribute("dynamicFragmentTitle",
+                                        (catgCusItem.getFragmentTitle() != null
+                                                && !catgCusItem.getFragmentTitle().trim().isBlank())
+                                                        ? catgCusItem.getFragmentTitle()
+                                                        : GC_Constants.gc_TitleFragmentDefault);
+
+                                model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
+                                model.addAttribute("dynamicFragmentFooter",
+                                        (catgCusItem.getFragmentFooter() != null
+                                                && !catgCusItem.getFragmentFooter().trim().isBlank())
+                                                        ? catgCusItem.getFragmentFooter()
+                                                        : GC_Constants.gc_FooterFragmentDefault);
+                            }
 
                         }
-
-                        // Initialize Attachments Session Service
-                        if (attSrv != null)
-                        {
-                            attSrv.initialize();
-                        }
-
-                        TY_CatgCusItem catgCusItem = userSessSrv.getCurrentLOBConfig();
-                        if (catgCusItem != null)
-                        {
-                            // Attachment file Size
-                            model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
-
-                            model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
-                            model.addAttribute("dynamicFragmentHeader",
-                                    (catgCusItem.getFragmentHead() != null
-                                            && !catgCusItem.getFragmentHead().trim().isBlank())
-                                                    ? catgCusItem.getFragmentHead()
-                                                    : GC_Constants.gc_HeaderFragmentDefault);
-                            model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
-                            model.addAttribute("dynamicFragmentTitle",
-                                    (catgCusItem.getFragmentTitle() != null
-                                            && !catgCusItem.getFragmentTitle().trim().isBlank())
-                                                    ? catgCusItem.getFragmentTitle()
-                                                    : GC_Constants.gc_TitleFragmentDefault);
-
-                            model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
-                            model.addAttribute("dynamicFragmentFooter",
-                                    (catgCusItem.getFragmentFooter() != null
-                                            && !catgCusItem.getFragmentFooter().trim().isBlank())
-                                                    ? catgCusItem.getFragmentFooter()
-                                                    : GC_Constants.gc_FooterFragmentDefault);
-                        }
-
+                    }
+                    catch (Exception e)
+                    {
+                        throw new EX_ESMAPI("Exception Triggered while fetching Case Details for Case ID : " + caseID
+                                + "Details : " + e.getLocalizedMessage());
                     }
                 }
-                catch (Exception e)
-                {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+
             }
         }
 
@@ -1458,6 +1466,62 @@ public class POCLocalController
         }
 
         return uploadSuccess;
+
+    }
+
+    @GetMapping("/refreshFormReply4AttUpload")
+    public String refreshCaseReplyFormPostAttachmentUpload(Model model)
+    {
+        String viewName = VWNamesDirectoryLocal.getViewName(EnumVWNames.caseReply, false, (String[]) null);
+        List<String> attMsgs = Collections.emptyList();
+        TY_CaseEdit_Form caseEditForm = null;
+        if (userSessSrv != null)
+        {
+            caseEditForm = userSessSrv.getCaseEditFormB4Submission();
+            if (caseEditForm != null)
+            {
+                // Populate User Details
+                TY_UserESS userDetails = new TY_UserESS();
+                userDetails.setUserDetails(userSessSrv.getUserDetails4mSession());
+                model.addAttribute("userInfo", userDetails);
+
+                // Attachment to Local Storage Persistence Error
+                attMsgs = attSrv.getSessionMessages();
+
+                model.addAttribute("caseEditForm", caseEditForm);
+
+                model.addAttribute("formErrors", attMsgs);
+
+                model.addAttribute("attachments", attSrv.getAttachmentNames());
+                // Attachment file Size
+                model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
+
+                TY_CatgCusItem cusItem = userSessSrv.getCurrentLOBConfig();
+                if (cusItem != null)
+                {
+
+                    model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
+                    model.addAttribute("dynamicFragmentHeader",
+                            (cusItem.getFragmentHead() != null && !cusItem.getFragmentHead().trim().isBlank())
+                                    ? cusItem.getFragmentHead()
+                                    : GC_Constants.gc_HeaderFragmentDefault);
+                    model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
+                    model.addAttribute("dynamicFragmentTitle",
+                            (cusItem.getFragmentTitle() != null && !cusItem.getFragmentTitle().trim().isBlank())
+                                    ? cusItem.getFragmentTitle()
+                                    : GC_Constants.gc_TitleFragmentDefault);
+
+                    model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
+                    model.addAttribute("dynamicFragmentFooter",
+                            (cusItem.getFragmentFooter() != null && !cusItem.getFragmentFooter().trim().isBlank())
+                                    ? cusItem.getFragmentFooter()
+                                    : GC_Constants.gc_FooterFragmentDefault);
+
+                }
+            }
+        }
+
+        return viewName;
 
     }
 

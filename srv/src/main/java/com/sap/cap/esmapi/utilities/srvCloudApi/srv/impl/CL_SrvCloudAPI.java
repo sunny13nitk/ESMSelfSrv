@@ -3649,20 +3649,8 @@ public class CL_SrvCloudAPI implements IF_SrvCloudAPI
                     String encoding = null;
                     casePOSTURL = casePOSTURL + patchInfo.getCaseGuid();
 
-                    if (caseReply.isExternal())
-                    {
-                        encoding = Base64.getEncoder().encodeToString(
-                                (srvCloudUrls.getUserNameExt() + ":" + srvCloudUrls.getPasswordExt()).getBytes());
-                    }
-                    else
-                    {
-                        encoding = Base64.getEncoder().encodeToString(
-                                (srvCloudUrls.getUserName() + ":" + srvCloudUrls.getPassword()).getBytes());
-
-                    }
-
                     HttpPatch httpPatch = new HttpPatch(casePOSTURL);
-                    httpPatch.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encoding);
+                    httpPatch.setHeader(HttpHeaders.AUTHORIZATION, srvCloudUrls.getToken());
                     httpPatch.addHeader("Content-Type", "application/json");
                     httpPatch.addHeader(GC_Constants.gc_IFMatch, patchInfo.getETag());
 
@@ -4329,12 +4317,94 @@ public class CL_SrvCloudAPI implements IF_SrvCloudAPI
                             JsonNode rootNode = jsonNode.path("value");
                             if (rootNode != null && rootNode.isArray() && rootNode.size() > 0)
                             {
-                                log.info("Notes for Case ID : " + caseId + " bound..");
+                                log.info("# Notes (External & Default) for Case ID : " + caseId + " bound.. -  "
+                                        + rootNode.size());
+                                for (JsonNode arrayItem : rootNode)
+                                {
+                                    String content = null, noteType = null, userCreate = null, timestamp = null,
+                                            id = null, noteId = null;
+                                    boolean agentNote = false;
+
+                                    OffsetDateTime odt = null;
+
+                                    Iterator<Entry<String, JsonNode>> fields = arrayItem.fields();
+                                    while (fields.hasNext())
+                                    {
+                                        Entry<String, JsonNode> jsonField = fields.next();
+                                        if (jsonField.getKey().equals("hostObjectId"))
+                                        {
+                                            id = jsonField.getValue().asText();
+                                        }
+
+                                        if (jsonField.getKey().equals("id"))
+                                        {
+                                            noteId = jsonField.getValue().asText();
+                                        }
+
+                                        if (jsonField.getKey().equals("htmlContent"))
+                                        {
+                                            content = jsonField.getValue().asText();
+                                        }
+
+                                        if (jsonField.getKey().equals("noteTypeCode"))
+                                        {
+                                            noteType = jsonField.getValue().asText();
+                                        }
+
+                                        if (jsonField.getKey().equals("adminData"))
+                                        {
+                                            JsonNode adminNode = jsonField.getValue();
+                                            if (adminNode != null)
+                                            {
+                                                Iterator<String> fieldNames = adminNode.fieldNames();
+                                                while (fieldNames.hasNext())
+                                                {
+                                                    String caseFieldName = fieldNames.next();
+
+                                                    if (caseFieldName.equals("createdOn"))
+                                                    {
+
+                                                        if (StringUtils.hasText(adminNode.get(caseFieldName).asText()))
+                                                        {
+
+                                                            timestamp = adminNode.get(caseFieldName).asText();
+                                                            // Parse the date-time string into OffsetDateTime
+                                                            odt = OffsetDateTime.parse(timestamp);
+                                                        }
+                                                    }
+
+                                                    if (caseFieldName.equals("createdByName"))
+                                                    {
+
+                                                        if (StringUtils.hasText(adminNode.get(caseFieldName).asText()))
+                                                        {
+                                                            userCreate = adminNode.get(caseFieldName).asText();
+                                                            if (StringUtils.hasText(rlConfig.getTechUserRegex()))
+                                                            {
+                                                                if (!userCreate.startsWith(rlConfig.getTechUserRegex()))
+                                                                {
+                                                                    agentNote = true;
+                                                                }
+
+                                                            }
+                                                        }
+
+                                                    }
+
+                                                }
+                                            }
+                                        }
+
+                                    }
+                                    TY_NotesDetails newNote = new TY_NotesDetails(noteType, id, noteId, odt, userCreate,
+                                            content, agentNote);
+                                    formattedExternalNotes.add(newNote);
+                                }
                             }
+
                         }
 
                     }
-
                 }
                 catch (Exception e)
                 {
