@@ -35,7 +35,6 @@ import com.sap.cap.esmapi.ui.pojos.TY_CaseEdit_Form;
 import com.sap.cap.esmapi.ui.pojos.TY_Case_Form;
 import com.sap.cap.esmapi.utilities.constants.GC_Constants;
 import com.sap.cap.esmapi.utilities.constants.VWNamesDirectory;
-import com.sap.cap.esmapi.utilities.constants.VWNamesDirectoryLocal;
 import com.sap.cap.esmapi.utilities.enums.EnumMessageType;
 import com.sap.cap.esmapi.utilities.enums.EnumVWNames;
 import com.sap.cap.esmapi.utilities.pojos.TY_Message;
@@ -537,7 +536,7 @@ public class ESSController
     @GetMapping("/caseReply/removeAttachment/{fileName}")
     public String removeAttachmentCaseReply(@PathVariable String fileName, Model model)
     {
-        String caseFormReply = VWNamesDirectoryLocal.getViewName(EnumVWNames.caseReply, false, (String[]) null);
+        String caseFormReply = VWNamesDirectory.getViewName(EnumVWNames.caseReply, false, (String[]) null);
         if (StringUtils.hasText(fileName) && attSrv != null && userSessionSrv != null)
         {
             userSessionSrv.clearActiveSubmission();
@@ -1062,7 +1061,7 @@ public class ESSController
     @GetMapping("/refreshFormReply4AttUpload")
     public String refreshCaseReplyFormPostAttachmentUpload(Model model)
     {
-        String viewName = VWNamesDirectoryLocal.getViewName(EnumVWNames.caseReply, false, (String[]) null);
+        String viewName = VWNamesDirectory.getViewName(EnumVWNames.caseReply, false, (String[]) null);
         List<String> attMsgs = Collections.emptyList();
         TY_CaseEdit_Form caseEditForm = null;
         if (userSessionSrv != null)
