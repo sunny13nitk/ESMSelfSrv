@@ -32,6 +32,7 @@ import com.sap.cap.esmapi.ui.pojos.TY_CaseFormAsync;
 import com.sap.cap.esmapi.ui.pojos.TY_Case_Form;
 import com.sap.cap.esmapi.utilities.constants.GC_Constants;
 import com.sap.cap.esmapi.utilities.constants.VWNamesDirectory;
+import com.sap.cap.esmapi.utilities.constants.VWNamesDirectoryLocal;
 import com.sap.cap.esmapi.utilities.enums.EnumVWNames;
 import com.sap.cap.esmapi.utilities.pojos.TY_RLConfig;
 import com.sap.cap.esmapi.utilities.pojos.TY_UserESS;
@@ -393,7 +394,8 @@ public class ESSPostController
             throws EX_ESMAPI, IOException
     {
 
-        String viewName = VWNamesDirectory.getViewName(EnumVWNames.caseReply, false, (String[]) null);
+        String viewName = VWNamesDirectoryLocal.getViewName(EnumVWNames.inbox, true,
+                userSessSrv.getCurrentLOBConfig().getCaseTypeEnum().toString());
         if (caseReplyForm != null && userSessSrv != null)
         {
             userSessSrv.clearActiveSubmission();
