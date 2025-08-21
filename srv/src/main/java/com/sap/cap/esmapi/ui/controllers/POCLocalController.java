@@ -38,6 +38,7 @@ import com.sap.cap.esmapi.ui.pojos.TY_CaseEdit_Form;
 import com.sap.cap.esmapi.ui.pojos.TY_CaseFormAsync;
 import com.sap.cap.esmapi.ui.pojos.TY_Case_Form;
 import com.sap.cap.esmapi.utilities.constants.GC_Constants;
+import com.sap.cap.esmapi.utilities.constants.VWNamesDirectory;
 import com.sap.cap.esmapi.utilities.constants.VWNamesDirectoryLocal;
 import com.sap.cap.esmapi.utilities.enums.EnumMessageType;
 import com.sap.cap.esmapi.utilities.enums.EnumVWNames;
@@ -160,10 +161,15 @@ public class POCLocalController
 
                 }
             }
+            else
+            {
+                throw new EX_ESMAPI(msgSrc.getMessage("ERR_CASE_TYPE_NOCFG", new Object[]
+                { lob }, Locale.ENGLISH));
+            }
 
         }
 
-        return "essListViewPOCLocalLXSS";
+        return VWNamesDirectoryLocal.getViewName(EnumVWNames.inbox, false, lob);
 
     }
 
@@ -532,13 +538,6 @@ public class POCLocalController
         return viewCaseForm;
     }
 
-    @GetMapping("/success")
-    public String showSuccess(Model model)
-    {
-
-        return "success";
-    }
-
     @PostMapping(value = "/saveCase", params = "action=catgChange")
     public String refreshCaseForm4Catg(@ModelAttribute("caseForm") TY_Case_Form caseForm, Model model)
     {
@@ -837,6 +836,7 @@ public class POCLocalController
     @PostMapping(value = "/saveCaseReply", params = "action=upload")
     public String uploadCaseReplyAttachment(@ModelAttribute("caseEditForm") TY_CaseEdit_Form caseReplyForm, Model model)
     {
+
         String caseFormReply = VWNamesDirectoryLocal.getViewName(EnumVWNames.caseReply, false, (String[]) null);
         List<String> attMsgs = Collections.emptyList();
         if (caseReplyForm != null && userSessSrv != null)
@@ -1065,6 +1065,7 @@ public class POCLocalController
                                                 && !catgCusItem.getFragmentFooter().trim().isBlank())
                                                         ? catgCusItem.getFragmentFooter()
                                                         : GC_Constants.gc_FooterFragmentDefault);
+
                             }
 
                         }
@@ -1294,13 +1295,16 @@ public class POCLocalController
     @GetMapping("/refreshForm4AttUpload")
     public String refreshCaseFormPostAttachmentUpload(Model model)
     {
-        String viewName = userSessSrv.getCurrentLOBConfig().getCaseFormView();
+        String viewName = VWNamesDirectory.getViewName(EnumVWNames.caseForm, false, (String[]) null);
 
         if (attSrv != null && userSessSrv != null)
         {
             TY_CatgCusItem cusItem = userSessSrv.getCurrentLOBConfig();
             if (cusItem != null)
             {
+                viewName = (cusItem.getCaseFormView() != null && !cusItem.getCaseFormView().trim().isBlank())
+                        ? cusItem.getCaseFormView()
+                        : viewName;
 
                 TY_Case_Form caseForm = userSessSrv.getCaseFormB4Submission();
 

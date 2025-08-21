@@ -37,8 +37,6 @@ import com.sap.cap.esmapi.utilities.pojos.TY_RLConfig;
 import com.sap.cap.esmapi.utilities.pojos.TY_UserESS;
 import com.sap.cap.esmapi.utilities.srv.intf.IF_SessAttachmentsService;
 import com.sap.cap.esmapi.utilities.srv.intf.IF_UserSessionSrv;
-import com.sap.cap.esmapi.utilities.uimodel.intf.IF_CountryLanguageVHelpAdj;
-import com.sap.cap.esmapi.vhelps.srv.intf.IF_VHelpLOBUIModelSrv;
 import com.sap.cds.services.request.UserInfo;
 
 import lombok.extern.slf4j.Slf4j;
@@ -65,9 +63,6 @@ public class ESSPostController
     private MessageSource msgSrc;
 
     @Autowired
-    private IF_VHelpLOBUIModelSrv vhlpUISrv;
-
-    @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired
@@ -75,15 +70,6 @@ public class ESSPostController
 
     @Autowired
     private TY_RLConfig rlConfig;
-
-    @Autowired
-    private IF_CountryLanguageVHelpAdj coLaDDLBSrv;
-
-    private final String caseListVWRedirect = "redirect:/lso/";
-    private final String caseFormErrorRedirect = "redirect:/lso/errForm/";
-    private final String caseFormViewLXSS = "caseFormLSOLXSS";
-    private final String caseFormReplyLXSS = "caseFormReplyLSOLXSS";
-    private final String caseFormReplyErrorRedirect = "redirect:/lso/errCaseReply/";
 
     @PostMapping(value = "/saveCase", params = "action=saveCase")
     public String saveCase(@ModelAttribute("caseForm") TY_Case_Form caseForm, Model model)
@@ -262,7 +248,9 @@ public class ESSPostController
                     {
                         // Attachment to Local Storage Persistence Error
                         uploadSuccess = false;
-                        userSessSrv.addFormErrors(caseFormErrorRedirect);
+                        userSessSrv.addFormErrors(msgSrc.getMessage("ERR_ATT_BYTES", new Object[]
+                        { caseForm.getAttachment().getOriginalFilename(), attSrv.getSessionMessages().get(0) },
+                                Locale.ENGLISH));
 
                     }
                     else
@@ -405,7 +393,7 @@ public class ESSPostController
             throws EX_ESMAPI, IOException
     {
 
-        String viewName = caseListVWRedirect;
+        String viewName = VWNamesDirectory.getViewName(EnumVWNames.caseReply, false, (String[]) null);
         if (caseReplyForm != null && userSessSrv != null)
         {
             userSessSrv.clearActiveSubmission();
@@ -415,7 +403,7 @@ public class ESSPostController
             if (!userSessSrv.SubmitCaseReply(caseReplyForm))
             {
                 // Redirect to Error Processing of Form
-                viewName = caseFormReplyErrorRedirect;
+                viewName = VWNamesDirectory.getViewName(EnumVWNames.caseReply, true, (String[]) null);
             }
             else
             {
@@ -439,7 +427,7 @@ public class ESSPostController
     @PostMapping(value = "/saveCaseReply", params = "action=upload")
     public String uploadCaseReplyAttachment(@ModelAttribute("caseEditForm") TY_CaseEdit_Form caseReplyForm, Model model)
     {
-
+        String caseFormReply = VWNamesDirectory.getViewName(EnumVWNames.caseReply, false, (String[]) null);
         List<String> attMsgs = Collections.emptyList();
         if (caseReplyForm != null && userSessSrv != null)
         {
@@ -488,10 +476,32 @@ public class ESSPostController
                 // Attachment file Size
                 model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
 
+                TY_CatgCusItem cusItem = userSessSrv.getCurrentLOBConfig();
+                if (cusItem != null)
+                {
+
+                    model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
+                    model.addAttribute("dynamicFragmentHeader",
+                            (cusItem.getFragmentHead() != null && !cusItem.getFragmentHead().trim().isBlank())
+                                    ? cusItem.getFragmentHead()
+                                    : GC_Constants.gc_HeaderFragmentDefault);
+                    model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
+                    model.addAttribute("dynamicFragmentTitle",
+                            (cusItem.getFragmentTitle() != null && !cusItem.getFragmentTitle().trim().isBlank())
+                                    ? cusItem.getFragmentTitle()
+                                    : GC_Constants.gc_TitleFragmentDefault);
+
+                    model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
+                    model.addAttribute("dynamicFragmentFooter",
+                            (cusItem.getFragmentFooter() != null && !cusItem.getFragmentFooter().trim().isBlank())
+                                    ? cusItem.getFragmentFooter()
+                                    : GC_Constants.gc_FooterFragmentDefault);
+                }
+
             }
         }
 
-        return caseFormReplyLXSS;
+        return caseFormReply;
     }
 
     @PostMapping(value = "/selCatg")
@@ -586,7 +596,11 @@ public class ESSPostController
                             // Attachment to Local Storage Persistence Error
                             // attMsgs = attSrv.getSessionMessages();
                             uploadSuccess = false;
-                            userSessSrv.addFormErrors(caseFormReplyErrorRedirect);
+                            // ERR_ATT_BYTES= Error Accessing Binary Data from attachment - {0}, Details -
+                            // {1}. Not able to upload.
+                            userSessSrv.addFormErrors(msgSrc.getMessage("ERR_ATT_BYTES", new Object[]
+                            { caseReplyForm.getAttachment().getOriginalFilename(), attSrv.getSessionMessages().get(0) },
+                                    Locale.ENGLISH));
                             log.error("Attachment to Local Storage Persistence Error");
 
                         }

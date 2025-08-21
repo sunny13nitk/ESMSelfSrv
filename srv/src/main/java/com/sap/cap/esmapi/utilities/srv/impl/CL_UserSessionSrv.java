@@ -857,9 +857,12 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
     @Override
     public Ty_UserAccountEmployee getUserDetails4mSession()
     {
-        if (this.userSessInfo.getUserDetails() != null)
+        if (this.userSessInfo != null)
         {
-            return userSessInfo.getUserDetails().getUsAccEmpl();
+            if (this.userSessInfo.getUserDetails() != null)
+            {
+                return userSessInfo.getUserDetails().getUsAccEmpl();
+            }
         }
 
         return null;

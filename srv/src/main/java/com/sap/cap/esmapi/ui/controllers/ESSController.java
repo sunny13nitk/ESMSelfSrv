@@ -33,9 +33,9 @@ import com.sap.cap.esmapi.exceptions.EX_ESMAPI;
 import com.sap.cap.esmapi.ui.pojos.TY_CaseConfirmPOJO;
 import com.sap.cap.esmapi.ui.pojos.TY_CaseEdit_Form;
 import com.sap.cap.esmapi.ui.pojos.TY_Case_Form;
-import com.sap.cap.esmapi.ui.srv.intf.IF_ESS_UISrv;
 import com.sap.cap.esmapi.utilities.constants.GC_Constants;
 import com.sap.cap.esmapi.utilities.constants.VWNamesDirectory;
+import com.sap.cap.esmapi.utilities.constants.VWNamesDirectoryLocal;
 import com.sap.cap.esmapi.utilities.enums.EnumMessageType;
 import com.sap.cap.esmapi.utilities.enums.EnumVWNames;
 import com.sap.cap.esmapi.utilities.pojos.TY_Message;
@@ -43,10 +43,8 @@ import com.sap.cap.esmapi.utilities.pojos.TY_RLConfig;
 import com.sap.cap.esmapi.utilities.pojos.TY_UserESS;
 import com.sap.cap.esmapi.utilities.pojos.Ty_UserAccountEmployee;
 import com.sap.cap.esmapi.utilities.srv.intf.IF_SessAttachmentsService;
-import com.sap.cap.esmapi.utilities.srv.intf.IF_UserAPISrv;
 import com.sap.cap.esmapi.utilities.srv.intf.IF_UserSessionSrv;
 import com.sap.cap.esmapi.utilities.srvCloudApi.srv.intf.IF_SrvCloudAPI;
-import com.sap.cap.esmapi.vhelps.srv.intf.IF_VHelpLOBUIModelSrv;
 import com.sap.cds.services.request.UserInfo;
 import com.sap.cloud.security.token.Token;
 
@@ -64,13 +62,7 @@ public class ESSController
 {
 
     @Autowired
-    private IF_UserAPISrv userSrv;
-
-    @Autowired
     private UserInfo userInfo;
-
-    @Autowired
-    private IF_ESS_UISrv uiSrv;
 
     @Autowired
     private MessageSource msgSrc;
@@ -83,9 +75,6 @@ public class ESSController
 
     @Autowired
     private TY_RLConfig rlConfig;
-
-    @Autowired
-    private IF_VHelpLOBUIModelSrv vhlpUISrv;
 
     @Autowired
     private IF_SrvCloudAPI srvCloudApiSrv;
@@ -102,7 +91,6 @@ public class ESSController
     @Autowired
     private IF_UserSessionSrv userSessionSrv;
 
-    private final String caseFormReplyLXSS = "caseFormReplyLSOLXSS";
     private final String caseConfirmError = "alreadyConfirmed";
 
     @GetMapping("/{lob}")
@@ -549,6 +537,7 @@ public class ESSController
     @GetMapping("/caseReply/removeAttachment/{fileName}")
     public String removeAttachmentCaseReply(@PathVariable String fileName, Model model)
     {
+        String caseFormReply = VWNamesDirectoryLocal.getViewName(EnumVWNames.caseReply, false, (String[]) null);
         if (StringUtils.hasText(fileName) && attSrv != null && userSessionSrv != null)
         {
             userSessionSrv.clearActiveSubmission();
@@ -607,16 +596,38 @@ public class ESSController
 
                 // Attachment file Size
                 model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
+                TY_CatgCusItem cusItem = userSessionSrv.getCurrentLOBConfig();
+                if (cusItem != null)
+                {
+
+                    model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
+                    model.addAttribute("dynamicFragmentHeader",
+                            (cusItem.getFragmentHead() != null && !cusItem.getFragmentHead().trim().isBlank())
+                                    ? cusItem.getFragmentHead()
+                                    : GC_Constants.gc_HeaderFragmentDefault);
+                    model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
+                    model.addAttribute("dynamicFragmentTitle",
+                            (cusItem.getFragmentTitle() != null && !cusItem.getFragmentTitle().trim().isBlank())
+                                    ? cusItem.getFragmentTitle()
+                                    : GC_Constants.gc_TitleFragmentDefault);
+
+                    model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
+                    model.addAttribute("dynamicFragmentFooter",
+                            (cusItem.getFragmentFooter() != null && !cusItem.getFragmentFooter().trim().isBlank())
+                                    ? cusItem.getFragmentFooter()
+                                    : GC_Constants.gc_FooterFragmentDefault);
+                }
             }
         }
 
-        return caseFormReplyLXSS;
+        return caseFormReply;
 
     }
 
     @GetMapping("/errCaseReply/")
     public String showErrorCaseReplyForm(Model model)
     {
+        String viewName = VWNamesDirectory.getViewName(EnumVWNames.caseReply, false, (String[]) null);
         if (userSessionSrv != null)
         {
             userSessionSrv.clearActiveSubmission();
@@ -661,6 +672,29 @@ public class ESSController
 
                     // Attachment file Size
                     model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
+                    TY_CatgCusItem cusItem = userSessionSrv.getCurrentLOBConfig();
+                    if (cusItem != null)
+                    {
+
+                        model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
+                        model.addAttribute("dynamicFragmentHeader",
+                                (cusItem.getFragmentHead() != null && !cusItem.getFragmentHead().trim().isBlank())
+                                        ? cusItem.getFragmentHead()
+                                        : GC_Constants.gc_HeaderFragmentDefault);
+                        model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
+                        model.addAttribute("dynamicFragmentTitle",
+                                (cusItem.getFragmentTitle() != null && !cusItem.getFragmentTitle().trim().isBlank())
+                                        ? cusItem.getFragmentTitle()
+                                        : GC_Constants.gc_TitleFragmentDefault);
+
+                        model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
+                        model.addAttribute("dynamicFragmentFooter",
+                                (cusItem.getFragmentFooter() != null && !cusItem.getFragmentFooter().trim().isBlank())
+                                        ? cusItem.getFragmentFooter()
+                                        : GC_Constants.gc_FooterFragmentDefault);
+
+                    }
+
                 }
 
             }
@@ -673,20 +707,22 @@ public class ESSController
             }
         }
 
-        return caseFormReplyLXSS;
+        return viewName;
 
     }
 
     @GetMapping("/caseDetails/{caseID}")
     public String getCaseDetails(@PathVariable String caseID, Model model)
     {
-        String viewName = caseFormReplyLXSS;
+        String viewName = VWNamesDirectory.getViewName(EnumVWNames.caseReply, false, (String[]) null);
         userSessionSrv.clearActiveSubmission();
         log.info("Navigating to case with UUID : " + caseID);
+
         if (StringUtils.hasText(caseID))
         {
             if (userSessionSrv != null)
             {
+                TY_CatgCusItem cusItem = userSessionSrv.getCurrentLOBConfig();
                 // Before case form Inititation we must check the Rate Limit for the Current
                 // User Session --current Form Submission added for Rate Limit Evaulation
                 if (userSessionSrv.checkRateLimit())
@@ -719,6 +755,28 @@ public class ESSController
 
                             // Attachment file Size
                             model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
+                            if (cusItem != null)
+                            {
+                                model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
+                                model.addAttribute("dynamicFragmentHeader",
+                                        (cusItem.getFragmentHead() != null
+                                                && !cusItem.getFragmentHead().trim().isBlank())
+                                                        ? cusItem.getFragmentHead()
+                                                        : GC_Constants.gc_HeaderFragmentDefault);
+                                model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
+                                model.addAttribute("dynamicFragmentTitle",
+                                        (cusItem.getFragmentTitle() != null
+                                                && !cusItem.getFragmentTitle().trim().isBlank())
+                                                        ? cusItem.getFragmentTitle()
+                                                        : GC_Constants.gc_TitleFragmentDefault);
+
+                                model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
+                                model.addAttribute("dynamicFragmentFooter",
+                                        (cusItem.getFragmentFooter() != null
+                                                && !cusItem.getFragmentFooter().trim().isBlank())
+                                                        ? cusItem.getFragmentFooter()
+                                                        : GC_Constants.gc_FooterFragmentDefault);
+                            }
                         }
                     }
                     catch (Exception e)
@@ -728,7 +786,7 @@ public class ESSController
                 }
                 else
                 {
-                    TY_CatgCusItem cusItem = userSessionSrv.getCurrentLOBConfig();
+
                     if (cusItem != null)
                     {
                         // Not Within Rate Limit - REdirect to List View
@@ -1004,7 +1062,7 @@ public class ESSController
     @GetMapping("/refreshFormReply4AttUpload")
     public String refreshCaseReplyFormPostAttachmentUpload(Model model)
     {
-        String viewName = caseFormReplyLXSS;
+        String viewName = VWNamesDirectoryLocal.getViewName(EnumVWNames.caseReply, false, (String[]) null);
         List<String> attMsgs = Collections.emptyList();
         TY_CaseEdit_Form caseEditForm = null;
         if (userSessionSrv != null)
@@ -1027,6 +1085,28 @@ public class ESSController
                 model.addAttribute("attachments", attSrv.getAttachmentNames());
                 // Attachment file Size
                 model.addAttribute("attSize", rlConfig.getAllowedSizeAttachmentMB());
+                TY_CatgCusItem cusItem = userSessionSrv.getCurrentLOBConfig();
+                if (cusItem != null)
+                {
+
+                    model.addAttribute("dynamicTemplateHeader", GC_Constants.gc_HeaderFragments);
+                    model.addAttribute("dynamicFragmentHeader",
+                            (cusItem.getFragmentHead() != null && !cusItem.getFragmentHead().trim().isBlank())
+                                    ? cusItem.getFragmentHead()
+                                    : GC_Constants.gc_HeaderFragmentDefault);
+                    model.addAttribute("dynamicTemplateTitle", GC_Constants.gc_TitleFragments);
+                    model.addAttribute("dynamicFragmentTitle",
+                            (cusItem.getFragmentTitle() != null && !cusItem.getFragmentTitle().trim().isBlank())
+                                    ? cusItem.getFragmentTitle()
+                                    : GC_Constants.gc_TitleFragmentDefault);
+
+                    model.addAttribute("dynamicTemplateFooter", GC_Constants.gc_FooterFragments);
+                    model.addAttribute("dynamicFragmentFooter",
+                            (cusItem.getFragmentFooter() != null && !cusItem.getFragmentFooter().trim().isBlank())
+                                    ? cusItem.getFragmentFooter()
+                                    : GC_Constants.gc_FooterFragmentDefault);
+
+                }
             }
         }
 

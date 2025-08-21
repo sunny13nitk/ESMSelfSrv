@@ -385,9 +385,7 @@
 </head>
 
 <body>
-   <!-- Configure at Header fragment level -->
-   <!-- <newlxp-header entrypoint="support_lso"></newlxp-header>
-   <newlxp-announcements entrypoint="support_lso"></newlxp-announcements> -->
+
 
    <div th:replace="~{${dynamicTemplateHeader} :: ${dynamicFragmentHeader}}"></div>
 
@@ -561,8 +559,8 @@
    <div class="slot" id="slot1" th:if="${rateLimitBreached == true}"></div>
    <div class="slotSubm" id="submToast" th:if="${submActive == true}"></div>
 
-    <div th:replace="~{${dynamicTemplateFooter} :: ${dynamicFragmentFooter}}"></div>
-   <!-- <newlxp-footer></newlxp-footer> -->
+   <div th:replace="~{${dynamicTemplateFooter} :: ${dynamicFragmentFooter}}"></div>
+
 
 
    <script>
