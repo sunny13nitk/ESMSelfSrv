@@ -394,7 +394,7 @@ public class ESSPostController
             throws EX_ESMAPI, IOException
     {
 
-        String viewName = VWNamesDirectoryLocal.getViewName(EnumVWNames.inbox, true,
+        String viewName = VWNamesDirectory.getViewName(EnumVWNames.inbox, true,
                 userSessSrv.getCurrentLOBConfig().getCaseTypeEnum().toString());
         if (caseReplyForm != null && userSessSrv != null)
         {
