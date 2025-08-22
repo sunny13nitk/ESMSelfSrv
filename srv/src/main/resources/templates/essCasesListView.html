@@ -509,7 +509,7 @@
                      <td th:text="${case.statusDesc}"></td>
                      <td th:text="${case.subject}"></td>
                      <td th:text="${#temporals.format(case.tsCreate, 'yyyy-MM-dd HH:mm:ss')}"></td>
-                     <td>
+                     <td> 
                         <a href="#" class="" th:href="@{'/ess/caseDetails/' + ${case.guid}}" role="button"
                            data-role="hint" data-hint-position="right" data-cls-hint="fg-black"
                            data-hint-text="View Case Details">
