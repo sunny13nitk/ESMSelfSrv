@@ -24,6 +24,8 @@ public class VWNamesDirectoryLocal
 
         viewsDescMap.add(
                 new TY_ViewMappings(EnumVWNames.caseReply, "/poclocal/caseDetails/{caseID}", "esscaseFormReplyLocal"));
+        viewsDescMap
+                .add(new TY_ViewMappings(EnumVWNames.alreadyConfirmed, "/poclocal/errorConfirm", "alreadyConfirmed"));
 
         return viewsDescMap;
     }

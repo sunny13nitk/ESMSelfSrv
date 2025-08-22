@@ -40,7 +40,6 @@ import com.sap.cap.esmapi.utilities.enums.EnumVWNames;
 import com.sap.cap.esmapi.utilities.pojos.TY_Message;
 import com.sap.cap.esmapi.utilities.pojos.TY_RLConfig;
 import com.sap.cap.esmapi.utilities.pojos.TY_UserESS;
-import com.sap.cap.esmapi.utilities.pojos.Ty_UserAccountEmployee;
 import com.sap.cap.esmapi.utilities.srv.intf.IF_SessAttachmentsService;
 import com.sap.cap.esmapi.utilities.srv.intf.IF_UserSessionSrv;
 import com.sap.cap.esmapi.utilities.srvCloudApi.srv.intf.IF_SrvCloudAPI;
@@ -814,36 +813,20 @@ public class ESSController
             try
             {
 
-                Ty_UserAccountEmployee usAccConEmpl = userSessionSrv.getUserDetails4mSession();
+                svyUrl = userSessionSrv.getSurveyUrl4CaseId(caseID);
 
-                if (!usAccConEmpl.isExternal())
-                { // Internal User
-                    log.info("Internal employee detected. Skipping survey redirect for case ID: " + caseID);
-
+                if (StringUtils.hasText(svyUrl))
+                {
                     caseDetails = userSessionSrv.getCaseDetails4Confirmation(caseID);
                     if (caseDetails != null && StringUtils.hasText(caseDetails.getETag()))
                     {
+                        log.info("Etag Bound. Ready for patch....");
                         EV_CaseConfirmSubmit caseConfirmEvent = new EV_CaseConfirmSubmit(this, caseDetails);
                         applicationEventPublisher.publishEvent(caseConfirmEvent);
                     }
-                    return new ModelAndView(new RedirectView(GC_Constants.gc_basePath)); // Redirect for INTERNAL user -
-                                                                                         // Base Path
+                    return new ModelAndView(new RedirectView(svyUrl)); // Redirect for EXTERNAL user with survey URL
                 }
-                else
-                { // External User
-                    svyUrl = userSessionSrv.getSurveyUrl4CaseId(caseID);
 
-                    if (StringUtils.hasText(svyUrl))
-                    {
-                        caseDetails = userSessionSrv.getCaseDetails4Confirmation(caseID);
-                        if (caseDetails != null && StringUtils.hasText(caseDetails.getETag()))
-                        {
-                            EV_CaseConfirmSubmit caseConfirmEvent = new EV_CaseConfirmSubmit(this, caseDetails);
-                            applicationEventPublisher.publishEvent(caseConfirmEvent);
-                        }
-                        return new ModelAndView(new RedirectView(svyUrl)); // Redirect for EXTERNAL user with survey URL
-                    }
-                }
             }
             catch (Exception e)
             {
@@ -857,14 +840,16 @@ public class ESSController
                 {
                     userSessionSrv.addSessionMessage(e.getMessage());
                     attributes.addFlashAttribute("message", e.getMessage());
-                    return new ModelAndView(new RedirectView("/lso/errorConfirm"));
+                    return new ModelAndView(new RedirectView("/ess/errorConfirm"));
 
                 }
             }
 
         }
-        return new ModelAndView(new RedirectView(GC_Constants.gc_basePath)); // Redirect for INTERNAL user -
-                                                                             // Base Path
+        // Parallel redirect to Inbox View
+        log.info("Redirecting to Inbox View for Case Confirmation");
+        return new ModelAndView(new RedirectView(VWNamesDirectory.getViewName(EnumVWNames.inbox, true,
+                userSessionSrv.getCurrentLOBConfig().getCaseTypeEnum().toString())));
     }
 
     @GetMapping("/errorConfirm")
