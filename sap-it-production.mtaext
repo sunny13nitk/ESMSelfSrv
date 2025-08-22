@@ -55,7 +55,8 @@ modules:
     properties:
       COOKIE_BACKWARD_COMPATIBILITY: true  
     routes:  
-      - route: "esm_ssrv-app.cfapps.eu10-004.hana.ondemand.com"  
+      - route: "${default-url}"
+      - route: "esm_app.cfapps.eu10-004.hana.ondemand.com"  
     requires:
       - name: srv-api
         group: destinations
