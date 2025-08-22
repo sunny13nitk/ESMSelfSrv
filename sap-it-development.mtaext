@@ -50,10 +50,12 @@ modules:
     path: app/
     parameters:
       keep-existing-routes: true
-      disk-quota: 1024M
+      disk-quota: 1024M 
       memory: 256M
+    properties:
+      COOKIE_BACKWARD_COMPATIBILITY: true  
     routes:  
-      - route: "esm_ssrv_app-dev.cfapps.eu10-004.hana.ondemand.com"
+      - route: "esm_ssrv-app-dev.cfapps.eu10-004.hana.ondemand.com"
     requires:
       - name: srv-api
         group: destinations
