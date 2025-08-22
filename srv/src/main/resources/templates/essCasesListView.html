@@ -515,19 +515,13 @@
                            data-hint-text="View Case Details">
                            View
                         </a>
-                        <a th:if="${case.confirmAllowed == true and userInfo.userDetails.isExternal() == true}" href="#"
-                           style="margin-left: 10px;" th:href="@{'/ess/confirmCase/' + ${case.id}}" role="button"
-                           data-role="hint" target="_blank" data-hint-position="right" data-cls-hint="fg-black"
-                           data-hint-text="Confirm Case">
+                        <a th:if="${case.confirmAllowed == true }" href="#" style="margin-left: 10px;"
+                           th:href="@{'/ess/confirmCase/' + ${case.id}}" role="button" data-role="hint" target="_blank"
+                           data-hint-position="right" data-cls-hint="fg-black" data-hint-text="Confirm Case">
                            Confirm
                         </a>
 
-                        <a th:if="${case.confirmAllowed == true and userInfo.userDetails.isExternal() != true}" href="#"
-                           style="margin-left: 10px;" th:href="@{'/ess/confirmCase/' + ${case.id}}" role="button"
-                           data-role="hint" data-hint-position="right" data-cls-hint="fg-black"
-                           data-hint-text="Confirm Case">
-                           Confirm
-                        </a>
+
                      </td>
                </tbody>
             </table>
