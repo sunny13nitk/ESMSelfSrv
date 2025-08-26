@@ -69,6 +69,7 @@ public class CL_HANALoggingSrv implements IF_HANALoggingSrv
                 Map<String, Object> logEntity = new HashMap<>();
                 logEntity.put("ID", UUID.randomUUID()); // ID
                 logEntity.put("username", logMsg.getUserName()); // User Name
+                logEntity.put("casetype", logMsg.getCasetype()); // Case Type
                 logEntity.put("timestamp", new Timestamp(System.currentTimeMillis())); // TimeStamp
                 logEntity.put("status", logMsg.getStatus().toString()); // Status
                 logEntity.put("msgtype", logMsg.getMsgType().toString()); // Message Type

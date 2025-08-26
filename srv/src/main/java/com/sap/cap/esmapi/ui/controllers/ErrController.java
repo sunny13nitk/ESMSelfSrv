@@ -20,7 +20,7 @@ public class ErrController
                 ModelAndView mv = new ModelAndView();
                 mv.setViewName("error");
                 mv.addObject("formError",
-                                "Invalid Token! Access to app not possible. Try clearing browser history and cookies and reaccessing the app. You can also try logging in via a private/Incognito window.");
+                                "Role(s)/Authorization to access this application are not assigned to you. Please contact your administrator to get the required role(s) assigned.");
                 log.error("Invalid Token! Access to app not possible. Try clearing browser history and cookies and reaccessing the app. You can also try logging in via a private/Incognito window. ");
 
                 return mv;
