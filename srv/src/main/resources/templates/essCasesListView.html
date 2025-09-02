@@ -257,7 +257,7 @@
          height: 63px;
       }
 
-      /* .table.compact thead tr th:nth-child(3) {
+      .table.compact thead tr th:nth-child(3) {
          width: 15%;
          min-width: 95px;
       }
@@ -276,7 +276,7 @@
 
       .table tbody tr td:nth-child(3) {
          padding-left: 24px;
-      } */
+      }
 
       .table.compact tbody td {
          font-size: 16px;
@@ -509,7 +509,7 @@
                      <td th:text="${case.statusDesc}"></td>
                      <td th:text="${case.subject}"></td>
                      <td th:text="${#temporals.format(case.tsCreate, 'yyyy-MM-dd HH:mm:ss')}"></td>
-                     <td> 
+                     <td>
                         <a href="#" class="" th:href="@{'/ess/caseDetails/' + ${case.guid}}" role="button"
                            data-role="hint" data-hint-position="right" data-cls-hint="fg-black"
                            data-hint-text="View Case Details">
