@@ -9,14 +9,30 @@ namespace db.esmlogs;
 @Capabilities.Insertable: false
 @Capabilities.Updatable : false
 entity esmapplogs : cuid {
-    username : String(50);
-    casetype : String(50);
-    timestamp: Timestamp;
-    status   : String(50);
-    msgtype  : String(50);
-    objectid : String(50);
-    message  : String(1000);
+    username  : String(50);
+    casetype  : String(50);
+    timestamp : Timestamp;
+    status    : String(50);
+    msgtype   : String(50);
+    objectid  : String(50);
+    message   : String(1000);
 }
 
-
-
+@Capabilities.Insertable: false
+@Capabilities.Updatable : false
+@Capabilities.Deletable : false
+entity baseconfig {
+    key caseTypeEnum       : String(50);
+        casetype           : String(10);
+        appNotesTypes      : String(50);
+        statusSchema       : String(5);
+        replyNoteType      : String(50);
+        catgRankEnabled    : Boolean;
+        catgsranksonlyShow : Boolean;
+        confirmStatus      : String(20);
+        fragmentHead       : String(10);
+        fragmentTitle      : String(10);
+        fragmentFooter     : String(10);
+        caseFormView       : String(50);
+        logouturl          : String(255);
+}

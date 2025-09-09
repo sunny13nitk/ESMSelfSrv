@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sap.cap.esmapi.events.event.EV_LogMessage;
+import com.sap.cap.esmapi.exceptions.EX_CONFIG;
 import com.sap.cap.esmapi.exceptions.EX_ESMAPI;
 import com.sap.cap.esmapi.exceptions.EX_SessionExpired;
 import com.sap.cap.esmapi.utilities.enums.EnumMessageType;
@@ -52,6 +53,17 @@ public class GlobalExceptionHdlr
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("sessionexpire");
 		log.error("Exception of Type 'EX_SessionExpired' occured with error details as : " + ex.getLocalizedMessage());
+		log.error(ex.getStackTrace().toString());
+		return mv;
+	}
+
+	@ExceptionHandler(EX_CONFIG.class)
+	public ModelAndView handleConfigException(Exception ex)
+	{
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("cfgerror");
+		mv.addObject("formError", ex.getMessage());
+		log.error("Exception of Type 'EX_CONFIG' occured with error details as : " + ex.getLocalizedMessage());
 		log.error(ex.getStackTrace().toString());
 		return mv;
 	}

@@ -35,6 +35,7 @@ import com.sap.cap.esmapi.events.event.EV_LogMessage;
 import com.sap.cap.esmapi.exceptions.EX_CaseAlreadyConfirmed;
 import com.sap.cap.esmapi.exceptions.EX_ESMAPI;
 import com.sap.cap.esmapi.exceptions.EX_SessionExpired;
+import com.sap.cap.esmapi.hana.config.srv.intf.IF_BaseConfigSrv;
 import com.sap.cap.esmapi.hana.logging.srv.intf.IF_HANALoggingSrv;
 import com.sap.cap.esmapi.status.srv.intf.IF_StatusSrv;
 import com.sap.cap.esmapi.ui.pojos.TY_Attachment;
@@ -125,6 +126,9 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
 
     @Autowired
     private IF_DestinationService destSrv;
+
+    @Autowired
+    private IF_BaseConfigSrv baseConfigSrv;
 
     // Properties
     private TY_UserSessionInfo userSessInfo;
@@ -593,22 +597,39 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
     public boolean isLobValid(String lob)
     {
         boolean isValid = false;
-        if (StringUtils.hasText(lob) && CollectionUtils.isNotEmpty(catgCusSrv.getCustomizations()))
+
+        if (StringUtils.hasText(lob) && baseConfigSrv != null)
         {
-            Optional<TY_CatgCusItem> catgCusItemO = catgCusSrv.getCustomizations().stream()
-                    .filter(c -> c.getCaseTypeEnum().toString().equalsIgnoreCase(lob)).findFirst();
-            if (catgCusItemO.isPresent())
+            // Initialize User Session Info if not already
+            if (userSessInfo == null)
+            {
+                log.info("User Session Info. Instantiated!");
+                userSessInfo = new TY_UserSessionInfo();
+            }
+            TY_CatgCusItem baseCfg = baseConfigSrv.getConfigByLoB(lob);
+            if (baseCfg != null)
             {
                 isValid = true;
-                if (userSessInfo == null)
-                {
-                    log.info("User Session Info. Instantiated!");
-                    userSessInfo = new TY_UserSessionInfo();
-                }
-                userSessInfo.setCatgCusItem(catgCusItemO.get()); // also set the Path LoB in user session
-                log.info("User Session Lob Validated & Set: " + lob);
-            }
 
+                userSessInfo.setCatgCusItem(baseCfg); // also set the Path LoB in user session
+                log.info("User Session Lob Validated & Set via HDI: " + lob);
+            }
+            else // Fallback to Customizations
+            {
+                if (StringUtils.hasText(lob) && CollectionUtils.isNotEmpty(catgCusSrv.getCustomizations()))
+                {
+                    Optional<TY_CatgCusItem> catgCusItemO = catgCusSrv.getCustomizations().stream()
+                            .filter(c -> c.getCaseTypeEnum().toString().equalsIgnoreCase(lob)).findFirst();
+                    if (catgCusItemO.isPresent())
+                    {
+                        isValid = true;
+
+                        userSessInfo.setCatgCusItem(catgCusItemO.get()); // also set the Path LoB in user session
+                        log.info("User Session Lob Validated & Set via csv Customizations: " + lob);
+                    }
+
+                }
+            }
         }
 
         return isValid;
