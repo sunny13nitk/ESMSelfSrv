@@ -90,7 +90,7 @@ public class AppSecurityConfig
                                 .requestMatchers("/post/**").hasAnyAuthority(GC_Constants.gc_role_employee_esm, GC_Constants.gc_role_contractor_esm)
                                 .requestMatchers("/*").authenticated()
                                 .anyRequest().denyAll())
-                                .exceptionHandling(ex->ex.accessDeniedHandler(accessDeniedHandler()))
+                                // .exceptionHandling(ex->ex.accessDeniedHandler(accessDeniedHandler()))
                                 .csrf(csrf -> csrf.csrfTokenRepository(csrfTokenRepository()))
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
