@@ -6,6 +6,7 @@ import java.time.Instant;
 import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.sap.cap.esmapi.events.event.EV_LogMessage;
 import com.sap.cap.esmapi.exceptions.EX_CONFIG;
@@ -35,6 +37,9 @@ public class GlobalExceptionHdlr
 
 	@Autowired
 	private ApplicationEventPublisher applicationEventPublisher;
+
+	@Autowired
+	private MessageSource msgSrc;
 
 	@ExceptionHandler(EX_ESMAPI.class)
 	public ModelAndView handleNotFound(Exception ex)
@@ -93,11 +98,17 @@ public class GlobalExceptionHdlr
 	{
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("error");
-		mv.addObject("formError",
-				"Invalid Token! Access to app not possible. Try clearing browser history and cookies. Try logging in via a private/Incognito window.");
-		log.error(
-				"Invalid Token! Access to app not possible. Try clearing browser history and cookies. Try logging in via a private/Incognito window."
-						+ e.getLocalizedMessage());
+		String msg = msgSrc.getMessage("ERR_INVALID_TOKEN", null, null);
+
+		if (e instanceof NoResourceFoundException)
+		{
+			// ERR_NO_RESOURCE= No Resource could be found. Details - {0}.
+			msg = msgSrc.getMessage("ERR_NO_RESOURCE", new Object[]
+			{ e.getLocalizedMessage() }, null);
+		}
+
+		mv.addObject("formError", msg);
+		log.error(msg + e.getLocalizedMessage());
 		log.error(e.getClass().getName());
 		log.error(e.getStackTrace().toString());
 		return mv;
