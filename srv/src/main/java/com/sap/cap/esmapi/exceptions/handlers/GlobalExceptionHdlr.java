@@ -98,6 +98,7 @@ public class GlobalExceptionHdlr
 		log.error(
 				"Invalid Token! Access to app not possible. Try clearing browser history and cookies. Try logging in via a private/Incognito window."
 						+ e.getLocalizedMessage());
+		log.error(e.getClass().getName());
 		log.error(e.getStackTrace().toString());
 		return mv;
 
