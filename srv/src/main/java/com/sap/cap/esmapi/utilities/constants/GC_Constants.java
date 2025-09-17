@@ -74,4 +74,6 @@ public class GC_Constants
     public static final String gc_TitleFragmentDefault = "genT";
     public static final String gc_FooterFragmentDefault = "genF";
 
+    public static final String gc_Ty_UserAccountEmployee = "Ty_UserAccountEmployee";
+
 }

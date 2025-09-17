@@ -20,6 +20,7 @@ import com.sap.cap.esmapi.events.event.EV_LogMessage;
 import com.sap.cap.esmapi.exceptions.EX_CONFIG;
 import com.sap.cap.esmapi.exceptions.EX_ESMAPI;
 import com.sap.cap.esmapi.exceptions.EX_SessionExpired;
+import com.sap.cap.esmapi.utilities.constants.GC_Constants;
 import com.sap.cap.esmapi.utilities.enums.EnumMessageType;
 import com.sap.cap.esmapi.utilities.enums.EnumStatus;
 import com.sap.cap.esmapi.utilities.pojos.TY_Message;
@@ -105,6 +106,14 @@ public class GlobalExceptionHdlr
 			// ERR_NO_RESOURCE= No Resource could be found. Details - {0}.
 			msg = msgSrc.getMessage("ERR_NO_RESOURCE", new Object[]
 			{ e.getLocalizedMessage() }, null);
+		}
+
+		if (e instanceof NullPointerException)
+		{
+			if (e.getLocalizedMessage().contains(GC_Constants.gc_Ty_UserAccountEmployee))
+			{
+				mv.setViewName("sessionexpire");
+			}
 		}
 
 		mv.addObject("formError", msg);
