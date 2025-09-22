@@ -36,3 +36,14 @@ entity baseconfig {
         caseFormView       : String(50);
         logouturl          : String(255);
 }
+
+@Capabilities.Insertable: false
+@Capabilities.Updatable : false
+@Capabilities.Deletable : false
+entity lobcatgsranks : cuid
+{
+    casetype : String(10);
+    catg     : String(200);
+    rank     : Int16;
+
+}

@@ -28,7 +28,6 @@ import com.sap.cap.esmapi.catg.pojos.TY_CatgCus;
 import com.sap.cap.esmapi.catg.srv.intf.IF_CatalogSrv;
 import com.sap.cap.esmapi.utilities.StringsUtility;
 import com.sap.cap.esmapi.utilities.constants.GC_Constants;
-import com.sap.cap.esmapi.utilities.enums.EnumCaseTypes;
 import com.sap.cap.esmapi.utilities.pojos.JSONAnotamy;
 import com.sap.cap.esmapi.utilities.pojos.TY_CaseCatalogCustomizing;
 import com.sap.cap.esmapi.utilities.pojos.TY_CaseESS;
@@ -66,8 +65,6 @@ public class APIRestController
 
     @Autowired
     private IF_SrvCloudAPI srvCloudApiSrv;
-
- 
 
     @Autowired
     private IF_CatalogSrv catalogSrv;
@@ -336,14 +333,14 @@ public class APIRestController
 
                                             casesESSList.add(new TY_CaseESS(caseguid, caseid, caseType,
                                                     caseTypeDescription, subject, status, accountId, contactId,
-                                                    createdOn, date, dateFormatted, odt, origin,false));
+                                                    createdOn, date, dateFormatted, odt, origin, false));
 
                                         }
                                         else
                                         {
                                             casesESSList.add(new TY_CaseESS(caseguid, caseid, caseType,
                                                     caseTypeDescription, subject, status, accountId, contactId,
-                                                    createdOn, null, null, null, origin,false));
+                                                    createdOn, null, null, null, origin, false));
                                         }
 
                                     }
@@ -469,8 +466,6 @@ public class APIRestController
         return this.catgCus;
     }
 
-  
-
     @GetMapping("/accURL")
     private String getACCURL(@RequestParam(name = "userName", required = true) String userName,
             @RequestParam(name = "email", required = true) String email)
@@ -508,7 +503,7 @@ public class APIRestController
     @GetMapping("/catalogDetails")
     private TY_CatalogTree getCatgTreeCaseType(@RequestParam(name = "caseType", required = true) String caseType)
     {
-        return catalogSrv.getCaseCatgTree4LoB(EnumCaseTypes.valueOf(caseType));
+        return catalogSrv.getCaseCatgTree4LoB(caseType);
     }
 
 }

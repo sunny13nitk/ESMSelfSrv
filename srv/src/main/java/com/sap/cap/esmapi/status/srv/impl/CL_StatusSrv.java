@@ -21,7 +21,6 @@ import com.sap.cap.esmapi.status.pojos.TY_PortalStatusTransitions;
 import com.sap.cap.esmapi.status.pojos.TY_StatusCfg;
 import com.sap.cap.esmapi.status.pojos.TY_StatusCfgItem;
 import com.sap.cap.esmapi.status.srv.intf.IF_StatusSrv;
-import com.sap.cap.esmapi.utilities.enums.EnumCaseTypes;
 import com.sap.cap.esmapi.utilities.srv.intf.IF_UserSessionSrv;
 import com.sap.cap.esmapi.utilities.srvCloudApi.srv.intf.IF_SrvCloudAPI;
 
@@ -48,7 +47,7 @@ public class CL_StatusSrv implements IF_StatusSrv
     private List<TY_StatusCfg> lobStatusCfgList;
 
     @Override
-    public TY_StatusCfg getStatusCfg4CaseType(EnumCaseTypes caseType) throws EX_ESMAPI, IOException
+    public TY_StatusCfg getStatusCfg4CaseType(String caseType) throws EX_ESMAPI, IOException
     {
         TY_StatusCfg statusCFG = null;
         if (caseType != null && catgCus != null)
@@ -182,13 +181,13 @@ public class CL_StatusSrv implements IF_StatusSrv
 
     }
 
-    private TY_StatusCfg fetchStatusCfg4CaseType(EnumCaseTypes caseType) throws EX_ESMAPI, IOException
+    private TY_StatusCfg fetchStatusCfg4CaseType(String caseType) throws EX_ESMAPI, IOException
     {
         TY_StatusCfg statusCfg = null;
         if (CollectionUtils.isNotEmpty(catgCus.getCustomizations()))
         {
             Optional<TY_CatgCusItem> cusO = catgCus.getCustomizations().stream()
-                    .filter(c -> c.getCaseTypeEnum().name().equalsIgnoreCase(caseType.name())).findFirst();
+                    .filter(c -> c.getCaseTypeEnum().equalsIgnoreCase(caseType)).findFirst();
             if (cusO.isPresent())
             {
                 TY_CatgCusItem cus = cusO.get();

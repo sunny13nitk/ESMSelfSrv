@@ -59,7 +59,6 @@ import com.sap.cap.esmapi.ui.pojos.TY_Attachment;
 import com.sap.cap.esmapi.ui.pojos.TY_CaseConfirmPOJO;
 import com.sap.cap.esmapi.utilities.StringsUtility;
 import com.sap.cap.esmapi.utilities.constants.GC_Constants;
-import com.sap.cap.esmapi.utilities.enums.EnumCaseTypes;
 import com.sap.cap.esmapi.utilities.pojos.TY_AttachmentResponse;
 import com.sap.cap.esmapi.utilities.pojos.TY_CaseCatalogCustomizing;
 import com.sap.cap.esmapi.utilities.pojos.TY_CaseDetails;
@@ -2737,7 +2736,7 @@ public class CL_SrvCloudAPI implements IF_SrvCloudAPI
     }
 
     @Override
-    public List<TY_CaseESS> getCases4User(Ty_UserAccountEmployee userDetails, EnumCaseTypes caseType,
+    public List<TY_CaseESS> getCases4User(Ty_UserAccountEmployee userDetails, String caseType,
             TY_DestinationProps desProps) throws IOException
     {
 

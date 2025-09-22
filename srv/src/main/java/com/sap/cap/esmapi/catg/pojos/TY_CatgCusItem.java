@@ -15,7 +15,7 @@ import lombok.Setter;
 public class TY_CatgCusItem
 {
     @CsvBindByPosition(position = 0)
-    private EnumCaseTypes caseTypeEnum;
+    private String caseTypeEnum;
     @CsvBindByPosition(position = 1)
     private String caseType;
     @CsvBindByPosition(position = 2)

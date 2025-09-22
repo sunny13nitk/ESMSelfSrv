@@ -26,7 +26,6 @@ import com.sap.cap.esmapi.catg.pojos.TY_CatgTemplates;
 import com.sap.cap.esmapi.catg.pojos.TY_CatgTemplatesCus;
 import com.sap.cap.esmapi.catg.srv.intf.IF_CatalogSrv;
 import com.sap.cap.esmapi.exceptions.EX_ESMAPI;
-import com.sap.cap.esmapi.utilities.enums.EnumCaseTypes;
 import com.sap.cap.esmapi.utilities.pojos.TY_CaseCatalogCustomizing;
 import com.sap.cap.esmapi.utilities.srv.intf.IF_UserSessionSrv;
 import com.sap.cap.esmapi.utilities.srvCloudApi.srv.intf.IF_SrvCloudAPI;
@@ -59,7 +58,7 @@ public class CL_CatalogSrv implements IF_CatalogSrv
     private IF_UserSessionSrv userSessionSrv;
 
     @Override
-    public TY_CatalogTree getCaseCatgTree4LoB(EnumCaseTypes caseType) throws EX_ESMAPI
+    public TY_CatalogTree getCaseCatgTree4LoB(String caseType) throws EX_ESMAPI
     {
         TY_CatalogTree caseCatgTree = null;
         if (caseType != null)
@@ -91,7 +90,7 @@ public class CL_CatalogSrv implements IF_CatalogSrv
     }
 
     @Override
-    public String[] getCatgHierarchyforCatId(String catId, EnumCaseTypes caseType) throws EX_ESMAPI
+    public String[] getCatgHierarchyforCatId(String catId, String caseType) throws EX_ESMAPI
     {
         String[] catTree = null;
         int idx = 0;
@@ -141,7 +140,7 @@ public class CL_CatalogSrv implements IF_CatalogSrv
     }
 
     @Override
-    public TY_CatgTemplates getTemplates4Catg(String catId, EnumCaseTypes caseType) throws EX_ESMAPI
+    public TY_CatgTemplates getTemplates4Catg(String catId, String caseType) throws EX_ESMAPI
     {
         TY_CatgTemplates catgTmpl = null;
         if (StringUtils.hasText(catId) && CollectionUtils.isNotEmpty(catgTmplCus.getCatgTemplates())
@@ -217,8 +216,7 @@ public class CL_CatalogSrv implements IF_CatalogSrv
     }
 
     @Override
-    public TY_CatgDetails getCategoryDetails4Catg(String catId, EnumCaseTypes caseType, boolean inUpperCase)
-            throws EX_ESMAPI
+    public TY_CatgDetails getCategoryDetails4Catg(String catId, String caseType, boolean inUpperCase) throws EX_ESMAPI
     {
         TY_CatgDetails catgDetails = null;
 
@@ -278,7 +276,7 @@ public class CL_CatalogSrv implements IF_CatalogSrv
         return catgDetails;
     }
 
-    private TY_CatalogTree loadCatgTree4CaseType(EnumCaseTypes caseType)
+    private TY_CatalogTree loadCatgTree4CaseType(String caseType)
     {
 
         TY_CatalogTree caseCatgTree = null;
@@ -352,7 +350,7 @@ public class CL_CatalogSrv implements IF_CatalogSrv
         return caseCatgTree;
     }
 
-    private List<TY_CatalogItem> prepareRankedCatgTree(TY_CatalogTree caseCatgTree, EnumCaseTypes caseType)
+    private List<TY_CatalogItem> prepareRankedCatgTree(TY_CatalogTree caseCatgTree, String caseType)
     {
         List<TY_CatalogItem> catgsSorted = new ArrayList<TY_CatalogItem>();
         TY_CatgCusItem cusItem = userSessionSrv.getCurrentLOBConfig();

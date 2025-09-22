@@ -17,7 +17,6 @@ import com.sap.cap.esmapi.catg.pojos.TY_CatgDetails;
 import com.sap.cap.esmapi.catg.srv.intf.IF_CatalogSrv;
 import com.sap.cap.esmapi.exceptions.EX_ESMAPI;
 import com.sap.cap.esmapi.utilities.constants.GC_Constants;
-import com.sap.cap.esmapi.utilities.enums.EnumCaseTypes;
 import com.sap.cap.esmapi.vhelps.cus.TY_Catg_MandatoryFlds;
 import com.sap.cap.esmapi.vhelps.cus.TY_Cus_VHelpsLOB;
 import com.sap.cap.esmapi.vhelps.cus.TY_FieldProperties;
@@ -46,11 +45,11 @@ public class CL_VHelpLOBUIModelSrv implements IF_VHelpLOBUIModelSrv
     private ApplicationContext appCtxt;
 
     @Override
-    public Map<String, List<TY_KeyValue>> getVHelpUIModelMap4LobCatg(EnumCaseTypes lob, String catgId) throws EX_ESMAPI
+    public Map<String, List<TY_KeyValue>> getVHelpUIModelMap4LobCatg(String lob, String catgId) throws EX_ESMAPI
     {
         Map<String, List<TY_KeyValue>> modelAttrs = new HashMap<String, List<TY_KeyValue>>();
 
-        if (StringUtils.hasText(lob.name()) && StringUtils.hasText(catgId) && catalogSrv != null && vHelpSrv != null
+        if (StringUtils.hasText(lob) && StringUtils.hasText(catgId) && catalogSrv != null && vHelpSrv != null
                 && vHelpCusSrv != null && appCtxt != null)
         {
 
@@ -61,7 +60,7 @@ public class CL_VHelpLOBUIModelSrv implements IF_VHelpLOBUIModelSrv
                 TY_CatgDetails catgDetails = catalogSrv.getCategoryDetails4Catg(catgId, lob, true);
                 // Get Customizing for LOB
                 Optional<TY_Cus_VHelpsLOB> lobVHelpCusO = vHelpCusSrv.getVHelpsCus().stream()
-                        .filter(x -> x.getLOB().equals(lob.name())).findFirst();
+                        .filter(x -> x.getLOB().equals(lob)).findFirst();
 
                 if (lobVHelpCusO.isPresent())
                 {

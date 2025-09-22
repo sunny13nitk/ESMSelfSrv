@@ -1,5 +1,6 @@
 
 DROP VIEW IF EXISTS LogsReadService_Logs;
+DROP TABLE IF EXISTS db_esmlogs_lobcatgsranks;
 DROP TABLE IF EXISTS db_esmlogs_baseconfig;
 DROP TABLE IF EXISTS db_esmlogs_esmapplogs;
 
@@ -30,6 +31,14 @@ CREATE TABLE db_esmlogs_baseconfig (
   caseFormView NVARCHAR(50),
   logouturl NVARCHAR(255),
   PRIMARY KEY(caseTypeEnum)
+); 
+
+CREATE TABLE db_esmlogs_lobcatgsranks (
+  ID NVARCHAR(36) NOT NULL,
+  casetype NVARCHAR(10),
+  catg NVARCHAR(200),
+  rank SMALLINT,
+  PRIMARY KEY(ID)
 ); 
 
 CREATE VIEW LogsReadService_Logs AS SELECT

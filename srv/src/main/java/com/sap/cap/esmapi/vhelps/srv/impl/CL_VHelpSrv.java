@@ -16,7 +16,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.context.annotation.SessionScope;
 
 import com.sap.cap.esmapi.exceptions.EX_ESMAPI;
-import com.sap.cap.esmapi.utilities.enums.EnumCaseTypes;
 import com.sap.cap.esmapi.utilities.srv.intf.IF_UserSessionSrv;
 import com.sap.cap.esmapi.utilities.srvCloudApi.srv.intf.IF_SrvCloudAPI;
 import com.sap.cap.esmapi.vhelps.cus.TY_Cus_VHelpsLOB;
@@ -50,7 +49,7 @@ public class CL_VHelpSrv implements IF_VHelpSrv
     private List<TY_LOBVHlpPool> vhlpPool;
 
     @Override
-    public List<TY_KeyValue> getVHelpDDLB4Field(EnumCaseTypes lob, String fieldName)
+    public List<TY_KeyValue> getVHelpDDLB4Field(String lob, String fieldName)
     {
 
         List<TY_KeyValue> vhlpDDLB = null;
@@ -109,7 +108,7 @@ public class CL_VHelpSrv implements IF_VHelpSrv
         return vhlpDDLB;
     }
 
-    private List<TY_KeyValue> fetchAndPopulateVhelp4Fld(EnumCaseTypes lob, String fieldName)
+    private List<TY_KeyValue> fetchAndPopulateVhelp4Fld(String lob, String fieldName)
     {
         boolean fieldFound = false;
         List<TY_KeyValue> vhlpDDLB = null;
@@ -144,7 +143,7 @@ public class CL_VHelpSrv implements IF_VHelpSrv
             {
                 // SCan for LOB
                 Optional<TY_LOBVHlpPool> lobVhlpsO;
-                lobVhlpsO = vhlpPool.stream().filter(c -> c.getLob().name().equals(lob.name())).findFirst();
+                lobVhlpsO = vhlpPool.stream().filter(c -> c.getLob().equals(lob)).findFirst();
                 if (lobVhlpsO.isPresent())
                 {
                     // Scan for field
@@ -171,8 +170,8 @@ public class CL_VHelpSrv implements IF_VHelpSrv
                             Collections.sort(vhlpDDLB, Comparator.comparing(TY_KeyValue::getKey));
                             // Get the LOB Vhelp
 
-                            Optional<TY_LOBVHlpPool> vHlpLobO = vhlpPool.stream()
-                                    .filter(f -> f.getLob().name().equals(lob.name())).findFirst();
+                            Optional<TY_LOBVHlpPool> vHlpLobO = vhlpPool.stream().filter(f -> f.getLob().equals(lob))
+                                    .findFirst();
                             if (vHlpLobO.isPresent())
                             {
 

@@ -1,6 +1,5 @@
 package com.sap.cap.esmapi.hana.config.srv.impl;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,7 +11,6 @@ import com.sap.cap.esmapi.catg.pojos.TY_CatgCus;
 import com.sap.cap.esmapi.catg.pojos.TY_CatgCusItem;
 import com.sap.cap.esmapi.exceptions.EX_CONFIG;
 import com.sap.cap.esmapi.hana.config.srv.intf.IF_BaseConfigSrv;
-import com.sap.cap.esmapi.utilities.enums.EnumCaseTypes;
 import com.sap.cap.esmapi.utilities.srv.intf.IF_UserSessionSrv;
 import com.sap.cds.ql.Select;
 import com.sap.cds.ql.cqn.CqnSelect;
@@ -48,13 +46,10 @@ public class CL_BaseConfigSrv implements IF_BaseConfigSrv
         else
         {
             return new TY_CatgCus(configs.stream()
-                    .map(cfg -> new TY_CatgCusItem(
-                            Arrays.stream(EnumCaseTypes.values()).filter(x -> x.name().equals(cfg.getCaseTypeEnum()))
-                                    .findFirst().get(),
-                            cfg.getCasetype(), cfg.getAppNotesTypes(), cfg.getStatusSchema(), cfg.getReplyNoteType(),
-                            cfg.getCatgRankEnabled(), cfg.getCatgsranksonlyShow(), cfg.getConfirmStatus(),
-                            cfg.getFragmentHead(), cfg.getFragmentTitle(), cfg.getFragmentFooter(),
-                            cfg.getCaseFormView(), cfg.getLogouturl()))
+                    .map(cfg -> new TY_CatgCusItem(cfg.getCaseTypeEnum(), cfg.getCasetype(), cfg.getAppNotesTypes(),
+                            cfg.getStatusSchema(), cfg.getReplyNoteType(), cfg.getCatgRankEnabled(),
+                            cfg.getCatgsranksonlyShow(), cfg.getConfirmStatus(), cfg.getFragmentHead(),
+                            cfg.getFragmentTitle(), cfg.getFragmentFooter(), cfg.getCaseFormView(), cfg.getLogouturl()))
                     .toList());
         }
     }
@@ -72,14 +67,11 @@ public class CL_BaseConfigSrv implements IF_BaseConfigSrv
                 Optional<Baseconfig> cfgO = ps.run(qLobId).first(Baseconfig.class);
                 if (cfgO.isPresent())
                 {
-                    return new TY_CatgCusItem(
-                            Arrays.stream(EnumCaseTypes.values())
-                                    .filter(x -> x.name().equals(cfgO.get().getCaseTypeEnum())).findFirst().get(),
-                            cfgO.get().getCasetype(), cfgO.get().getAppNotesTypes(), cfgO.get().getStatusSchema(),
-                            cfgO.get().getReplyNoteType(), cfgO.get().getCatgRankEnabled(),
-                            cfgO.get().getCatgsranksonlyShow(), cfgO.get().getConfirmStatus(),
-                            cfgO.get().getFragmentHead(), cfgO.get().getFragmentTitle(), cfgO.get().getFragmentFooter(),
-                            cfgO.get().getCaseFormView(), cfgO.get().getLogouturl());
+                    return new TY_CatgCusItem(cfgO.get().getCaseTypeEnum(), cfgO.get().getCasetype(),
+                            cfgO.get().getAppNotesTypes(), cfgO.get().getStatusSchema(), cfgO.get().getReplyNoteType(),
+                            cfgO.get().getCatgRankEnabled(), cfgO.get().getCatgsranksonlyShow(),
+                            cfgO.get().getConfirmStatus(), cfgO.get().getFragmentHead(), cfgO.get().getFragmentTitle(),
+                            cfgO.get().getFragmentFooter(), cfgO.get().getCaseFormView(), cfgO.get().getLogouturl());
                 }
 
             }
@@ -100,14 +92,11 @@ public class CL_BaseConfigSrv implements IF_BaseConfigSrv
                 Optional<Baseconfig> cfgO = ps.run(qLobId).first(Baseconfig.class);
                 if (cfgO.isPresent())
                 {
-                    return new TY_CatgCusItem(
-                            Arrays.stream(EnumCaseTypes.values())
-                                    .filter(x -> x.name().equals(cfgO.get().getCaseTypeEnum())).findFirst().get(),
-                            cfgO.get().getCasetype(), cfgO.get().getAppNotesTypes(), cfgO.get().getStatusSchema(),
-                            cfgO.get().getReplyNoteType(), cfgO.get().getCatgRankEnabled(),
-                            cfgO.get().getCatgsranksonlyShow(), cfgO.get().getConfirmStatus(),
-                            cfgO.get().getFragmentHead(), cfgO.get().getFragmentTitle(), cfgO.get().getFragmentFooter(),
-                            cfgO.get().getCaseFormView(), cfgO.get().getLogouturl());
+                    return new TY_CatgCusItem(cfgO.get().getCaseTypeEnum(), cfgO.get().getCasetype(),
+                            cfgO.get().getAppNotesTypes(), cfgO.get().getStatusSchema(), cfgO.get().getReplyNoteType(),
+                            cfgO.get().getCatgRankEnabled(), cfgO.get().getCatgsranksonlyShow(),
+                            cfgO.get().getConfirmStatus(), cfgO.get().getFragmentHead(), cfgO.get().getFragmentTitle(),
+                            cfgO.get().getFragmentFooter(), cfgO.get().getCaseFormView(), cfgO.get().getLogouturl());
                 }
 
             }
