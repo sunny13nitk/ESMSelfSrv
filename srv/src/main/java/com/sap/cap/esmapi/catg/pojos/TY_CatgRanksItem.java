@@ -1,7 +1,6 @@
 package com.sap.cap.esmapi.catg.pojos;
 
 import com.opencsv.bean.CsvBindByPosition;
-import com.sap.cap.esmapi.utilities.enums.EnumCaseTypes;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,7 +15,7 @@ public class TY_CatgRanksItem
 {
 
     @CsvBindByPosition(position = 0)
-    private EnumCaseTypes caseTypeEnum;
+    private String caseTypeEnum;
     @CsvBindByPosition(position = 1)
     private String catg;
     @CsvBindByPosition(position = 2)

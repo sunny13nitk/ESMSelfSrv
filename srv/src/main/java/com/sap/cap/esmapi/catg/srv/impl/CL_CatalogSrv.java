@@ -30,7 +30,10 @@ import com.sap.cap.esmapi.utilities.pojos.TY_CaseCatalogCustomizing;
 import com.sap.cap.esmapi.utilities.srv.intf.IF_UserSessionSrv;
 import com.sap.cap.esmapi.utilities.srvCloudApi.srv.intf.IF_SrvCloudAPI;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class CL_CatalogSrv implements IF_CatalogSrv
 {
@@ -67,7 +70,7 @@ public class CL_CatalogSrv implements IF_CatalogSrv
             {
                 // 1. Check from Session if Loaded already!
                 Optional<TY_CatalogTree> caseCatgTreeO = caseCatgContainer.stream()
-                        .filter(f -> f.getCaseTypeEnum().toString().equals(caseType.toString())).findFirst();
+                        .filter(f -> f.getCaseTypeEnum().toString().equals(caseType)).findFirst();
                 if (caseCatgTreeO.isPresent())
                 {
                     System.out.println("REading Catg. Tree from Session for :" + caseType);
@@ -283,9 +286,14 @@ public class CL_CatalogSrv implements IF_CatalogSrv
 
         // Get the Config
         Optional<TY_CatgCusItem> caseCFgO = catgCus.getCustomizations().stream()
-                .filter(g -> g.getCaseTypeEnum().toString().equals(caseType.toString())).findFirst();
+                .filter(g -> g.getCaseTypeEnum().toString().equals(caseType)).findFirst();
         if (caseCFgO.isPresent() && srvCloudApiSrv != null && userSessionSrv != null)
         {
+
+            // #TEST - Begin
+            log.info("Loading Catg. Tree from Srv Cloud for :" + caseType);
+            log.info("Catg. Config Props :" + caseCFgO.toString());
+            // #TEST - End
             // Read FRom Srv Cloud the Catg. Tree
             try
             {
@@ -312,6 +320,13 @@ public class CL_CatalogSrv implements IF_CatalogSrv
                             if (CollectionUtils.isNotEmpty(toplvlCatgs))
                             {
                                 caseCatgTree.setCategories(toplvlCatgs);
+
+                                // #TEST - Begin
+                                for (TY_CatalogItem catgItem : toplvlCatgs)
+                                {
+                                    log.info("Top Level Catg :" + catgItem.getName());
+                                }
+                                // #TEST - End
                             }
 
                             // Categories Sort Enabled
@@ -332,7 +347,7 @@ public class CL_CatalogSrv implements IF_CatalogSrv
             catch (Exception e)
             {
                 throw new EX_ESMAPI(msgSrc.getMessage("ERR_CATG_LOAD", new Object[]
-                { null, caseType.toString() }, Locale.ENGLISH));
+                { null, caseType }, Locale.ENGLISH));
             }
 
         }
@@ -340,7 +355,7 @@ public class CL_CatalogSrv implements IF_CatalogSrv
         else
         {
             throw new EX_ESMAPI(msgSrc.getMessage("ERR_CASE_TYPE_NOCFG", new Object[]
-            { caseType.toString() }, Locale.ENGLISH));
+            { caseType }, Locale.ENGLISH));
         }
 
         if (CollectionUtils.isNotEmpty(caseCatgTree.getCategories()))
@@ -355,6 +370,9 @@ public class CL_CatalogSrv implements IF_CatalogSrv
         List<TY_CatalogItem> catgsSorted = new ArrayList<TY_CatalogItem>();
         TY_CatgCusItem cusItem = userSessionSrv.getCurrentLOBConfig();
 
+        // #TEST - Begin
+        log.info("Inside Category ranking method...." + caseType);
+        // #TEST - End
         if (catgRanks != null && cusItem != null)
         {
             if (CollectionUtils.isNotEmpty(catgRanks.getCatgRankItems()))
