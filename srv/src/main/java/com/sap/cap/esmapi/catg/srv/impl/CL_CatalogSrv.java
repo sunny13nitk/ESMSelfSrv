@@ -285,9 +285,8 @@ public class CL_CatalogSrv implements IF_CatalogSrv
         TY_CatalogTree caseCatgTree = null;
 
         // Get the Config
-        Optional<TY_CatgCusItem> caseCFgO = catgCus.getCustomizations().stream()
-                .filter(g -> g.getCaseTypeEnum().toString().equals(caseType)).findFirst();
-        if (caseCFgO.isPresent() && srvCloudApiSrv != null && userSessionSrv != null)
+        TY_CatgCusItem caseCFg = userSessionSrv.getCurrentLOBConfig();
+        if (caseCFg != null && srvCloudApiSrv != null)
         {
 
             // Read FRom Srv Cloud the Catg. Tree
@@ -295,7 +294,7 @@ public class CL_CatalogSrv implements IF_CatalogSrv
             {
                 // Get config from Srv Cloud for Case type - Active Catalog ID
                 TY_CaseCatalogCustomizing caseCus = srvCloudApiSrv.getActiveCaseTemplateConfig4CaseType(
-                        caseCFgO.get().getCaseType(), userSessionSrv.getDestinationDetails4mUserSession());
+                        caseCFg.getCaseType(), userSessionSrv.getDestinationDetails4mUserSession());
                 if (caseCus != null)
                 {
                     if (StringUtils.hasText(caseCus.getCataglogId()))
@@ -320,8 +319,9 @@ public class CL_CatalogSrv implements IF_CatalogSrv
                             }
 
                             // Categories Sort Enabled
-                            if (caseCFgO.get().getCatgRankEnabled())
+                            if (caseCFg.getCatgRankEnabled())
                             {
+                                log.info("Preparing Ranked Catg. Tree for :" + caseType);
                                 List<TY_CatalogItem> catgItems = prepareRankedCatgTree(caseCatgTree, caseType);
                                 caseCatgTree.setCategories(catgItems);
                             }
@@ -368,6 +368,16 @@ public class CL_CatalogSrv implements IF_CatalogSrv
             {
                 // Get from Autowired Bean - csv bound only in case not present in session
                 catgRanksItems = this.catgRanks.getCatgRankItems();
+            }
+            else
+            {
+                log.info("Reading Catg. Ranks from HDI for :" + caseType);
+                // #Test - Begin
+                for (TY_CatgRanksItem ty_CatgRanksItem : catgRanksItems)
+                {
+                    log.info("Catg. Rank Item :" + ty_CatgRanksItem.getCatg() + " - " + ty_CatgRanksItem.getRank());
+                }
+                // #Test - End
             }
 
             if (CollectionUtils.isNotEmpty(catgRanksItems))
