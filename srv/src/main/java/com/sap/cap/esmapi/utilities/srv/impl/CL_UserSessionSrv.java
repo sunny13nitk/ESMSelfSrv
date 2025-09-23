@@ -2079,8 +2079,9 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
         // Instantiate and Fire the Event
         EV_LogMessage logMsgEvent = new EV_LogMessage(this, message);
         applicationEventPublisher.publishEvent(logMsgEvent);
-
+        log.info("Case Reply Blank Error Handled..");
         this.addFormErrors(msg);// For Form Display
+        log.info("Form Error Added to Display..");
     }
 
     private void handleErrorCaseFetch(String caseID, Exception e)
