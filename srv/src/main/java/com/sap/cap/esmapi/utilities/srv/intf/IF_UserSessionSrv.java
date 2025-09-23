@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import com.sap.cap.esmapi.catg.pojos.TY_CatgCusItem;
+import com.sap.cap.esmapi.catg.pojos.TY_CatgRanks;
 import com.sap.cap.esmapi.exceptions.EX_ESMAPI;
 import com.sap.cap.esmapi.ui.pojos.TY_CaseConfirmPOJO;
 import com.sap.cap.esmapi.ui.pojos.TY_CaseEditFormAsync;
@@ -196,5 +197,9 @@ public interface IF_UserSessionSrv
      * @return - true in case the case is already confirmed in current Session
      */
     public boolean isCaseAlreadyConfirmed(String caseId);
+
+    public void setCatgRanks(TY_CatgRanks catgRanks);
+
+    public TY_CatgRanks getCatgRanks();
 
 }

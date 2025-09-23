@@ -4,8 +4,11 @@ import java.util.List;
 
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.sap.cap.esmapi.catg.pojos.TY_CatgRanks;
+import com.sap.cap.esmapi.catg.pojos.TY_CatgRanksItem;
+import com.sap.cap.esmapi.exceptions.EX_CONFIG;
 import com.sap.cap.esmapi.hana.config.srv.intf.IF_CatgRanksSrv;
 import com.sap.cds.ql.Select;
 import com.sap.cds.ql.cqn.CqnSelect;
@@ -26,25 +29,31 @@ public class CL_CatgRanksSrv implements IF_CatgRanksSrv
     private final MessageSource msgSrc;
 
     @Override
-    public TY_CatgRanks getAllCatgRanks()
+    public TY_CatgRanks getAllCatgRanks4Lob(String caseType) throws EX_CONFIG
     {
         List<Lobcatgsranks> configs = null;
-
-        CqnSelect qConfigsAll = Select.from(Lobcatgsranks_.class);
-        configs = ps.run(qConfigsAll).listOf(Lobcatgsranks.class);
-
-        if (configs == null || configs.isEmpty())
+        if (StringUtils.hasText(caseType))
         {
-            return null;
-        }
-        else
-        {
-            // return new TY_CatgRanks(configs.stream()
-            // .map(cfg -> new TY_CatgRanksItem(cfg.getCasetype(), cfg.getCatg(), (int)
-            // cfg.getRank())).toList());
+            CqnSelect qConfigsByLob = Select.from(Lobcatgsranks_.class).where(b -> b.casetype().eq(caseType));
+            configs = ps.run(qConfigsByLob).listOf(Lobcatgsranks.class);
 
-            return null;
+            if (configs == null || configs.isEmpty())
+            {
+                // ERR_NO_LOB_CFG= No LOB Configuration found for Scenario - {0} in Customizing.
+                // Please contact your system administrator.
+                throw new EX_CONFIG(msgSrc.getMessage("ERR_NO_LOB_CFG", new String[]
+                { caseType }, null));
+            }
+            else
+            {
+                return new TY_CatgRanks(configs.stream()
+                        .map(cfg -> new TY_CatgRanksItem(cfg.getCasetype(), cfg.getCatg(), (int) cfg.getRank()))
+                        .toList());
+
+            }
         }
+        return null;
+
     }
 
 }

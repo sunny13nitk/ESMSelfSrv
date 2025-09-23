@@ -290,10 +290,6 @@ public class CL_CatalogSrv implements IF_CatalogSrv
         if (caseCFgO.isPresent() && srvCloudApiSrv != null && userSessionSrv != null)
         {
 
-            // #TEST - Begin
-            log.info("Loading Catg. Tree from Srv Cloud for :" + caseType);
-            log.info("Catg. Config Props :" + caseCFgO.toString());
-            // #TEST - End
             // Read FRom Srv Cloud the Catg. Tree
             try
             {
@@ -321,12 +317,6 @@ public class CL_CatalogSrv implements IF_CatalogSrv
                             {
                                 caseCatgTree.setCategories(toplvlCatgs);
 
-                                // #TEST - Begin
-                                for (TY_CatalogItem catgItem : toplvlCatgs)
-                                {
-                                    log.info("Top Level Catg :" + catgItem.getName());
-                                }
-                                // #TEST - End
                             }
 
                             // Categories Sort Enabled
@@ -370,15 +360,20 @@ public class CL_CatalogSrv implements IF_CatalogSrv
         List<TY_CatalogItem> catgsSorted = new ArrayList<TY_CatalogItem>();
         TY_CatgCusItem cusItem = userSessionSrv.getCurrentLOBConfig();
 
-        // #TEST - Begin
-        log.info("Inside Category ranking method...." + caseType);
-        // #TEST - End
-        if (catgRanks != null && cusItem != null)
+        if (userSessionSrv != null && cusItem != null)
         {
-            if (CollectionUtils.isNotEmpty(catgRanks.getCatgRankItems()))
+            // From Session get the Catg Ranks for LoB
+            List<TY_CatgRanksItem> catgRanksItems = userSessionSrv.getCatgRanks().getCatgRankItems();
+            if (CollectionUtils.isEmpty(catgRanksItems))
+            {
+                // Get from Autowired Bean - csv bound only in case not present in session
+                catgRanksItems = this.catgRanks.getCatgRankItems();
+            }
+
+            if (CollectionUtils.isNotEmpty(catgRanksItems))
             {
                 // Get Categories for Current CaseType
-                List<TY_CatgRanksItem> currLoBCatgRanks = catgRanks.getCatgRankItems().stream()
+                List<TY_CatgRanksItem> currLoBCatgRanks = catgRanksItems.stream()
                         .filter(c -> c.getCaseTypeEnum().equals(caseType)).collect(Collectors.toList());
 
                 if (CollectionUtils.isNotEmpty(currLoBCatgRanks))

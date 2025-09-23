@@ -30,12 +30,14 @@ import com.sap.cap.esmapi.catg.pojos.TY_CatalogItem;
 import com.sap.cap.esmapi.catg.pojos.TY_CatalogTree;
 import com.sap.cap.esmapi.catg.pojos.TY_CatgCus;
 import com.sap.cap.esmapi.catg.pojos.TY_CatgCusItem;
+import com.sap.cap.esmapi.catg.pojos.TY_CatgRanks;
 import com.sap.cap.esmapi.catg.srv.intf.IF_CatalogSrv;
 import com.sap.cap.esmapi.events.event.EV_LogMessage;
 import com.sap.cap.esmapi.exceptions.EX_CaseAlreadyConfirmed;
 import com.sap.cap.esmapi.exceptions.EX_ESMAPI;
 import com.sap.cap.esmapi.exceptions.EX_SessionExpired;
 import com.sap.cap.esmapi.hana.config.srv.intf.IF_BaseConfigSrv;
+import com.sap.cap.esmapi.hana.config.srv.intf.IF_CatgRanksSrv;
 import com.sap.cap.esmapi.hana.logging.srv.intf.IF_HANALoggingSrv;
 import com.sap.cap.esmapi.status.srv.intf.IF_StatusSrv;
 import com.sap.cap.esmapi.ui.pojos.TY_Attachment;
@@ -129,6 +131,9 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
 
     @Autowired
     private IF_BaseConfigSrv baseConfigSrv;
+
+    @Autowired
+    private IF_CatgRanksSrv catgRanksSrv;
 
     // Properties
     private TY_UserSessionInfo userSessInfo;
@@ -613,6 +618,18 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
 
                 userSessInfo.setCatgCusItem(baseCfg); // also set the Path LoB in user session
                 log.info("User Session Lob Validated & Set via HDI: " + lob);
+
+                if (catgRanksSrv != null)
+                {
+                    TY_CatgRanks catgRanks = catgRanksSrv.getAllCatgRanks4Lob(baseCfg.getCaseType());
+                    if (catgRanks != null)
+                    {
+                        userSessInfo.setCatgRanks(catgRanks);
+                        log.info("Category Ranks Set in User Session for LoB " + lob + " for Case type: "
+                                + baseCfg.getCaseType() + " via HDI ");
+                    }
+                }
+
             }
             else // Fallback to Customizations
             {
@@ -1991,6 +2008,18 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
 
         }
         return isValid;
+    }
+
+    @Override
+    public void setCatgRanks(TY_CatgRanks catgRanks)
+    {
+        this.userSessInfo.setCatgRanks(catgRanks);
+    }
+
+    @Override
+    public TY_CatgRanks getCatgRanks()
+    {
+        return this.userSessInfo.getCatgRanks();
     }
 
     private void handleAPIFailure(String[] params)
