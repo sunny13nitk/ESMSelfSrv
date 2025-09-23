@@ -32,7 +32,6 @@ import com.sap.cap.esmapi.ui.pojos.TY_CaseFormAsync;
 import com.sap.cap.esmapi.ui.pojos.TY_Case_Form;
 import com.sap.cap.esmapi.utilities.constants.GC_Constants;
 import com.sap.cap.esmapi.utilities.constants.VWNamesDirectory;
-import com.sap.cap.esmapi.utilities.constants.VWNamesDirectoryLocal;
 import com.sap.cap.esmapi.utilities.enums.EnumVWNames;
 import com.sap.cap.esmapi.utilities.pojos.TY_RLConfig;
 import com.sap.cap.esmapi.utilities.pojos.TY_UserESS;
@@ -405,25 +404,26 @@ public class ESSPostController
             if (!userSessSrv.SubmitCaseReply(caseReplyForm))
             {
                 // Redirect to Error Processing of Form
-                viewName = VWNamesDirectory.getViewName(EnumVWNames.caseReply, true, (String[]) null);
+                viewName = VWNamesDirectory.getViewName(EnumVWNames.caseReply, true, new String[]
+                { caseReplyForm.getCaseDetails().getCaseGuid() });
             }
             else
             {
                 // Fire Case Submission Event - To be processed Asyncronously
                 TY_CaseEditFormAsync caseEditFormAsync = userSessSrv.getCurrentReplyForm4Submission();
-                log.info("Case Reply Form Async Object Retrieved from Session..");
+
                 // External/Internal User Pass to Asynch Thread as Session Scoped Service would
                 // not be accessible in Asynch thread
                 caseEditFormAsync.getCaseReply().setExternal(userSessSrv.getUserDetails4mSession().isExternal());
-                log.info("User External/Internal Flag set in Case Reply Form Async Object..");
+
                 caseEditFormAsync.setDesProps(userSessSrv.getDestinationDetails4mUserSession());
-                log.info("Destination Properties set in Case Reply Form Async Object..");
+
                 EV_CaseReplySubmit eventCaseReplySubmit = new EV_CaseReplySubmit(this, caseEditFormAsync);
-                log.info("Publishing Case Reply Submit Event..");
+
                 applicationEventPublisher.publishEvent(eventCaseReplySubmit);
-                log.info("Case Reply Submit Event Published..");
+
                 userSessSrv.setSubmissionActive();
-                log.info("Case Reply Submission Active Flag set in User Session..");
+
             }
 
             log.info("Processing of Case Form - UI layer :Ends....");
