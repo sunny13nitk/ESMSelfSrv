@@ -404,8 +404,10 @@ public class ESSPostController
             if (!userSessSrv.SubmitCaseReply(caseReplyForm))
             {
                 // Redirect to Error Processing of Form
-                viewName = VWNamesDirectory.getViewName(EnumVWNames.caseReply, true, new String[]
-                { caseReplyForm.getCaseDetails().getCaseGuid() });
+                // viewName = VWNamesDirectory.getViewName(EnumVWNames.caseReply, true, new
+                // String[]
+                // { caseReplyForm.getCaseDetails().getCaseGuid() });
+                viewName = VWNamesDirectory.getViewName(EnumVWNames.caseReplyError, true, (String[]) null);
             }
             else
             {
