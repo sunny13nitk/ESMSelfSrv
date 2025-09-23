@@ -321,8 +321,9 @@ public class CL_CatalogSrv implements IF_CatalogSrv
                             // Categories Sort Enabled
                             if (caseCFg.getCatgRankEnabled())
                             {
-                                log.info("Preparing Ranked Catg. Tree for :" + caseType);
-                                List<TY_CatalogItem> catgItems = prepareRankedCatgTree(caseCatgTree, caseType);
+                                log.info("Preparing Ranked Catg. Tree for :" + caseCFg.getCaseType());
+                                List<TY_CatalogItem> catgItems = prepareRankedCatgTree(caseCatgTree,
+                                        caseCFg.getCaseType());
                                 caseCatgTree.setCategories(catgItems);
                             }
 
