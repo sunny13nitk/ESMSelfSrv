@@ -50,6 +50,7 @@ public class CL_SrvUrlSrv implements IF_SrvUrlSrv
                 TY_CatgCusItem cusI = userSessSrv.getCurrentLOBConfig();
                 String des = (cusI != null && StringUtils.hasText(cusI.getSvydes())) ? cusI.getSvydes()
                         : GC_Constants.gc_SVY_DESTINATION_DEFAULT;
+                log.info("Using Destination for Survey URL : " + des);
                 if (StringUtils.hasText(des))
                 {
                     try

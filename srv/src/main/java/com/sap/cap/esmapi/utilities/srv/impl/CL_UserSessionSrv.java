@@ -1848,6 +1848,7 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
 
                         if (urlSrv != null)
                         {
+                            log.info("Getting Survey URL from Service Bean : " + urlSrv.getClass().getName());
                             if (StringUtils.hasText(userSessInfo.getQualtricsUrl()))
                             {
                                 // {
@@ -1858,7 +1859,7 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
                             else
                             {
                                 svyUrl = urlSrv.getSrvUrl(this.getCurrentLOBConfig().getCaseTypeEnum(), new String[]
-                                { caseId }, (String[]) null);
+                                { caseId });
 
                             }
                         }
