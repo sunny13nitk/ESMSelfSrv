@@ -1,7 +1,6 @@
 package com.sap.cap.esmapi.catg.pojos;
 
 import com.opencsv.bean.CsvBindByPosition;
-import com.sap.cap.esmapi.utilities.enums.EnumCaseTypes;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -39,6 +38,10 @@ public class TY_CatgCusItem
     @CsvBindByPosition(position = 11)
     private String caseFormView;
     @CsvBindByPosition(position = 12)
+    private String svydes;
+    @CsvBindByPosition(position = 13)
+    private String svysrv;
+    @CsvBindByPosition(position = 14)
     private String logoutUrl;
 
 }

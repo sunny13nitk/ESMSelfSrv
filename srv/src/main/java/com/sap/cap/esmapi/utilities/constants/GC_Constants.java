@@ -76,4 +76,12 @@ public class GC_Constants
 
     public static final String gc_Ty_UserAccountEmployee = "Ty_UserAccountEmployee";
 
+    public static final String gc_SVY_DESTINATION_DEFAULT = "DES_QUALTRICS";
+
+      public static final String gc_SVY_SRV_DEFAULT = "SVY_DEFAULT";
+
+    public static final String gc_prop_URL = "URL";
+
+   public static final String gc_cons_pattn = "\\~";
+
 }

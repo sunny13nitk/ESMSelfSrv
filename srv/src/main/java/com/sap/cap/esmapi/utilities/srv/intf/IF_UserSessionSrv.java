@@ -202,4 +202,6 @@ public interface IF_UserSessionSrv
 
     public TY_CatgRanks getCatgRanks();
 
+    public void setSvyUrl(String svyUrl);
+
 }

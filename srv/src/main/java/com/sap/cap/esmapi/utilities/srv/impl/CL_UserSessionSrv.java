@@ -18,7 +18,10 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.validator.routines.EmailValidator;
+import org.springframework.beans.factory.BeanNotOfRequiredTypeException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -63,15 +66,13 @@ import com.sap.cap.esmapi.utilities.pojos.TY_UserSessionInfo;
 import com.sap.cap.esmapi.utilities.pojos.Ty_UserAccountEmployee;
 import com.sap.cap.esmapi.utilities.srv.intf.IF_AttachmentsFetchSrv;
 import com.sap.cap.esmapi.utilities.srv.intf.IF_SessAttachmentsService;
+import com.sap.cap.esmapi.utilities.srv.intf.IF_SrvUrlSrv;
 import com.sap.cap.esmapi.utilities.srv.intf.IF_UserSessionSrv;
 import com.sap.cap.esmapi.utilities.srvCloudApi.destination.intf.IF_DestinationService;
 import com.sap.cap.esmapi.utilities.srvCloudApi.destination.pojos.TY_DestinationProps;
 import com.sap.cap.esmapi.utilities.srvCloudApi.srv.intf.IF_SrvCloudAPI;
 import com.sap.cap.esmapi.vhelps.srv.intf.IF_VHelpLOBUIModelSrv;
 import com.sap.cds.services.request.UserInfo;
-import com.sap.cloud.sdk.cloudplatform.connectivity.Destination;
-import com.sap.cloud.sdk.cloudplatform.connectivity.DestinationAccessor;
-import com.sap.cloud.sdk.cloudplatform.connectivity.exception.DestinationAccessException;
 import com.sap.cloud.security.token.Token;
 import com.sap.cloud.security.token.TokenClaims;
 
@@ -134,6 +135,9 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
 
     @Autowired
     private IF_CatgRanksSrv catgRanksSrv;
+
+    @Autowired
+    private ApplicationContext appCtxt;
 
     // Properties
     private TY_UserSessionInfo userSessInfo;
@@ -1695,16 +1699,105 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
         return isActive;
     }
 
+    // @Override
+    // public String getSurveyUrl4CaseId(String caseId) throws EX_ESMAPI
+    // {
+    // String svyUrl = null;
+    // String cons_pattn = "\\~";
+    // final String prop_URL = "URL";
+
+    // if (StringUtils.hasText(caseId) &&
+    // StringUtils.hasText(dS.getDestQualtrics()))
+    // {
+
+    // // Validate that the case belongs to User Only
+    // if (CollectionUtils.isNotEmpty(getCases4User4mSession()))
+    // {
+    // Optional<TY_CaseESS> caseESSO = getCases4User4mSession().stream().filter(c ->
+    // c.getId().equals(caseId))
+    // .findFirst();
+    // if (!caseESSO.isPresent())
+    // {
+    // handleUnauthorizedCaseAccess(userSessInfo.getUserDetails().getUsAccEmpl().getUserId(),
+    // caseId);
+    // }
+    // else
+    // {
+    // // check if the Case has been already confirmed by the User in Current
+    // Session
+    // if (this.isCaseAlreadyConfirmed(caseId))
+    // {
+    // String msg = msgSrc.getMessage("ERR_CASE_ALREADY_CONFIRMED", new Object[]
+    // { caseId }, Locale.ENGLISH);
+    // throw new EX_CaseAlreadyConfirmed(msg);
+    // }
+
+    // else
+    // {
+    // // Add Current CasId to Confirmed cases List already
+    // this.addCaseToSessionConfirmedCases(caseId);
+
+    // // First check for base Url in Session if loaded
+    // if (StringUtils.hasText(userSessInfo.getQualtricsUrl()))
+    // {
+    // log.info("Survey base Url loaded from session.. ");
+    // svyUrl = userSessInfo.getQualtricsUrl();
+    // svyUrl = svyUrl.replaceAll(cons_pattn, caseId);
+    // }
+    // else // Fetch BaseUrl from Destination accessor
+    // {
+
+    // try
+    // {
+
+    // log.info("Scanning for Destination : " + dS.getDestQualtrics());
+    // Destination dest = DestinationAccessor.getDestination(dS.getDestQualtrics());
+    // if (dest != null)
+    // {
+
+    // log.info("Qualtrics Destination Bound via Destination Accessor.");
+
+    // for (String prop : dest.getPropertyNames())
+    // {
+
+    // if (prop.equals(prop_URL))
+    // {
+    // svyUrl = dest.get(prop).get().toString();
+    // userSessInfo.setQualtricsUrl(svyUrl); // Load in Session Memory for later
+    // // Use
+    // svyUrl = svyUrl.replaceAll(cons_pattn, caseId);
+    // }
+
+    // }
+
+    // }
+    // }
+    // catch (DestinationAccessException e)
+    // {
+    // log.error("Error Accessing Destination : " + e.getLocalizedMessage());
+    // String msg = msgSrc.getMessage("ERR_DESTINATION_ACCESS", new Object[]
+    // { dS.getDestQualtrics(), e.getLocalizedMessage() }, Locale.ENGLISH);
+    // throw new EX_ESMAPI(msg);
+
+    // }
+
+    // }
+    // }
+
+    // }
+
+    // }
+
+    // }
+    // return svyUrl;
+    // }
+
     @Override
     public String getSurveyUrl4CaseId(String caseId) throws EX_ESMAPI
     {
         String svyUrl = null;
-        String cons_pattn = "\\~";
-        final String prop_URL = "URL";
-
-        if (StringUtils.hasText(caseId) && StringUtils.hasText(dS.getDestQualtrics()))
+        if (StringUtils.hasText(caseId) && appCtxt != null)
         {
-
             // Validate that the case belongs to User Only
             if (CollectionUtils.isNotEmpty(getCases4User4mSession()))
             {
@@ -1726,54 +1819,42 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
 
                     else
                     {
+                        IF_SrvUrlSrv urlSrv = null;
+                        try
+                        {
+                            urlSrv = appCtxt.getBean(this.getCurrentLOBConfig().getSvysrv(), IF_SrvUrlSrv.class);
+                            log.info("Survey URL Service Bean found for LoB - "
+                                    + this.getCurrentLOBConfig().getCaseTypeEnum().toString() + " with name : "
+                                    + this.getCurrentLOBConfig().getSvysrv());
+
+                        }
+                        catch (NoSuchBeanDefinitionException | BeanNotOfRequiredTypeException e)
+                        {
+                            urlSrv = appCtxt.getBean(GC_Constants.gc_SVY_SRV_DEFAULT, IF_SrvUrlSrv.class);
+                            log.warn("No Specific Survey URL Service Bean found for LoB - "
+                                    + this.getCurrentLOBConfig().getCaseTypeEnum().toString()
+                                    + ". Using Default Service with name : " + GC_Constants.gc_SVY_SRV_DEFAULT);
+                        }
+
+                        if (urlSrv != null)
+                        {
+                            if (StringUtils.hasText(userSessInfo.getQualtricsUrl()))
+                            {
+                                // {
+                                svyUrl = urlSrv.getSrvUrl(this.getCurrentLOBConfig().getCaseTypeEnum(), new String[]
+                                { caseId }, new String[]
+                                { userSessInfo.getQualtricsUrl() });
+                            }
+                            else
+                            {
+                                svyUrl = urlSrv.getSrvUrl(this.getCurrentLOBConfig().getCaseTypeEnum(), new String[]
+                                { caseId }, (String[]) null);
+
+                            }
+                        }
                         // Add Current CasId to Confirmed cases List already
                         this.addCaseToSessionConfirmedCases(caseId);
 
-                        // First check for base Url in Session if loaded
-                        if (StringUtils.hasText(userSessInfo.getQualtricsUrl()))
-                        {
-                            log.info("Survey base Url loaded from session.. ");
-                            svyUrl = userSessInfo.getQualtricsUrl();
-                            svyUrl = svyUrl.replaceAll(cons_pattn, caseId);
-                        }
-                        else // Fetch BaseUrl from Destination accessor
-                        {
-
-                            try
-                            {
-
-                                log.info("Scanning for Destination : " + dS.getDestQualtrics());
-                                Destination dest = DestinationAccessor.getDestination(dS.getDestQualtrics());
-                                if (dest != null)
-                                {
-
-                                    log.info("Qualtrics Destination Bound via Destination Accessor.");
-
-                                    for (String prop : dest.getPropertyNames())
-                                    {
-
-                                        if (prop.equals(prop_URL))
-                                        {
-                                            svyUrl = dest.get(prop).get().toString();
-                                            userSessInfo.setQualtricsUrl(svyUrl); // Load in Session Memory for later
-                                                                                  // Use
-                                            svyUrl = svyUrl.replaceAll(cons_pattn, caseId);
-                                        }
-
-                                    }
-
-                                }
-                            }
-                            catch (DestinationAccessException e)
-                            {
-                                log.error("Error Accessing Destination : " + e.getLocalizedMessage());
-                                String msg = msgSrc.getMessage("ERR_DESTINATION_ACCESS", new Object[]
-                                { dS.getDestQualtrics(), e.getLocalizedMessage() }, Locale.ENGLISH);
-                                throw new EX_ESMAPI(msg);
-
-                            }
-
-                        }
                     }
 
                 }
@@ -2020,6 +2101,15 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
     public TY_CatgRanks getCatgRanks()
     {
         return this.userSessInfo.getCatgRanks();
+    }
+
+    @Override
+    public void setSvyUrl(String svyUrl)
+    {
+        if (StringUtils.hasText(svyUrl))
+        {
+            this.userSessInfo.setQualtricsUrl(svyUrl);
+        }
     }
 
     private void handleAPIFailure(String[] params)
