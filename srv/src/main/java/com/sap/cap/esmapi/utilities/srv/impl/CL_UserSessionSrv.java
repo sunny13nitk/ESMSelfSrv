@@ -1822,10 +1822,20 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
                         IF_SrvUrlSrv urlSrv = null;
                         try
                         {
-                            urlSrv = appCtxt.getBean(this.getCurrentLOBConfig().getSvysrv(), IF_SrvUrlSrv.class);
-                            log.info("Survey URL Service Bean found for LoB - "
-                                    + this.getCurrentLOBConfig().getCaseTypeEnum().toString() + " with name : "
-                                    + this.getCurrentLOBConfig().getSvysrv());
+                            if (StringUtils.hasText(getCurrentLOBConfig().getSvysrv()))
+                            {
+                                urlSrv = appCtxt.getBean(this.getCurrentLOBConfig().getSvysrv(), IF_SrvUrlSrv.class);
+                                log.info("Survey URL Service Bean found for LoB - "
+                                        + this.getCurrentLOBConfig().getCaseTypeEnum().toString() + " with name : "
+                                        + this.getCurrentLOBConfig().getSvysrv());
+                            }
+                            else
+                            {
+                                urlSrv = appCtxt.getBean(GC_Constants.gc_SVY_SRV_DEFAULT, IF_SrvUrlSrv.class);
+                                log.warn("No Specific Survey URL Service Bean configured for LoB - "
+                                        + this.getCurrentLOBConfig().getCaseTypeEnum().toString()
+                                        + ". Using Default Service with name : " + GC_Constants.gc_SVY_SRV_DEFAULT);
+                            }
 
                         }
                         catch (NoSuchBeanDefinitionException | BeanNotOfRequiredTypeException e)
