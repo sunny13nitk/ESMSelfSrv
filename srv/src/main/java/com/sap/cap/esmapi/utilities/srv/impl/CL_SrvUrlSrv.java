@@ -32,11 +32,11 @@ public class CL_SrvUrlSrv implements IF_SrvUrlSrv
 
     @SuppressWarnings("null")
     @Override
-    public String getSrvUrl(String lob, String[] params, String... destinationurl) throws EX_ESMAPI
+    public String getSrvUrl(String caseid, String... destinationurl) throws EX_ESMAPI
     {
         String svyUrl = null;
 
-        if (StringUtils.hasText(lob) && CollectionUtils.isNotEmpty(Arrays.asList(params)) && userSessSrv != null)
+        if (StringUtils.hasText(caseid) && userSessSrv != null)
         {
 
             if (CollectionUtils.isNotEmpty(Arrays.asList(destinationurl)))
@@ -90,12 +90,11 @@ public class CL_SrvUrlSrv implements IF_SrvUrlSrv
 
             }
 
-            for (String param : params)
+            if (StringUtils.hasText(svyUrl))
             {
-                if (StringUtils.hasText(param) && StringUtils.hasText(svyUrl))
-                {
-                    svyUrl = svyUrl.replace(GC_Constants.gc_cons_pattn, param);
-                }
+                log.info(svyUrl + "Before REplacement .....");
+                svyUrl = svyUrl.replaceAll(GC_Constants.gc_cons_pattn, caseid);
+                log.info(svyUrl + "After REplacement .....");
             }
 
         }

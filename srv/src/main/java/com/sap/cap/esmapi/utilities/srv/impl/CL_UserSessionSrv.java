@@ -1852,14 +1852,12 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
                             if (StringUtils.hasText(userSessInfo.getQualtricsUrl()))
                             {
                                 // {
-                                svyUrl = urlSrv.getSrvUrl(this.getCurrentLOBConfig().getCaseTypeEnum(), new String[]
-                                { caseId }, new String[]
+                                svyUrl = urlSrv.getSrvUrl(caseId, new String[]
                                 { userSessInfo.getQualtricsUrl() });
                             }
                             else
                             {
-                                svyUrl = urlSrv.getSrvUrl(this.getCurrentLOBConfig().getCaseTypeEnum(), new String[]
-                                { caseId });
+                                svyUrl = urlSrv.getSrvUrl(caseId);
 
                             }
                         }
