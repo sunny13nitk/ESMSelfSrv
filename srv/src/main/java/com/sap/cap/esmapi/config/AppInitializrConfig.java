@@ -144,7 +144,7 @@ public class AppInitializrConfig
                                 .collect(Collectors.toList()));
                 for (TY_CatgTemplates catgtemplates : catgTempCus.getCatgTemplates())
                 {
-                    log.info(catgtemplates.getCatgU(), catgtemplates.getQuestionnaire());
+                    log.info(catgtemplates.getCatgU() + catgtemplates.getQuestionnaire());
                 }
             }
             else
