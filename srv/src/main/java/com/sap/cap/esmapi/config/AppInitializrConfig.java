@@ -4,6 +4,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -21,6 +22,7 @@ import com.sap.cap.esmapi.catg.pojos.TY_CatgRanksItem;
 import com.sap.cap.esmapi.catg.pojos.TY_CatgTemplates;
 import com.sap.cap.esmapi.catg.pojos.TY_CatgTemplatesCus;
 import com.sap.cap.esmapi.exceptions.EX_ESMAPI;
+import com.sap.cap.esmapi.hana.config.srv.intf.IF_CatgTemplatesSrv;
 import com.sap.cap.esmapi.status.pojos.TY_PortalStatusTransI;
 import com.sap.cap.esmapi.status.pojos.TY_PortalStatusTransitions;
 import com.sap.cap.esmapi.vhelps.cus.TY_Catg_MandatoryFlds;
@@ -31,6 +33,7 @@ import com.sap.cap.esmapi.vhelps.pojos.TY_CountryLangaugeMapping;
 import com.sap.cap.esmapi.vhelps.pojos.TY_CountryLangaugeMappingsList;
 import com.sap.cap.esmapi.vhelps.pojos.TY_MandatoryFlds_CatgsList;
 
+import cds.gen.db.esmlogs.Catgtemplates;
 import lombok.extern.slf4j.Slf4j;
 
 @Configuration
@@ -49,6 +52,9 @@ public class AppInitializrConfig
 
     @Autowired
     private MessageSource msgSrc;
+
+    @Autowired
+    private IF_CatgTemplatesSrv catgTmplSrv;
 
     @Bean
     public TY_CatgCus loadCaseTypes4mConfig()
@@ -127,32 +133,48 @@ public class AppInitializrConfig
     {
         TY_CatgTemplatesCus catgTempCus = null;
 
-        try
+        if (catgTmplSrv != null)
         {
-
-            ClassPathResource classPathResource = new ClassPathResource(configCatgTemplates);
-            if (classPathResource != null)
+            List<Catgtemplates> catgTmpls = catgTmplSrv.getAllTemplates();
+            if (!CollectionUtils.isEmpty(catgTmpls))
             {
-                Reader reader = new InputStreamReader(classPathResource.getInputStream());
-                if (reader != null)
+                catgTempCus = new TY_CatgTemplatesCus();
+                catgTempCus.setCatgTemplates(
+                        catgTmpls.stream().map(e -> new TY_CatgTemplates(e.getCatgU(), e.getQuestionnaire()))
+                                .collect(Collectors.toList()));
+            }
+            else
+            {
+                try
                 {
-                    log.info("Resource Bound... ");
-                    List<TY_CatgTemplates> configs = new CsvToBeanBuilder(reader).withSkipLines(1)
-                            .withType(TY_CatgTemplates.class).build().parse();
 
-                    if (!CollectionUtils.isEmpty(configs))
+                    ClassPathResource classPathResource = new ClassPathResource(configCatgTemplates);
+                    if (classPathResource != null)
                     {
-                        log.info("Entries in Config. Found for Case Categories and Templates: " + configs.size());
-                        catgTempCus = new TY_CatgTemplatesCus(configs);
+                        Reader reader = new InputStreamReader(classPathResource.getInputStream());
+                        if (reader != null)
+                        {
+                            log.info("Resource Bound... ");
+                            List<TY_CatgTemplates> configs = new CsvToBeanBuilder(reader).withSkipLines(1)
+                                    .withType(TY_CatgTemplates.class).build().parse();
+
+                            if (!CollectionUtils.isEmpty(configs))
+                            {
+                                log.info("Entries in Config. Found for Case Categories and Templates: "
+                                        + configs.size());
+                                catgTempCus = new TY_CatgTemplatesCus(configs);
+                            }
+                        }
                     }
+
+                }
+                catch (Exception e)
+                {
+                    throw new EX_ESMAPI(msgSrc.getMessage("ERR_CASETYPE_CFG", new Object[]
+                    { configPath, e.getLocalizedMessage() }, Locale.ENGLISH));
                 }
             }
 
-        }
-        catch (Exception e)
-        {
-            throw new EX_ESMAPI(msgSrc.getMessage("ERR_CASETYPE_CFG", new Object[]
-            { configPath, e.getLocalizedMessage() }, Locale.ENGLISH));
         }
 
         return catgTempCus;

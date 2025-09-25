@@ -48,3 +48,13 @@ entity lobcatgsranks : cuid {
     rank     : Int16;
 
 }
+
+@Capabilities.Insertable: false
+@Capabilities.Updatable : false
+@Capabilities.Deletable : false
+entity catgtemplates : cuid {
+    catgU         : String(255);
+    questionnaire : LargeString;
+
+
+}

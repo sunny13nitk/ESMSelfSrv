@@ -14,9 +14,7 @@ import lombok.Setter;
 public class TY_CatgTemplates
 {
     @CsvBindByPosition(position = 0)
-    private String catg;
-    @CsvBindByPosition(position = 1)
     private String catgU;
-    @CsvBindByPosition(position = 2)
+    @CsvBindByPosition(position = 1)
     private String questionnaire;
 }
