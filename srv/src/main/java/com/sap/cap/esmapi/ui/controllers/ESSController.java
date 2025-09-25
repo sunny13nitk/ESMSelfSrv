@@ -42,7 +42,6 @@ import com.sap.cap.esmapi.utilities.pojos.TY_RLConfig;
 import com.sap.cap.esmapi.utilities.pojos.TY_UserESS;
 import com.sap.cap.esmapi.utilities.srv.intf.IF_SessAttachmentsService;
 import com.sap.cap.esmapi.utilities.srv.intf.IF_UserSessionSrv;
-import com.sap.cap.esmapi.utilities.srvCloudApi.srv.intf.IF_SrvCloudAPI;
 import com.sap.cds.services.request.UserInfo;
 import com.sap.cloud.security.token.Token;
 
@@ -73,9 +72,6 @@ public class ESSController
 
     @Autowired
     private TY_RLConfig rlConfig;
-
-    @Autowired
-    private IF_SrvCloudAPI srvCloudApiSrv;
 
     @Autowired
     private IF_CatalogSrv catalogSrv;

@@ -34,6 +34,8 @@ import com.sap.cap.esmapi.catg.pojos.TY_CatalogTree;
 import com.sap.cap.esmapi.catg.pojos.TY_CatgCus;
 import com.sap.cap.esmapi.catg.pojos.TY_CatgCusItem;
 import com.sap.cap.esmapi.catg.pojos.TY_CatgRanks;
+import com.sap.cap.esmapi.catg.pojos.TY_CatgTemplates;
+import com.sap.cap.esmapi.catg.pojos.TY_CatgTemplatesCus;
 import com.sap.cap.esmapi.catg.srv.intf.IF_CatalogSrv;
 import com.sap.cap.esmapi.events.event.EV_LogMessage;
 import com.sap.cap.esmapi.exceptions.EX_CaseAlreadyConfirmed;
@@ -41,6 +43,7 @@ import com.sap.cap.esmapi.exceptions.EX_ESMAPI;
 import com.sap.cap.esmapi.exceptions.EX_SessionExpired;
 import com.sap.cap.esmapi.hana.config.srv.intf.IF_BaseConfigSrv;
 import com.sap.cap.esmapi.hana.config.srv.intf.IF_CatgRanksSrv;
+import com.sap.cap.esmapi.hana.config.srv.intf.IF_CatgTemplatesSrv;
 import com.sap.cap.esmapi.hana.logging.srv.intf.IF_HANALoggingSrv;
 import com.sap.cap.esmapi.status.srv.intf.IF_StatusSrv;
 import com.sap.cap.esmapi.ui.pojos.TY_Attachment;
@@ -76,6 +79,7 @@ import com.sap.cds.services.request.UserInfo;
 import com.sap.cloud.security.token.Token;
 import com.sap.cloud.security.token.TokenClaims;
 
+import cds.gen.db.esmlogs.Catgtemplates;
 import cds.gen.db.esmlogs.Esmapplogs;
 import lombok.extern.slf4j.Slf4j;
 
@@ -135,6 +139,9 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
 
     @Autowired
     private IF_CatgRanksSrv catgRanksSrv;
+
+    @Autowired
+    private IF_CatgTemplatesSrv catgTmplSrv;
 
     @Autowired
     private ApplicationContext appCtxt;
@@ -631,6 +638,27 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
                         userSessInfo.setCatgRanks(catgRanks);
                         log.info("Category Ranks Set in User Session for LoB " + lob + " for Case type: "
                                 + baseCfg.getCaseType() + " via HDI ");
+                    }
+
+                }
+
+                if (catgTmplSrv != null && appCtxt != null)
+                {
+                    List<Catgtemplates> catgTmpls = catgTmplSrv.getAllTemplates();
+                    if (!CollectionUtils.isEmpty(catgTmpls))
+                    {
+                        TY_CatgTemplatesCus catgTempCus = appCtxt.getBean(TY_CatgTemplatesCus.class);
+                        if (catgTempCus != null)
+                        {
+                            log.info("Category templates Found in App Ctxt for replacement.....");
+                            catgTempCus.setCatgTemplates(catgTmpls.stream()
+                                    .map(e -> new TY_CatgTemplates(e.getCatgU(), e.getQuestionnaire()))
+                                    .collect(Collectors.toList()));
+
+                            log.info("Category templates replaced in app ctxt...");
+
+                        }
+
                     }
                 }
 

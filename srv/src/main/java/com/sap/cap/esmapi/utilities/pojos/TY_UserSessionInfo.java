@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.sap.cap.esmapi.catg.pojos.TY_CatgCusItem;
 import com.sap.cap.esmapi.catg.pojos.TY_CatgRanks;
+import com.sap.cap.esmapi.catg.pojos.TY_CatgTemplatesCus;
 import com.sap.cap.esmapi.ui.pojos.TY_CaseEditFormAsync;
 import com.sap.cap.esmapi.ui.pojos.TY_CaseEdit_Form;
 import com.sap.cap.esmapi.ui.pojos.TY_CaseFormAsync;
@@ -45,4 +46,6 @@ public class TY_UserSessionInfo
     private List<String> cnfCasesSess = new ArrayList<String>(); // Placeholder for Confirmed cases in session
     private String prevCatg; // Category selected Previous
     private TY_CatgRanks catgRanks = new TY_CatgRanks(); // Category Ranks
+    private TY_CatgTemplatesCus catgTmpl;
+
 }
