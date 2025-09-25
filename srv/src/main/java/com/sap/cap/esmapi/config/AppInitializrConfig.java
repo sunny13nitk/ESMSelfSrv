@@ -142,6 +142,10 @@ public class AppInitializrConfig
                 catgTempCus.setCatgTemplates(
                         catgTmpls.stream().map(e -> new TY_CatgTemplates(e.getCatgU(), e.getQuestionnaire()))
                                 .collect(Collectors.toList()));
+                for (TY_CatgTemplates catgtemplates : catgTempCus.getCatgTemplates())
+                {
+                    log.info(catgtemplates.getCatgU(), catgtemplates.getQuestionnaire());
+                }
             }
             else
             {
