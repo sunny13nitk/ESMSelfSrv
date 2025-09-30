@@ -28,4 +28,7 @@ public class TY_CaseESS
     private OffsetDateTime tsCreate;
     private String origin;
     private boolean confirmAllowed;
+    private String priority;
+    private String catg1;
+    private String catg2;
 }
