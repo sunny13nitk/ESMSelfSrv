@@ -83,6 +83,7 @@ import com.sap.cap.esmapi.utilities.pojos.TY_RLConfig;
 import com.sap.cap.esmapi.utilities.pojos.TY_SrvCloudUrls;
 import com.sap.cap.esmapi.utilities.pojos.Ty_UserAccountEmployee;
 import com.sap.cap.esmapi.utilities.srv.intf.IF_APISrv;
+import com.sap.cap.esmapi.utilities.srv.intf.IF_UserSessionSrv;
 import com.sap.cap.esmapi.utilities.srvCloudApi.destination.URLUtility.CL_URLUtility;
 import com.sap.cap.esmapi.utilities.srvCloudApi.destination.pojos.TY_DestinationProps;
 import com.sap.cap.esmapi.utilities.srvCloudApi.srv.intf.IF_SrvCloudAPI;
@@ -100,6 +101,9 @@ public class CL_SrvCloudAPI implements IF_SrvCloudAPI
     private TY_SrvCloudUrls srvCloudUrls;
 
     @Autowired
+    private IF_UserSessionSrv userSessionSrv;
+
+    @Autowired
     private IF_APISrv apiSrv;
 
     @Autowired
@@ -110,9 +114,6 @@ public class CL_SrvCloudAPI implements IF_SrvCloudAPI
 
     @Autowired
     private MessageSource msgSrc;
-
-    @Autowired
-    private TY_PortalStatusTransitions statusTransitions;
 
     @Override
     public JsonNode getAllCases(TY_DestinationProps desProps) throws IOException
@@ -199,9 +200,11 @@ public class CL_SrvCloudAPI implements IF_SrvCloudAPI
             {
                 JsonNode jsonNode = getAllCases(desProps);
 
-                if (jsonNode != null && CollectionUtils.isNotEmpty(statusTransitions.getStatusTransitions()))
+                if (jsonNode != null
+                        && CollectionUtils.isNotEmpty(userSessionSrv.getStatusTransitions().getStatusTransitions()))
                 {
-                    List<TY_PortalStatusTransI> statusTransitionsList = statusTransitions.getStatusTransitions();
+                    List<TY_PortalStatusTransI> statusTransitionsList = userSessionSrv.getStatusTransitions()
+                            .getStatusTransitions();
                     JsonNode rootNode = jsonNode.path("value");
                     if (rootNode != null)
                     {
@@ -2343,9 +2346,11 @@ public class CL_SrvCloudAPI implements IF_SrvCloudAPI
 
                 JsonNode jsonNode = getAllCases(desProps);
 
-                if (jsonNode != null && CollectionUtils.isNotEmpty(statusTransitions.getStatusTransitions()))
+                if (jsonNode != null
+                        && CollectionUtils.isNotEmpty(userSessionSrv.getStatusTransitions().getStatusTransitions()))
                 {
-                    List<TY_PortalStatusTransI> statusTransitionsList = statusTransitions.getStatusTransitions();
+                    List<TY_PortalStatusTransI> statusTransitionsList = userSessionSrv.getStatusTransitions()
+                            .getStatusTransitions();
                     JsonNode rootNode = jsonNode.path("value");
                     if (rootNode != null)
                     {
@@ -2935,11 +2940,11 @@ public class CL_SrvCloudAPI implements IF_SrvCloudAPI
                             ObjectMapper mapper = new ObjectMapper();
                             jsonNode = mapper.readTree(apiOutput);
 
-                            if (jsonNode != null
-                                    && CollectionUtils.isNotEmpty(statusTransitions.getStatusTransitions()))
+                            if (jsonNode != null && CollectionUtils
+                                    .isNotEmpty(userSessionSrv.getStatusTransitions().getStatusTransitions()))
                             {
-                                List<TY_PortalStatusTransI> statusTransitionsList = statusTransitions
-                                        .getStatusTransitions();
+                                List<TY_PortalStatusTransI> statusTransitionsList = userSessionSrv
+                                        .getStatusTransitions().getStatusTransitions();
                                 JsonNode rootNode = jsonNode.path("value");
                                 if (rootNode != null)
                                 {

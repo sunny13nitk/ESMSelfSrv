@@ -8,6 +8,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import com.sap.cap.esmapi.catg.pojos.TY_CatgCusItem;
 import com.sap.cap.esmapi.catg.pojos.TY_CatgRanks;
 import com.sap.cap.esmapi.exceptions.EX_ESMAPI;
+import com.sap.cap.esmapi.status.pojos.TY_PortalStatusTransitions;
 import com.sap.cap.esmapi.ui.pojos.TY_CaseConfirmPOJO;
 import com.sap.cap.esmapi.ui.pojos.TY_CaseEditFormAsync;
 import com.sap.cap.esmapi.ui.pojos.TY_CaseEdit_Form;
@@ -203,5 +204,7 @@ public interface IF_UserSessionSrv
     public TY_CatgRanks getCatgRanks();
 
     public void setSvyUrl(String svyUrl);
+
+    public TY_PortalStatusTransitions getStatusTransitions();
 
 }

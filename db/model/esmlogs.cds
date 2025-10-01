@@ -58,3 +58,14 @@ entity catgtemplates : cuid {
 
 
 }
+
+@Capabilities.Insertable: false
+@Capabilities.Updatable : false
+@Capabilities.Deletable : false
+entity statustrans : cuid {
+    casetype        : String(10);
+    fromStatus      : String(30);
+    toStatus        : String(30);
+    caseEditAllowed : Boolean;
+    confirmAllowed  : Boolean;
+}

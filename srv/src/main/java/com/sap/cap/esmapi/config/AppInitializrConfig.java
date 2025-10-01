@@ -21,8 +21,6 @@ import com.sap.cap.esmapi.catg.pojos.TY_CatgRanksItem;
 import com.sap.cap.esmapi.catg.pojos.TY_CatgTemplates;
 import com.sap.cap.esmapi.catg.pojos.TY_CatgTemplatesCus;
 import com.sap.cap.esmapi.exceptions.EX_ESMAPI;
-import com.sap.cap.esmapi.status.pojos.TY_PortalStatusTransI;
-import com.sap.cap.esmapi.status.pojos.TY_PortalStatusTransitions;
 import com.sap.cap.esmapi.vhelps.cus.TY_Catg_MandatoryFlds;
 import com.sap.cap.esmapi.vhelps.cus.TY_VHelpsRoot;
 import com.sap.cap.esmapi.vhelps.pojos.TY_CatgCountryMapping;
@@ -333,42 +331,6 @@ public class AppInitializrConfig
         }
 
         return catgCountryMappingsList;
-    }
-
-    @Bean
-    public TY_PortalStatusTransitions loadStatusTransitions4mConfig()
-    {
-        TY_PortalStatusTransitions statusTransCus = null;
-
-        try
-        {
-
-            ClassPathResource classPathResource = new ClassPathResource(configStatusTransition);
-            if (classPathResource != null)
-            {
-                Reader reader = new InputStreamReader(classPathResource.getInputStream());
-                if (reader != null)
-                {
-                    log.info("Resource Bound... ");
-                    List<TY_PortalStatusTransI> configs = new CsvToBeanBuilder(reader).withSkipLines(1)
-                            .withType(TY_PortalStatusTransI.class).build().parse();
-
-                    if (!CollectionUtils.isEmpty(configs))
-                    {
-                        log.info("Entries in Config Found for Case Status Transitions. : " + configs.size());
-                        statusTransCus = new TY_PortalStatusTransitions(configs);
-                    }
-                }
-            }
-
-        }
-        catch (Exception e)
-        {
-            throw new EX_ESMAPI(msgSrc.getMessage("ERR_CFG_STATUSTRANS", new Object[]
-            { e.getLocalizedMessage() }, Locale.ENGLISH));
-        }
-
-        return statusTransCus;
     }
 
 }

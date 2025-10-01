@@ -44,7 +44,9 @@ import com.sap.cap.esmapi.exceptions.EX_SessionExpired;
 import com.sap.cap.esmapi.hana.config.srv.intf.IF_BaseConfigSrv;
 import com.sap.cap.esmapi.hana.config.srv.intf.IF_CatgRanksSrv;
 import com.sap.cap.esmapi.hana.config.srv.intf.IF_CatgTemplatesSrv;
+import com.sap.cap.esmapi.hana.config.srv.intf.IF_StatTransSrv;
 import com.sap.cap.esmapi.hana.logging.srv.intf.IF_HANALoggingSrv;
+import com.sap.cap.esmapi.status.pojos.TY_PortalStatusTransitions;
 import com.sap.cap.esmapi.status.srv.intf.IF_StatusSrv;
 import com.sap.cap.esmapi.ui.pojos.TY_Attachment;
 import com.sap.cap.esmapi.ui.pojos.TY_CaseConfirmPOJO;
@@ -145,6 +147,9 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
 
     @Autowired
     private ApplicationContext appCtxt;
+
+    @Autowired
+    private IF_StatTransSrv statusTransSrv;
 
     // Properties
     private TY_UserSessionInfo userSessInfo;
@@ -640,6 +645,15 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
                                 + baseCfg.getCaseType() + " via HDI ");
                     }
 
+                }
+
+                if (statusTransSrv != null)
+                {
+                    TY_PortalStatusTransitions statTrans = new TY_PortalStatusTransitions();
+                    statTrans.setStatusTransitions(statusTransSrv.getStatus4CaseType(baseCfg.getCaseType()));
+                    this.userSessInfo.setStatusTransitions(statTrans);
+                    log.info("StatusTransitions set in User Session for LoB " + lob + " for Case type: "
+                            + baseCfg.getCaseType() + " via HDI ");
                 }
 
                 if (catgTmplSrv != null && appCtxt != null)
@@ -2147,6 +2161,12 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
         {
             this.userSessInfo.setQualtricsUrl(svyUrl);
         }
+    }
+
+    @Override
+    public TY_PortalStatusTransitions getStatusTransitions()
+    {
+        return this.userSessInfo.getStatusTransitions();
     }
 
     private void handleAPIFailure(String[] params)

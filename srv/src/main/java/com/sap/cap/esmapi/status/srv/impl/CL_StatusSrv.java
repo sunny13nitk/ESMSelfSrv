@@ -17,7 +17,6 @@ import com.sap.cap.esmapi.catg.pojos.TY_CatgCusItem;
 import com.sap.cap.esmapi.exceptions.EX_ESMAPI;
 import com.sap.cap.esmapi.status.pojos.TY_PortalStatusTransI;
 import com.sap.cap.esmapi.status.pojos.TY_PortalStatusTransICode;
-import com.sap.cap.esmapi.status.pojos.TY_PortalStatusTransitions;
 import com.sap.cap.esmapi.status.pojos.TY_StatusCfg;
 import com.sap.cap.esmapi.status.pojos.TY_StatusCfgItem;
 import com.sap.cap.esmapi.status.srv.intf.IF_StatusSrv;
@@ -35,8 +34,6 @@ public class CL_StatusSrv implements IF_StatusSrv
 {
 
     private final TY_CatgCus catgCus; // Autowired
-
-    private final TY_PortalStatusTransitions statusTransitions; // Autowired
 
     private final MessageSource msgSrc; // Autowired
 
@@ -82,16 +79,17 @@ public class CL_StatusSrv implements IF_StatusSrv
 
         if (StringUtils.hasText(caseStatus) && StringUtils.hasText(caseType) && msgSrc != null && catgCus != null)
         {
-            if (CollectionUtils.isNotEmpty(statusTransitions.getStatusTransitions()))
+            if (CollectionUtils.isNotEmpty(userSessionSrv.getStatusTransitions().getStatusTransitions()))
             {
-                Optional<TY_PortalStatusTransI> transO = statusTransitions.getStatusTransitions().stream().filter(s ->
-                {
-                    if (s.getCaseType().equals(caseType) && s.getFromStatus().equalsIgnoreCase(caseStatus))
-                    {
-                        return true;
-                    }
-                    return false;
-                }).findFirst();
+                Optional<TY_PortalStatusTransI> transO = userSessionSrv.getStatusTransitions().getStatusTransitions()
+                        .stream().filter(s ->
+                        {
+                            if (s.getCaseType().equals(caseType) && s.getFromStatus().equalsIgnoreCase(caseStatus))
+                            {
+                                return true;
+                            }
+                            return false;
+                        }).findFirst();
                 if (transO.isPresent())
                 {
                     statTransCus = new TY_PortalStatusTransICode(transO.get(), null);
