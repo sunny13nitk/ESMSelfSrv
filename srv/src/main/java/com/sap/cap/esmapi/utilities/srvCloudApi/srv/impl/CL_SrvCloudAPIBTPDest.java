@@ -52,7 +52,6 @@ import com.sap.cap.esmapi.catg.pojos.TY_CatgCus;
 import com.sap.cap.esmapi.catg.pojos.TY_CatgCusItem;
 import com.sap.cap.esmapi.exceptions.EX_ESMAPI;
 import com.sap.cap.esmapi.status.pojos.TY_PortalStatusTransI;
-import com.sap.cap.esmapi.status.pojos.TY_PortalStatusTransitions;
 import com.sap.cap.esmapi.status.pojos.TY_StatusCfgItem;
 import com.sap.cap.esmapi.ui.pojos.TY_Attachment;
 import com.sap.cap.esmapi.ui.pojos.TY_CaseConfirmPOJO;
@@ -82,6 +81,7 @@ import com.sap.cap.esmapi.utilities.pojos.TY_PreviousAttachments;
 import com.sap.cap.esmapi.utilities.pojos.TY_RLConfig;
 import com.sap.cap.esmapi.utilities.pojos.Ty_UserAccountEmployee;
 import com.sap.cap.esmapi.utilities.srv.intf.IF_APISrv;
+import com.sap.cap.esmapi.utilities.srv.intf.IF_UserSessionSrv;
 import com.sap.cap.esmapi.utilities.srvCloudApi.destination.URLUtility.CL_URLUtility;
 import com.sap.cap.esmapi.utilities.srvCloudApi.destination.pojos.TY_DestinationProps;
 import com.sap.cap.esmapi.utilities.srvCloudApi.srv.intf.IF_SrvCloudAPI;
@@ -111,7 +111,7 @@ public class CL_SrvCloudAPIBTPDest implements IF_SrvCloudAPI
     private MessageSource msgSrc;
 
     @Autowired
-    private TY_PortalStatusTransitions statusTransitions;
+    private IF_UserSessionSrv userSessionSrv;
 
     @Override
     public JsonNode getAllCases(TY_DestinationProps desProps) throws IOException
@@ -201,9 +201,11 @@ public class CL_SrvCloudAPIBTPDest implements IF_SrvCloudAPI
             {
                 JsonNode jsonNode = getAllCases(desProps);
 
-                if (jsonNode != null && CollectionUtils.isNotEmpty(statusTransitions.getStatusTransitions()))
+                if (jsonNode != null
+                        && CollectionUtils.isNotEmpty(userSessionSrv.getStatusTransitions().getStatusTransitions()))
                 {
-                    List<TY_PortalStatusTransI> statusTransitionsList = statusTransitions.getStatusTransitions();
+                    List<TY_PortalStatusTransI> statusTransitionsList = userSessionSrv.getStatusTransitions()
+                            .getStatusTransitions();
                     JsonNode rootNode = jsonNode.path("value");
                     if (rootNode != null)
                     {
@@ -2546,7 +2548,8 @@ public class CL_SrvCloudAPIBTPDest implements IF_SrvCloudAPI
 
                 JsonNode jsonNode = getAllCases(desProps);
 
-                if (jsonNode != null && CollectionUtils.isNotEmpty(statusTransitions.getStatusTransitions()))
+                if (jsonNode != null
+                        && CollectionUtils.isNotEmpty(userSessionSrv.getStatusTransitions().getStatusTransitions()))
                 {
 
                     JsonNode rootNode = jsonNode.path("value");
@@ -2554,7 +2557,8 @@ public class CL_SrvCloudAPIBTPDest implements IF_SrvCloudAPI
                     {
                         log.info("Cases Bound!!");
                         casesESSList = new ArrayList<TY_CaseESS>();
-                        List<TY_PortalStatusTransI> statusTransitionsList = statusTransitions.getStatusTransitions();
+                        List<TY_PortalStatusTransI> statusTransitionsList = userSessionSrv.getStatusTransitions()
+                                .getStatusTransitions();
 
                         Iterator<Map.Entry<String, JsonNode>> payloadItr = jsonNode.fields();
                         while (payloadItr.hasNext())
@@ -3165,12 +3169,11 @@ public class CL_SrvCloudAPIBTPDest implements IF_SrvCloudAPI
                                         ObjectMapper mapper = new ObjectMapper();
                                         jsonNode = mapper.readTree(apiOutput);
 
-                                        if (jsonNode != null
-                                                && CollectionUtils.isNotEmpty(statusTransitions.getStatusTransitions()))
+                                        if (jsonNode != null && CollectionUtils.isNotEmpty(
+                                                userSessionSrv.getStatusTransitions().getStatusTransitions()))
                                         {
-                                            List<TY_PortalStatusTransI> statusTransitionsList = statusTransitions
-                                                    .getStatusTransitions();
-
+                                            List<TY_PortalStatusTransI> statusTransitionsList = userSessionSrv
+                                                    .getStatusTransitions().getStatusTransitions();
                                             JsonNode rootNode = jsonNode.path("value");
                                             if (rootNode != null)
                                             {
