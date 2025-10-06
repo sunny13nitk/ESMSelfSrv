@@ -32,10 +32,10 @@ public class CL_SrvUrlSIXSrv implements IF_SrvUrlSrv
 
     private final MessageSource msgSrc;
 
-    private final String gc_number = "&number = ";
-    private final String gc_priority = "&priority = ";
-    private final String gc_catg1 = "&service_offering = ";
-    private final String gc_catg2 = "&assignment_group = ";
+    private final String gc_number = "&number=";
+    private final String gc_priority = "&priority=";
+    private final String gc_catg1 = "&service_offering=";
+    private final String gc_catg2 = "&assignment_group=";
 
     @SuppressWarnings("null")
     @Override
