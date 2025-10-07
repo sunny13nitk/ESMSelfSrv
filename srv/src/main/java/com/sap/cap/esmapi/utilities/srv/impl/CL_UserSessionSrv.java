@@ -388,6 +388,7 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
                         {
 
                             // Get ONLY Lob Specific Cases for User
+                            userSessInfo.setCases(null); // In case already initialised for other Lob
                             userSessInfo.setCases(essSrv.getCases4User(userSessInfo.getUserDetails().getUsAccEmpl(),
                                     cusLoB.getCaseTypeEnum()));
                             if (CollectionUtils.isNotEmpty(getCases4User4mSession()))
