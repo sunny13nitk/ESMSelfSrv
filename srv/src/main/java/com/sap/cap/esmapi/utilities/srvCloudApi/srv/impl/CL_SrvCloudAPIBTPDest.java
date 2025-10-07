@@ -3117,6 +3117,7 @@ public class CL_SrvCloudAPIBTPDest implements IF_SrvCloudAPI
                                         urlLink = StringsUtility.replaceURLwithParams(dS.getCasesByEmplPathString(),
                                                 new String[]
                                                 { id, cusItemO.get().getCaseType() }, GC_Constants.gc_UrlReplParam);
+                                        log.info(urlLink);
                                     }
                                 }
                                 else
