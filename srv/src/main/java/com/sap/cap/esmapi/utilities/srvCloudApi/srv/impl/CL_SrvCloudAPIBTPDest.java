@@ -3117,7 +3117,7 @@ public class CL_SrvCloudAPIBTPDest implements IF_SrvCloudAPI
                                         urlLink = StringsUtility.replaceURLwithParams(dS.getCasesByEmplPathString(),
                                                 new String[]
                                                 { id, cusItemO.get().getCaseType() }, GC_Constants.gc_UrlReplParam);
-                                        log.info(urlLink); //#test
+                                        log.info(urlLink); // #test
                                     }
                                 }
                                 else
@@ -3159,6 +3159,8 @@ public class CL_SrvCloudAPIBTPDest implements IF_SrvCloudAPI
                                         {
                                             throw new RuntimeException("Failed with HTTP error code : " + statusCode);
                                         }
+                                        log.info("Status code : " + statusCode + " for case type : "
+                                                + cusItemO.get().getCaseType());
 
                                         // Try and Get Entity from Response
                                         HttpEntity entity = response.getEntity();
@@ -3514,6 +3516,10 @@ public class CL_SrvCloudAPIBTPDest implements IF_SrvCloudAPI
                                                     }
 
                                                 }
+                                            }
+                                            else
+                                            {
+                                                log.error("Cases not bound for Case type : " + caseType);
                                             }
 
                                         }
