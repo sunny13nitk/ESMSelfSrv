@@ -5,26 +5,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.sap.cap.esmapi.exceptions.EX_ESMAPI;
-import com.sap.cap.esmapi.ui.pojos.TY_ESS_Stats;
-import com.sap.cap.esmapi.ui.pojos.TY_NameValueLPair;
-import com.sap.cap.esmapi.ui.srv.intf.IF_ESS_UISrv;
-import com.sap.cap.esmapi.utilities.constants.GC_Constants;
-import com.sap.cap.esmapi.utilities.enums.EnumCaseTypes;
-import com.sap.cap.esmapi.utilities.pojos.TY_CaseESS;
-import com.sap.cap.esmapi.utilities.pojos.Ty_UserAccountEmployee;
-import com.sap.cap.esmapi.utilities.srv.intf.IF_UserSessionSrv;
-import com.sap.cap.esmapi.utilities.srvCloudApi.srv.intf.IF_SrvCloudAPI;
-
+import org.apache.commons.math3.util.Precision;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.apache.commons.math3.util.Precision;
+
+import com.sap.cap.esmapi.exceptions.EX_ESMAPI;
+import com.sap.cap.esmapi.ui.pojos.TY_ESS_Stats;
+import com.sap.cap.esmapi.ui.pojos.TY_NameValueLPair;
+import com.sap.cap.esmapi.ui.srv.intf.IF_ESS_UISrv;
+import com.sap.cap.esmapi.utilities.constants.GC_Constants;
+import com.sap.cap.esmapi.utilities.pojos.TY_CaseESS;
+import com.sap.cap.esmapi.utilities.pojos.Ty_UserAccountEmployee;
+import com.sap.cap.esmapi.utilities.srv.intf.IF_UserSessionSrv;
+import com.sap.cap.esmapi.utilities.srvCloudApi.srv.intf.IF_SrvCloudAPI;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+@Slf4j
 public class CL_ESS_UISrv implements IF_ESS_UISrv
 {
     @Autowired
@@ -115,6 +117,7 @@ public class CL_ESS_UISrv implements IF_ESS_UISrv
     @Override
     public List<TY_CaseESS> getCases4User(Ty_UserAccountEmployee userDetails, String caseTypeEnum) throws IOException
     {
+        log.info("Invoking Case API for Case Type :  " + caseTypeEnum);
         return srvCloudApiSrv.getCases4User(userDetails, caseTypeEnum, userSessionSrv.getDestinationDetails4mUserSession());
     }
 

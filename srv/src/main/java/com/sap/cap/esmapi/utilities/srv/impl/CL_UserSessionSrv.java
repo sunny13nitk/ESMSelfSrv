@@ -2172,7 +2172,7 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
     private void handleAPIFailure(String[] params)
     {
 
-        // ERR_API_FAILURE= Failure calling API - {0} for parameters -{1} for User -
+        // ERR_API_FAILURE= Failure calling API - {0} for rameters -{1} for User -
         // {2}. Details : {3}.
 
         String msg = msgSrc.getMessage("ERR_API_FAILURE", params, Locale.ENGLISH);

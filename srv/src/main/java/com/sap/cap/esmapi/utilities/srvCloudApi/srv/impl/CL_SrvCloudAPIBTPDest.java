@@ -3549,7 +3549,10 @@ public class CL_SrvCloudAPIBTPDest implements IF_SrvCloudAPI
 
             }
         }
-
+        if (CollectionUtils.isNotEmpty(casesByCaseType))
+        {
+            log.info("Cases returned from backend : " + casesByCaseType.size());
+        }
         return casesByCaseType;
     }
 
