@@ -390,7 +390,10 @@ public class CL_UserSessionSrv implements IF_UserSessionSrv
                             // Get ONLY Lob Specific Cases for User
                             userSessInfo.setCases(essSrv.getCases4User(userSessInfo.getUserDetails().getUsAccEmpl(),
                                     cusLoB.getCaseTypeEnum()));
-                            log.info("Cases Loaded for User : " + userSessInfo.getCases().size());
+                            if (CollectionUtils.isNotEmpty(getCases4User4mSession()))
+                            {
+                                log.info("Cases Loaded for User : " + userSessInfo.getCases().size());
+                            }
 
                             if (CollectionUtils.isNotEmpty(userSessInfo.getSubmissionIDs()))
                             {
