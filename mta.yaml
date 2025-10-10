@@ -1,6 +1,6 @@
 _schema-version: "3.1"
 ID: esm-selfsrv
-version: 1.0.7
+version: 1.0.8
 description: "ESM Self Service Application"
 parameters:
   enable-parallel-deployments: true
