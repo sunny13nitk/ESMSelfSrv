@@ -233,7 +233,7 @@ public class CL_SrvCloudAPIBTPDest implements IF_SrvCloudAPI
                                         String caseid = null, caseguid = null, caseType = null,
                                                 caseTypeDescription = null, subject = null, status = null,
                                                 createdOn = null, accountId = null, contactId = null, origin = null,
-                                                priority = null, catg1 = null, catg2 = null;
+                                                priority = null, catg1 = null, catg2 = null, catg3 = null, catg4 = null;
 
                                         boolean canConfirm = false;
 
@@ -335,6 +335,54 @@ public class CL_SrvCloudAPIBTPDest implements IF_SrvCloudAPI
                                                             // log.info( "Created On : " +
                                                             // admEnt.get(admFieldName).asText());
                                                             catg2 = admEnt.get(admFieldName).asText();
+                                                        }
+                                                    }
+
+                                                }
+                                            }
+
+                                            if (caseFieldName.equals("categoryLevel3"))
+                                            {
+                                                // log.info("Inside Admin Data: " );
+
+                                                JsonNode admEnt = caseEnt.path("categoryLevel3");
+                                                if (admEnt != null)
+                                                {
+                                                    // log.info("AdminData Node Bound");
+
+                                                    Iterator<String> fieldNamesAdm = admEnt.fieldNames();
+                                                    while (fieldNamesAdm.hasNext())
+                                                    {
+                                                        String admFieldName = fieldNamesAdm.next();
+                                                        if (admFieldName.equals("description"))
+                                                        {
+                                                            // log.info( "Created On : " +
+                                                            // admEnt.get(admFieldName).asText());
+                                                            catg3 = admEnt.get(admFieldName).asText();
+                                                        }
+                                                    }
+
+                                                }
+                                            }
+
+                                            if (caseFieldName.equals("categoryLevel4"))
+                                            {
+                                                // log.info("Inside Admin Data: " );
+
+                                                JsonNode admEnt = caseEnt.path("categoryLevel4");
+                                                if (admEnt != null)
+                                                {
+                                                    // log.info("AdminData Node Bound");
+
+                                                    Iterator<String> fieldNamesAdm = admEnt.fieldNames();
+                                                    while (fieldNamesAdm.hasNext())
+                                                    {
+                                                        String admFieldName = fieldNamesAdm.next();
+                                                        if (admFieldName.equals("description"))
+                                                        {
+                                                            // log.info( "Created On : " +
+                                                            // admEnt.get(admFieldName).asText());
+                                                            catg4 = admEnt.get(admFieldName).asText();
                                                         }
                                                     }
 
@@ -510,7 +558,7 @@ public class CL_SrvCloudAPIBTPDest implements IF_SrvCloudAPI
                                                 casesESSList.add(new TY_CaseESS(caseguid, caseid, caseType,
                                                         caseTypeDescription, subject, status, accountId, contactId,
                                                         createdOn, date, dateFormatted, odt, origin, canConfirm,
-                                                        priority, catg1, catg2));
+                                                        priority, catg1, catg2, catg3, catg4));
 
                                             }
                                             else
@@ -518,7 +566,7 @@ public class CL_SrvCloudAPIBTPDest implements IF_SrvCloudAPI
                                                 casesESSList.add(new TY_CaseESS(caseguid, caseid, caseType,
                                                         caseTypeDescription, subject, status, accountId, contactId,
                                                         createdOn, null, null, null, origin, canConfirm, priority,
-                                                        catg1, catg2));
+                                                        catg1, catg2, catg3, catg4));
                                             }
 
                                         }
@@ -2581,7 +2629,7 @@ public class CL_SrvCloudAPIBTPDest implements IF_SrvCloudAPI
                                         String caseid = null, caseguid = null, caseType = null,
                                                 caseTypeDescription = null, subject = null, status = null,
                                                 createdOn = null, accountId = null, contactId = null, origin = null,
-                                                priority = null, catg1 = null, catg2 = null;
+                                                priority = null, catg1 = null, catg2 = null, catg3 = null, catg4 = null;
                                         boolean canConfirm = false;
 
                                         // log.info("Cases Entity Bound - Reading Case...");
@@ -2731,6 +2779,54 @@ public class CL_SrvCloudAPIBTPDest implements IF_SrvCloudAPI
                                                 }
                                             }
 
+                                            if (caseFieldName.equals("categoryLevel3"))
+                                            {
+                                                // log.info("Inside Admin Data: " );
+
+                                                JsonNode admEnt = caseEnt.path("categoryLevel3");
+                                                if (admEnt != null)
+                                                {
+                                                    // log.info("AdminData Node Bound");
+
+                                                    Iterator<String> fieldNamesAdm = admEnt.fieldNames();
+                                                    while (fieldNamesAdm.hasNext())
+                                                    {
+                                                        String admFieldName = fieldNamesAdm.next();
+                                                        if (admFieldName.equals("description"))
+                                                        {
+                                                            // log.info( "Created On : " +
+                                                            // admEnt.get(admFieldName).asText());
+                                                            catg3 = admEnt.get(admFieldName).asText();
+                                                        }
+                                                    }
+
+                                                }
+                                            }
+
+                                            if (caseFieldName.equals("categoryLevel4"))
+                                            {
+                                                // log.info("Inside Admin Data: " );
+
+                                                JsonNode admEnt = caseEnt.path("categoryLevel4");
+                                                if (admEnt != null)
+                                                {
+                                                    // log.info("AdminData Node Bound");
+
+                                                    Iterator<String> fieldNamesAdm = admEnt.fieldNames();
+                                                    while (fieldNamesAdm.hasNext())
+                                                    {
+                                                        String admFieldName = fieldNamesAdm.next();
+                                                        if (admFieldName.equals("description"))
+                                                        {
+                                                            // log.info( "Created On : " +
+                                                            // admEnt.get(admFieldName).asText());
+                                                            catg4 = admEnt.get(admFieldName).asText();
+                                                        }
+                                                    }
+
+                                                }
+                                            }
+
                                             if (caseFieldName.equals("statusDescription"))
                                             {
                                                 // log.info("Case Status Added : " +
@@ -2857,7 +2953,7 @@ public class CL_SrvCloudAPIBTPDest implements IF_SrvCloudAPI
                                                 casesESSList.add(new TY_CaseESS(caseguid, caseid, caseType,
                                                         caseTypeDescription, subject, status, accountId, contactId,
                                                         createdOn, date, dateFormatted, odt, origin, canConfirm,
-                                                        priority, catg1, catg2));
+                                                        priority, catg1, catg2, catg3, catg4));
 
                                             }
                                             else
@@ -2865,7 +2961,7 @@ public class CL_SrvCloudAPIBTPDest implements IF_SrvCloudAPI
                                                 casesESSList.add(new TY_CaseESS(caseguid, caseid, caseType,
                                                         caseTypeDescription, subject, status, accountId, contactId,
                                                         createdOn, null, null, null, origin, canConfirm, priority,
-                                                        catg1, catg2));
+                                                        catg1, catg2, catg3, catg4));
                                             }
 
                                         }
@@ -3206,7 +3302,7 @@ public class CL_SrvCloudAPIBTPDest implements IF_SrvCloudAPI
                                                                         subject = null, status = null, createdOn = null,
                                                                         accountId = null, employeeId = null,
                                                                         origin = null, priority = null, catg1 = null,
-                                                                        catg2 = null;
+                                                                        catg2 = null, catg3 = null, catg4 = null;
 
                                                                 boolean canConfirm = false;
 
@@ -3411,6 +3507,62 @@ public class CL_SrvCloudAPIBTPDest implements IF_SrvCloudAPI
                                                                         }
                                                                     }
 
+                                                                    if (caseFieldName.equals("categoryLevel3"))
+                                                                    {
+                                                                        // log.info("Inside Admin Data: " );
+
+                                                                        JsonNode admEnt = caseEnt
+                                                                                .path("categoryLevel3");
+                                                                        if (admEnt != null)
+                                                                        {
+                                                                            // log.info("AdminData Node Bound");
+
+                                                                            Iterator<String> fieldNamesAdm = admEnt
+                                                                                    .fieldNames();
+                                                                            while (fieldNamesAdm.hasNext())
+                                                                            {
+                                                                                String admFieldName = fieldNamesAdm
+                                                                                        .next();
+                                                                                if (admFieldName.equals("description"))
+                                                                                {
+                                                                                    // log.info( "Created On : " +
+                                                                                    // admEnt.get(admFieldName).asText());
+                                                                                    catg3 = admEnt.get(admFieldName)
+                                                                                            .asText();
+                                                                                }
+                                                                            }
+
+                                                                        }
+                                                                    }
+
+                                                                    if (caseFieldName.equals("categoryLevel4"))
+                                                                    {
+                                                                        // log.info("Inside Admin Data: " );
+
+                                                                        JsonNode admEnt = caseEnt
+                                                                                .path("categoryLevel4");
+                                                                        if (admEnt != null)
+                                                                        {
+                                                                            // log.info("AdminData Node Bound");
+
+                                                                            Iterator<String> fieldNamesAdm = admEnt
+                                                                                    .fieldNames();
+                                                                            while (fieldNamesAdm.hasNext())
+                                                                            {
+                                                                                String admFieldName = fieldNamesAdm
+                                                                                        .next();
+                                                                                if (admFieldName.equals("description"))
+                                                                                {
+                                                                                    // log.info( "Created On : " +
+                                                                                    // admEnt.get(admFieldName).asText());
+                                                                                    catg4 = admEnt.get(admFieldName)
+                                                                                            .asText();
+                                                                                }
+                                                                            }
+
+                                                                        }
+                                                                    }
+
                                                                     if (caseFieldName.equals("individualCustomer")
                                                                             && (!StringUtils.hasText(accountId)))
                                                                     {
@@ -3494,7 +3646,7 @@ public class CL_SrvCloudAPIBTPDest implements IF_SrvCloudAPI
                                                                                 caseTypeDescription, subject, status,
                                                                                 accountId, employeeId, createdOn, date,
                                                                                 dateFormatted, odt, origin, canConfirm,
-                                                                                priority, catg1, catg2));
+                                                                                priority, catg1, catg2, catg3, catg4));
 
                                                                     }
                                                                     else
@@ -3504,7 +3656,7 @@ public class CL_SrvCloudAPIBTPDest implements IF_SrvCloudAPI
                                                                                 caseTypeDescription, subject, status,
                                                                                 accountId, employeeId, createdOn, null,
                                                                                 null, null, origin, canConfirm,
-                                                                                priority, catg1, catg2));
+                                                                                priority, catg1, catg2, catg3, catg4));
                                                                     }
 
                                                                 }

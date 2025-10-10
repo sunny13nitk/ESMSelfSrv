@@ -36,6 +36,8 @@ public class CL_SrvUrlSIXSrv implements IF_SrvUrlSrv
     private final String gc_priority = "&priority=";
     private final String gc_catg1 = "&service_offering=";
     private final String gc_catg2 = "&assignment_group=";
+    private final String gc_catg3 = "&resolution_category=";
+    private final String gc_catg4 = "&resolution_subcategory=";
 
     @SuppressWarnings("null")
     @Override
@@ -116,6 +118,14 @@ public class CL_SrvUrlSIXSrv implements IF_SrvUrlSrv
                     if (StringUtils.hasText(caseO.get().getCatg2()))
                     {
                         svyUrl += (gc_catg2 + caseO.get().getCatg2());
+                    }
+                    if (StringUtils.hasText(caseO.get().getCatg3()))
+                    {
+                        svyUrl += (gc_catg3 + caseO.get().getCatg3());
+                    }
+                    if (StringUtils.hasText(caseO.get().getCatg4()))
+                    {
+                        svyUrl += (gc_catg4 + caseO.get().getCatg4());
                     }
 
                 }

@@ -31,4 +31,6 @@ public class TY_CaseESS
     private String priority;
     private String catg1;
     private String catg2;
+    private String catg3;
+    private String catg4;
 }
