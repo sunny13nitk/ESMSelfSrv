@@ -49,8 +49,8 @@ public class CL_BaseConfigSrv implements IF_BaseConfigSrv
                     .map(cfg -> new TY_CatgCusItem(cfg.getCaseTypeEnum(), cfg.getCasetype(), cfg.getAppNotesTypes(),
                             cfg.getStatusSchema(), cfg.getReplyNoteType(), cfg.getCatgRankEnabled(),
                             cfg.getCatgsranksonlyShow(), cfg.getConfirmStatus(), cfg.getFragmentHead(),
-                            cfg.getFragmentTitle(), cfg.getFragmentFooter(), cfg.getCaseFormView(), cfg.getSvydes(),
-                            cfg.getSvysrv(), cfg.getLogouturl()))
+                            cfg.getFragmentTitle(), cfg.getFragmentFooter(), cfg.getCaseFormView(), cfg.getEnableSvy(),
+                            cfg.getSvydes(), cfg.getSvysrv(), cfg.getLogouturl()))
                     .toList());
         }
     }
@@ -72,8 +72,8 @@ public class CL_BaseConfigSrv implements IF_BaseConfigSrv
                             cfgO.get().getAppNotesTypes(), cfgO.get().getStatusSchema(), cfgO.get().getReplyNoteType(),
                             cfgO.get().getCatgRankEnabled(), cfgO.get().getCatgsranksonlyShow(),
                             cfgO.get().getConfirmStatus(), cfgO.get().getFragmentHead(), cfgO.get().getFragmentTitle(),
-                            cfgO.get().getFragmentFooter(), cfgO.get().getCaseFormView(), cfgO.get().getSvydes(),
-                            cfgO.get().getSvysrv(), cfgO.get().getLogouturl());
+                            cfgO.get().getFragmentFooter(), cfgO.get().getCaseFormView(), cfgO.get().getEnableSvy(),
+                            cfgO.get().getSvydes(), cfgO.get().getSvysrv(), cfgO.get().getLogouturl());
                 }
 
             }
@@ -98,8 +98,8 @@ public class CL_BaseConfigSrv implements IF_BaseConfigSrv
                             cfgO.get().getAppNotesTypes(), cfgO.get().getStatusSchema(), cfgO.get().getReplyNoteType(),
                             cfgO.get().getCatgRankEnabled(), cfgO.get().getCatgsranksonlyShow(),
                             cfgO.get().getConfirmStatus(), cfgO.get().getFragmentHead(), cfgO.get().getFragmentTitle(),
-                            cfgO.get().getFragmentFooter(), cfgO.get().getCaseFormView(), cfgO.get().getSvydes(),
-                            cfgO.get().getSvysrv(), cfgO.get().getLogouturl());
+                            cfgO.get().getFragmentFooter(), cfgO.get().getCaseFormView(), cfgO.get().getEnableSvy(),
+                            cfgO.get().getSvydes(), cfgO.get().getSvysrv(), cfgO.get().getLogouturl());
                 }
 
             }

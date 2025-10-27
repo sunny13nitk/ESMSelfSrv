@@ -33,15 +33,17 @@ public class TY_CatgCusItem
     private String fragmentHead;
     @CsvBindByPosition(position = 9)
     private String fragmentTitle;
-     @CsvBindByPosition(position = 10)
+    @CsvBindByPosition(position = 10)
     private String fragmentFooter;
     @CsvBindByPosition(position = 11)
     private String caseFormView;
-    @CsvBindByPosition(position = 12)
-    private String svydes;
     @CsvBindByPosition(position = 13)
-    private String svysrv;
+    private Boolean enableSvy;
     @CsvBindByPosition(position = 14)
+    private String svydes;
+    @CsvBindByPosition(position = 15)
+    private String svysrv;
+    @CsvBindByPosition(position = 16)
     private String logoutUrl;
 
 }

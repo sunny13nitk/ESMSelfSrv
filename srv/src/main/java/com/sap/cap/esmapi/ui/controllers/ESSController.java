@@ -809,18 +809,40 @@ public class ESSController
             try
             {
 
-                svyUrl = userSessionSrv.getSurveyUrl4CaseId(caseID);
-
-                if (StringUtils.hasText(svyUrl))
+                // Check if SSurvey processing is activated for the LOb
+                TY_CatgCusItem cusItem = userSessionSrv.getCurrentLOBConfig();
+                // Survey processing disabled for LoB
+                if (cusItem != null)
                 {
                     caseDetails = userSessionSrv.getCaseDetails4Confirmation(caseID);
-                    if (caseDetails != null && StringUtils.hasText(caseDetails.getETag()))
+                    if (cusItem.getEnableSvy())
                     {
-                        log.info("Etag Bound. Ready for patch....");
-                        EV_CaseConfirmSubmit caseConfirmEvent = new EV_CaseConfirmSubmit(this, caseDetails);
-                        applicationEventPublisher.publishEvent(caseConfirmEvent);
+                        log.info("Survey Processing Enabled for LoB : " + cusItem.getCaseTypeEnum().toString());
+                        svyUrl = userSessionSrv.getSurveyUrl4CaseId(caseID);
+                        if (StringUtils.hasText(svyUrl))
+                        {
+
+                            if (caseDetails != null && StringUtils.hasText(caseDetails.getETag()))
+                            {
+                                log.info("Etag Bound. Ready for patch....");
+                                EV_CaseConfirmSubmit caseConfirmEvent = new EV_CaseConfirmSubmit(this, caseDetails);
+                                applicationEventPublisher.publishEvent(caseConfirmEvent);
+                            }
+                            return new ModelAndView(new RedirectView(svyUrl)); // Redirect for EXTERNAL user with survey
+                                                                               // URL
+                        }
+
                     }
-                    return new ModelAndView(new RedirectView(svyUrl)); // Redirect for EXTERNAL user with survey URL
+                    else
+                    {
+                        log.info("Survey Processing Disabled for LoB : " + cusItem.getCaseTypeEnum().toString());
+                        if (caseDetails != null && StringUtils.hasText(caseDetails.getETag()))
+                        {
+                            log.info("Etag Bound. Ready for patch....");
+                            EV_CaseConfirmSubmit caseConfirmEvent = new EV_CaseConfirmSubmit(this, caseDetails);
+                            applicationEventPublisher.publishEvent(caseConfirmEvent);
+                        }
+                    }
                 }
 
             }

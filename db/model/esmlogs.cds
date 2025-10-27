@@ -34,6 +34,7 @@ entity baseconfig {
         fragmentTitle      : String(10);
         fragmentFooter     : String(10);
         caseFormView       : String(50);
+        enableSvy          : Boolean;
         svydes             : String(50);
         svysrv             : String(50);
         logouturl          : String(255);
