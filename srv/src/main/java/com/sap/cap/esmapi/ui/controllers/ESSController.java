@@ -159,6 +159,18 @@ public class ESSController
                                                             ? catgCusItem.getFragmentFooter()
                                                             : GC_Constants.gc_FooterFragmentDefault);
 
+                                    // Survey processing enabled
+                                    if (catgCusItem.getEnableSvy())
+                                    {
+                                        model.addAttribute("svyEnabled", true);
+                                        log.info("Survey Processing Enabled for LoB: " + lob);
+                                    }
+                                    else
+                                    {
+                                        model.addAttribute("svyEnabled", false);
+                                        log.info("Survey Processing Disabled for LoB: " + lob);
+
+                                    }
                                 }
 
                                 else
