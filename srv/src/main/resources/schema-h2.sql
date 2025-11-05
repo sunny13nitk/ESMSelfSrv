@@ -1,5 +1,7 @@
 
 DROP VIEW IF EXISTS LogsReadService_Logs;
+DROP TABLE IF EXISTS db_esmlogs_statustrans;
+DROP TABLE IF EXISTS db_esmlogs_catgtemplates;
 DROP TABLE IF EXISTS db_esmlogs_lobcatgsranks;
 DROP TABLE IF EXISTS db_esmlogs_baseconfig;
 DROP TABLE IF EXISTS db_esmlogs_esmapplogs;
@@ -29,6 +31,9 @@ CREATE TABLE db_esmlogs_baseconfig (
   fragmentTitle NVARCHAR(10),
   fragmentFooter NVARCHAR(10),
   caseFormView NVARCHAR(50),
+  enableSvy BOOLEAN,
+  svydes NVARCHAR(50),
+  svysrv NVARCHAR(50),
   logouturl NVARCHAR(255),
   PRIMARY KEY(caseTypeEnum)
 ); 
@@ -38,6 +43,23 @@ CREATE TABLE db_esmlogs_lobcatgsranks (
   casetype NVARCHAR(10),
   catg NVARCHAR(200),
   rank SMALLINT,
+  PRIMARY KEY(ID)
+); 
+
+CREATE TABLE db_esmlogs_catgtemplates (
+  ID NVARCHAR(36) NOT NULL,
+  catgU NVARCHAR(255),
+  questionnaire NCLOB,
+  PRIMARY KEY(ID)
+); 
+
+CREATE TABLE db_esmlogs_statustrans (
+  ID NVARCHAR(36) NOT NULL,
+  casetype NVARCHAR(10),
+  fromStatus NVARCHAR(30),
+  toStatus NVARCHAR(30),
+  caseEditAllowed BOOLEAN,
+  confirmAllowed BOOLEAN,
   PRIMARY KEY(ID)
 ); 
 
