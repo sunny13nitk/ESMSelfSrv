@@ -138,13 +138,20 @@ public class EV_HDLR_CaseReplySubmit
                                         if (StringUtils.hasText(scrambledTxt))
                                         {
                                             // Also check for HTMLInjection
-                                            scrambledTxt = HtmlSanitizer.sanitizeCaseHtml(scrambledTxt);
+                                            log.info("Scrambled Description: {}", scrambledTxt);
+                                            String sanitizedTxt = HtmlSanitizer.sanitizeCaseHtml(scrambledTxt);
+                                            log.info("Sanitized Description: {}", sanitizedTxt);
+
+                                            if (!StringUtils.hasText(sanitizedTxt))
+                                            {
+                                                return;
+                                            }
                                             // Create Note and Get Guid back
                                             String noteId = srvCloudApiSrv.createNotes(new TY_NotesCreate(false,
-                                                    scrambledTxt, cfgO.get().getReplyNoteType()), desProps);
+                                                    sanitizedTxt, cfgO.get().getReplyNoteType()), desProps);
                                             if (StringUtils.hasText(noteId))
                                             {
-                                                caseReplyPayload.getNotes().add(new TY_CaseReplyNote(scrambledTxt, null,
+                                                caseReplyPayload.getNotes().add(new TY_CaseReplyNote(sanitizedTxt, null,
                                                         noteId, cfgO.get().getReplyNoteType()));
                                             }
                                         }
@@ -161,12 +168,21 @@ public class EV_HDLR_CaseReplySubmit
                                                 .scrambleText(evCaseReply.getPayload().getCaseReply().getReply());
                                         if (StringUtils.hasText(scrambledTxt))
                                         {
+                                            // Also check for HTMLInjection
+                                            log.info("Scrambled Description: {}", scrambledTxt);
+                                            String sanitizedTxt = HtmlSanitizer.sanitizeCaseHtml(scrambledTxt);
+                                            log.info("Sanitized Description: {}", sanitizedTxt);
+
+                                            if (!StringUtils.hasText(sanitizedTxt))
+                                            {
+                                                return;
+                                            }
                                             String noteId = srvCloudApiSrv.createNotes(
-                                                    new TY_NotesCreate(false, scrambledTxt, null), desProps);
+                                                    new TY_NotesCreate(false, sanitizedTxt, null), desProps);
                                             if (StringUtils.hasText(noteId))
                                             {
                                                 caseReplyPayload.getNotes()
-                                                        .add(new TY_CaseReplyNote(scrambledTxt, null, noteId, null));
+                                                        .add(new TY_CaseReplyNote(sanitizedTxt, null, noteId, null));
                                             }
                                         }
 

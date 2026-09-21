@@ -229,12 +229,19 @@ public class EV_HDLR_CaseFormSubmit
                                         if (StringUtils.hasText(scrambledTxt))
                                         {
                                                 // Also check for HTMLInjection
-                                                scrambledTxt = HtmlSanitizer.sanitizeCaseHtml(scrambledTxt);
+                                                log.info("Scrambled Description: {}", scrambledTxt);
+                                                String sanitizedTxt = HtmlSanitizer.sanitizeCaseHtml(scrambledTxt);
+                                                log.info("Sanitized Description: {}", sanitizedTxt);
+
+                                                if (!StringUtils.hasText(sanitizedTxt))
+                                                {
+                                                        return;
+                                                }
                                                 // Create Note and Get Guid back
                                                 String noteId = srvCloudApiSrv.createNotes(new TY_NotesCreate(
                                                                 evCaseFormSubmit.getPayload().getCaseForm()
                                                                                 .isExternal(),
-                                                                scrambledTxt, GC_Constants.gc_NoteTypeDescription),
+                                                                sanitizedTxt, GC_Constants.gc_NoteTypeDescription),
                                                                 desProps);
                                                 if (StringUtils.hasText(noteId))
                                                 {
@@ -412,12 +419,19 @@ public class EV_HDLR_CaseFormSubmit
                                         if (StringUtils.hasText(scrambledTxt))
                                         {
                                                 // Also check for HTMLInjection
-                                                scrambledTxt = HtmlSanitizer.sanitizeCaseHtml(scrambledTxt);
+                                                log.info("Scrambled Description: {}", scrambledTxt);
+                                                String sanitizedTxt = HtmlSanitizer.sanitizeCaseHtml(scrambledTxt);
+                                                log.info("Sanitized Description: {}", sanitizedTxt);
+
+                                                if (!StringUtils.hasText(sanitizedTxt))
+                                                {
+                                                        return;
+                                                }
                                                 // Create Note and Get Guid back
                                                 String noteId = srvCloudApiSrv.createNotes(new TY_NotesCreate(
                                                                 evCaseFormSubmit.getPayload().getCaseForm()
                                                                                 .isExternal(),
-                                                                scrambledTxt, GC_Constants.gc_NoteTypeDescription),
+                                                                sanitizedTxt, GC_Constants.gc_NoteTypeDescription),
                                                                 desProps);
                                                 if (StringUtils.hasText(noteId))
                                                 {
@@ -583,12 +597,19 @@ public class EV_HDLR_CaseFormSubmit
                                         if (StringUtils.hasText(scrambledTxt))
                                         {
                                                 // Also check for HTMLInjection
-                                                scrambledTxt = HtmlSanitizer.sanitizeCaseHtml(scrambledTxt);
+                                                log.info("Scrambled Description: {}", scrambledTxt);
+                                                String sanitizedTxt = HtmlSanitizer.sanitizeCaseHtml(scrambledTxt);
+                                                log.info("Sanitized Description: {}", sanitizedTxt);
+
+                                                if (!StringUtils.hasText(sanitizedTxt))
+                                                {
+                                                        return;
+                                                }
                                                 // Create Note and Get Guid back
                                                 String noteId = srvCloudApiSrv.createNotes(new TY_NotesCreate(
                                                                 evCaseFormSubmit.getPayload().getCaseForm()
                                                                                 .isExternal(),
-                                                                scrambledTxt, GC_Constants.gc_NoteTypeDescription),
+                                                                sanitizedTxt, GC_Constants.gc_NoteTypeDescription),
                                                                 desProps);
                                                 if (StringUtils.hasText(noteId))
                                                 {
@@ -764,12 +785,19 @@ public class EV_HDLR_CaseFormSubmit
                                         if (StringUtils.hasText(scrambledTxt))
                                         {
                                                 // Also check for HTMLInjection
-                                                scrambledTxt = HtmlSanitizer.sanitizeCaseHtml(scrambledTxt);
+                                                log.info("Scrambled Description: {}", scrambledTxt);
+                                                String sanitizedTxt = HtmlSanitizer.sanitizeCaseHtml(scrambledTxt);
+                                                log.info("Sanitized Description: {}", sanitizedTxt);
+
+                                                if (!StringUtils.hasText(sanitizedTxt))
+                                                {
+                                                        return;
+                                                }
                                                 // Create Note and Get Guid back
                                                 String noteId = srvCloudApiSrv.createNotes(new TY_NotesCreate(
                                                                 evCaseFormSubmit.getPayload().getCaseForm()
                                                                                 .isExternal(),
-                                                                scrambledTxt, GC_Constants.gc_NoteTypeDescription),
+                                                                sanitizedTxt, GC_Constants.gc_NoteTypeDescription),
                                                                 desProps);
                                                 if (StringUtils.hasText(noteId))
                                                 {
@@ -941,12 +969,19 @@ public class EV_HDLR_CaseFormSubmit
                                         if (StringUtils.hasText(scrambledTxt))
                                         {
                                                 // Also check for HTMLInjection
-                                                scrambledTxt = HtmlSanitizer.sanitizeCaseHtml(scrambledTxt);
+                                                log.info("Scrambled Description: {}", scrambledTxt);
+                                                String sanitizedTxt = HtmlSanitizer.sanitizeCaseHtml(scrambledTxt);
+                                                log.info("Sanitized Description: {}", sanitizedTxt);
+
+                                                if (!StringUtils.hasText(sanitizedTxt))
+                                                {
+                                                        return;
+                                                }
                                                 // Create Note and Get Guid back
                                                 String noteId = srvCloudApiSrv.createNotes(new TY_NotesCreate(
                                                                 evCaseFormSubmit.getPayload().getCaseForm()
                                                                                 .isExternal(),
-                                                                scrambledTxt, GC_Constants.gc_NoteTypeDescription),
+                                                                sanitizedTxt, GC_Constants.gc_NoteTypeDescription),
                                                                 desProps);
                                                 if (StringUtils.hasText(noteId))
                                                 {
