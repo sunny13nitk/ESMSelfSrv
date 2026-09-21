@@ -34,6 +34,7 @@ import com.sap.cap.esmapi.utilities.pojos.TY_Case_SrvCloud_Reply;
 import com.sap.cap.esmapi.utilities.pojos.TY_Message;
 import com.sap.cap.esmapi.utilities.pojos.TY_NotesCreate;
 import com.sap.cap.esmapi.utilities.scrambling.CL_ScramblingUtils;
+import com.sap.cap.esmapi.utilities.scrambling.HtmlSanitizer;
 import com.sap.cap.esmapi.utilities.srvCloudApi.destination.pojos.TY_DestinationProps;
 import com.sap.cap.esmapi.utilities.srvCloudApi.srv.intf.IF_SrvCloudAPI;
 
@@ -136,6 +137,8 @@ public class EV_HDLR_CaseReplySubmit
                                                 .scrambleText(evCaseReply.getPayload().getCaseReply().getReply());
                                         if (StringUtils.hasText(scrambledTxt))
                                         {
+                                            // Also check for HTMLInjection
+                                            scrambledTxt = HtmlSanitizer.sanitizeCaseHtml(scrambledTxt);
                                             // Create Note and Get Guid back
                                             String noteId = srvCloudApiSrv.createNotes(new TY_NotesCreate(false,
                                                     scrambledTxt, cfgO.get().getReplyNoteType()), desProps);
@@ -256,7 +259,7 @@ public class EV_HDLR_CaseReplySubmit
 
         log.error(msg);
         TY_Message logMsg = new TY_Message(evCaseReply.getPayload().getUserId(),
-        evCaseReply.getPayload().getCaseReply().getCaseDetails().getCaseType(), Timestamp.from(Instant.now()),
+                evCaseReply.getPayload().getCaseReply().getCaseDetails().getCaseType(), Timestamp.from(Instant.now()),
                 EnumStatus.Error, EnumMessageType.ERR_CASE_REPL_SAVE, evCaseReply.getPayload().getSubmGuid(), msg);
 
         // Instantiate and Fire the Event
