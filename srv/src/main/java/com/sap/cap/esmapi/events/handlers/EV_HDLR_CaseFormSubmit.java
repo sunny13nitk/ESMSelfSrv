@@ -41,6 +41,7 @@ import com.sap.cap.esmapi.utilities.pojos.TY_Extensions_CaseCreate;
 import com.sap.cap.esmapi.utilities.pojos.TY_Message;
 import com.sap.cap.esmapi.utilities.pojos.TY_NotesCreate;
 import com.sap.cap.esmapi.utilities.scrambling.CL_ScramblingUtils;
+import com.sap.cap.esmapi.utilities.scrambling.HtmlSanitizer;
 import com.sap.cap.esmapi.utilities.srvCloudApi.destination.pojos.TY_DestinationProps;
 import com.sap.cap.esmapi.utilities.srvCloudApi.srv.intf.IF_SrvCloudAPI;
 
@@ -227,6 +228,8 @@ public class EV_HDLR_CaseFormSubmit
                                                         evCaseFormSubmit.getPayload().getCaseForm().getDescription());
                                         if (StringUtils.hasText(scrambledTxt))
                                         {
+                                                // Also check for HTMLInjection
+                                                scrambledTxt = HtmlSanitizer.sanitizeCaseHtml(scrambledTxt);
                                                 // Create Note and Get Guid back
                                                 String noteId = srvCloudApiSrv.createNotes(new TY_NotesCreate(
                                                                 evCaseFormSubmit.getPayload().getCaseForm()
@@ -405,8 +408,11 @@ public class EV_HDLR_CaseFormSubmit
                                          */
                                         String scrambledTxt = CL_ScramblingUtils.scrambleText(
                                                         evCaseFormSubmit.getPayload().getCaseForm().getDescription());
+
                                         if (StringUtils.hasText(scrambledTxt))
                                         {
+                                                // Also check for HTMLInjection
+                                                scrambledTxt = HtmlSanitizer.sanitizeCaseHtml(scrambledTxt);
                                                 // Create Note and Get Guid back
                                                 String noteId = srvCloudApiSrv.createNotes(new TY_NotesCreate(
                                                                 evCaseFormSubmit.getPayload().getCaseForm()
@@ -576,6 +582,8 @@ public class EV_HDLR_CaseFormSubmit
                                                         evCaseFormSubmit.getPayload().getCaseForm().getDescription());
                                         if (StringUtils.hasText(scrambledTxt))
                                         {
+                                                // Also check for HTMLInjection
+                                                scrambledTxt = HtmlSanitizer.sanitizeCaseHtml(scrambledTxt);
                                                 // Create Note and Get Guid back
                                                 String noteId = srvCloudApiSrv.createNotes(new TY_NotesCreate(
                                                                 evCaseFormSubmit.getPayload().getCaseForm()
@@ -755,7 +763,8 @@ public class EV_HDLR_CaseFormSubmit
                                                         evCaseFormSubmit.getPayload().getCaseForm().getDescription());
                                         if (StringUtils.hasText(scrambledTxt))
                                         {
-
+                                                // Also check for HTMLInjection
+                                                scrambledTxt = HtmlSanitizer.sanitizeCaseHtml(scrambledTxt);
                                                 // Create Note and Get Guid back
                                                 String noteId = srvCloudApiSrv.createNotes(new TY_NotesCreate(
                                                                 evCaseFormSubmit.getPayload().getCaseForm()
@@ -931,7 +940,8 @@ public class EV_HDLR_CaseFormSubmit
                                                         evCaseFormSubmit.getPayload().getCaseForm().getDescription());
                                         if (StringUtils.hasText(scrambledTxt))
                                         {
-
+                                                // Also check for HTMLInjection
+                                                scrambledTxt = HtmlSanitizer.sanitizeCaseHtml(scrambledTxt);
                                                 // Create Note and Get Guid back
                                                 String noteId = srvCloudApiSrv.createNotes(new TY_NotesCreate(
                                                                 evCaseFormSubmit.getPayload().getCaseForm()
@@ -1043,7 +1053,7 @@ public class EV_HDLR_CaseFormSubmit
 
                 log.error(msg);
                 TY_Message logMsg = new TY_Message(evCaseFormSubmit.getPayload().getUserId(),
-                evCaseFormSubmit.getPayload().getCaseForm().getCaseTxnType(),
+                                evCaseFormSubmit.getPayload().getCaseForm().getCaseTxnType(),
                                 Timestamp.from(Instant.now()), EnumStatus.Error, EnumMessageType.ERR_CASE_CREATE,
                                 evCaseFormSubmit.getPayload().getSubmGuid(), msg);
 
@@ -1068,7 +1078,7 @@ public class EV_HDLR_CaseFormSubmit
                 // Populate Success message in session
 
                 TY_Message logMsg = new TY_Message(evCaseFormSubmit.getPayload().getUserId(),
-                evCaseFormSubmit.getPayload().getCaseForm().getCaseTxnType(),
+                                evCaseFormSubmit.getPayload().getCaseForm().getCaseTxnType(),
                                 Timestamp.from(Instant.now()), EnumStatus.Success, EnumMessageType.SUCC_CASE_CREATE,
                                 evCaseFormSubmit.getPayload().getSubmGuid(), msg);
 
@@ -1086,7 +1096,7 @@ public class EV_HDLR_CaseFormSubmit
 
                 log.error(msg);
                 TY_Message logMsg = new TY_Message(evCaseFormSubmit.getPayload().getUserId(),
-                evCaseFormSubmit.getPayload().getCaseForm().getCaseTxnType(),
+                                evCaseFormSubmit.getPayload().getCaseForm().getCaseTxnType(),
                                 Timestamp.from(Instant.now()), EnumStatus.Error, EnumMessageType.ERR_CASE_CATG,
                                 evCaseFormSubmit.getPayload().getSubmGuid(), msg);
 
